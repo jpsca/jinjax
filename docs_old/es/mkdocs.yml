@@ -1,0 +1,91 @@
+site_name: JinjaX
+site_description: El poder de los componentes en tu aplicacion web renderizada en el servidor
+site_url: https://jinjax.scaletti.dev/es
+site_author: Juan-Pablo Scaletti
+repo_url: https://github.com/jpsca/jinjax/
+repo_name: jpsca/jinjax
+copyright: Copyright © 2022 Juan-Pablo Scaletti
+
+nav:
+  - Inicio: index.md
+  - Guía:
+    - guide/index.md
+    - guide/arguments.md
+    - guide/extra.md
+    - guide/css_and_js.md
+
+theme:
+  name: material
+  custom_dir: overrides
+  font: false
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.svg
+  language: es
+  features:
+    - navigation.expand
+    # - navigation.indexes
+    # - navigation.instant
+    # - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highligh
+  icon:
+    repo: material/github
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: white
+    accent: green
+    toggle:
+      icon: octicons/sun-16
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: black
+    accent: green
+    toggle:
+      icon: octicons/moon-16
+      name: Switch to light mode
+
+extra:
+  alternate:
+  - name: English
+    link: /
+    lang: en
+  - name: Español
+    link: /es/
+    lang: es
+
+extra_css:
+  - assets/stylesheets/highlight.css
+  # - assets/stylesheets/termynal.css
+  - assets/stylesheets/common.css
+extra_javascript:
+  # - assets/javascripts/termynal.js
+edit_uri: ""
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - smarty
+  - tables
+  - toc:
+      permalink: "#"
+      toc_depth: 4
+  - mkautodoc
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - pymdownx.tilde

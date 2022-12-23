@@ -1,0 +1,36 @@
+{#def languages, lang="" #}
+
+{% if languages %}
+<div {{ attrs.render(
+  tabindex="0",
+  title="Choose language",
+  class="group relative touch-manipulation rounded bg-white bg-opacity-[0.001]"
+) }}>
+  <div class="flex items-center p-2 text-zinc-400 group-hover:text-accent dark:group-hover:text-accent-darker">
+    <svg
+      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      stroke-width="2" stroke="currentColor"
+      class="w-6 h-6 "
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+    </svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 15"
+      stroke-width="1" stroke="currentColor" fill-rule="evenodd" clip-rule="evenodd"
+      class="w-4 h-4"
+    >
+      <path d="M4.18179 6.18181C4.35753 6.00608 4.64245 6.00608 4.81819 6.18181L7.49999 8.86362L10.1818 6.18181C10.3575 6.00608 10.6424 6.00608 10.8182 6.18181C10.9939 6.35755 10.9939 6.64247 10.8182 6.81821L7.81819 9.81821C7.73379 9.9026 7.61934 9.95001 7.49999 9.95001C7.38064 9.95001 7.26618 9.9026 7.18179 9.81821L4.18179 6.81821C4.00605 6.64247 4.00605 6.35755 4.18179 6.18181Z"></path>
+    </svg>
+  </div>
+
+  {% Dropdown %}
+  {% for lang in nav.languages -%}
+    <a href="{{ lang.url if lang.code != nav.page.lang else '' }}"
+      class="{% if lang.code == nav.page.lang %}active{% endif %}"
+    >
+      {{ lang.name }}
+    </a>
+  {% endfor %}
+  {% endDropdown %}
+</div>
+{% endif %}

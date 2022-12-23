@@ -1,0 +1,40 @@
+{#def toc #}
+{#js TocPage.js #}
+
+{% set max_depth = 3 %}
+{% set indent = ["ml-0", "ml-2", "ml-4", "ml-8"] %}
+
+{% macro render_item(url, title, depth=0) %}
+<li>
+  <a href="{{ url }}" class="{{ indent[depth] }}">
+    {{ title }}
+  </a>
+</li>
+{% endmacro %}
+
+{% macro render_sub_items(pages, depth=0) %}
+{%- for url, title, children in pages %}
+  {{ render_item(url, title, depth) }}
+  {% if depth < max_depth -%}
+    {{ render_sub_items(children, depth) }}
+  {%- endif %}
+{%- endfor %}
+{% endmacro %}
+
+<ul {{ attrs.render(
+  class="
+  TocPage
+  [&_a]:flex [&_a]:items-center
+  [&_a]:pt-2 [&_a]:pb-1 [&_a]:pl-3 [&_a]:pr-2
+  [&_a]:text-zinc-600 [&_a]:dark:text-zinc-500
+  [&_a:hover]:text-black [&_a:hover]:dark:text-zinc-100
+  [&_a]:border-l [&_a]:border-transparent
+  [&_a:hover]:border-accent [&_a:hover]:dark:border-accent-darker
+  [&_a.active]:text-accent [&_a.active]:dark:text-accent-darker
+  "
+) }}>
+{%- for url, title, children in toc %}
+  {{ render_item(url, title) }}
+  {{ render_sub_items(children, depth=1) }}
+{%- endfor %}
+</ul>

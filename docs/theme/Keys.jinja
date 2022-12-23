@@ -1,0 +1,45 @@
+{#def sep=" ", join="", symbols=True #}
+
+{% set symbol_map = {
+  "LEFT": "&#x2190;",
+  "UP": "&#x2191;",
+  "RIGHT": "&#x2192;",
+  "DOWN": "&#x2193;",
+
+  "ALT": "&#x2387;",
+  "OPT": "&#x2387;",
+  "OPTION": "&#x2387;",
+  "BACK": "&#x232B;",
+  "BACKSPACE": "&#x232B;",
+  "BKSP": "&#x232B;",
+  "CAPSLOCK": "&#x21EA;",
+  "CMD": "&#x2318;",
+  "COMMAND": "&#x2318;",
+  "CONTROL": "⌃",
+  "CTRL": "⌃",
+  "ENTER": "&#x23CE;",
+  "RETURN": "&#x23CE;",
+  "ESC": "&#x238B;",
+  "ESCAPE": "&#x238B;",
+  "MENU": "&#x2630;",
+  "META": "&#x25C6;",
+  "PRINT": "&#x2399;",
+  "PRTSC": "&#x2399;",
+  "SHIFT": "&#x21E7;",
+  "super" :"&#x2756;",
+  "TAB": "&#x21E5;",
+  "WIN": "&#x229E;",
+  "WINDOWS": "&#x229E;",
+} %}
+
+{% set insert_joiner = joiner(join) %}
+
+<span {{ attrs.render(class="inline-flex items-center font-mono font-medium mx-1 my-1") }}>
+{% for key in content.split(sep) -%}
+  {%- set key = key.upper().strip() -%}
+  {%- set symbol = symbol_map.get(key) -%}
+  {{ insert_joiner() }}<kbd class="inline-block border rounded border-white dark:border-black bg-zinc-100 dark:bg-zinc-900 leading-tight px-[0.1rem] mx-[0.1rem] shadow-[0_0_2px_0_#000]">
+    {%- if symbols and symbol -%}{{ symbol|safe }} {% endif -%}
+    {{ key }}</kbd>
+{%- endfor %}
+</span>

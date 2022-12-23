@@ -1,0 +1,15 @@
+{# def home=False #}
+
+<ul class="flex items-center space-x-8">
+  {% if home -%}
+  <li><a
+    class="hover:text-accent dark:hover:text-accent-darker"
+    href="{{ nav.next_page.url }}"
+  >Docs</a></li>
+  {%- endif %}
+  <li><a
+    title="Source code"
+    href="https://github.com/jpsca/jinjax"
+    class="hover:text-accent dark:hover:text-accent-darker"
+  >GitHub</a></li>
+</ul>

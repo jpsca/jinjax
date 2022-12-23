@@ -1,0 +1,10 @@
+{#def title="" #}
+{#css Page.css #}
+
+{% Layout title=title, description=meta.get('description', '') %}
+  {% NavBar home=home end %}NavBar %}
+  <main class="Page m-0 p-0 max-w-full text-xl font-sans">
+    {{ content }}
+  </main>
+  {% Menu class="lg:hidden" end %}Menu %}
+{% endLayout %}

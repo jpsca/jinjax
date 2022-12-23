@@ -1,0 +1,12 @@
+{#def src, alt=False, formats="avif,webp" #}
+
+{% set curr_format = src.options.format %}
+
+<picture {{ attrs.render() }}>
+  {% for format in formats.split(",") -%}
+    {% if not curr_format.endswith(format) -%}
+      <source srcset="{{ src.convert(format) }}" type="image/{{ format }}" />
+    {%- endif %}
+  {% endfor -%}
+  <img src="{{ src }}" alt="{{ alt }}" />
+</picture>

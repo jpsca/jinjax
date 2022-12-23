@@ -1,0 +1,49 @@
+{#def title="", type="info", icon=True, open=True #}
+
+{% set colors = {
+  "note": "bg-zinc-100 border-zinc-300 text-zinc-800",
+  "info": "bg-zinc-100 border-zinc-300 text-zinc-800",
+  "tip": "bg-yellow-100 border-yellow-200 text-yellow-800",
+  "alert": "bg-orange-100 border-orange-200 text-orange-800",
+  "warning": "bg-orange-100 border-orange-200 text-orange-800",
+  "danger": "bg-rose-100 border-rose-200 text-rose-900",
+  "error": "bg-rose-100 border-rose-200 text-rose-800",
+  "internal": "bg-stone-200 border-stone-300 text-stone-900",
+  "todo": "bg-zinc-100 border-zinc-300 text-zinc-800",
+} %}
+
+{% set type = type if type in colors else "" %}
+{% set show_icon = icon and type %}
+
+{% set color_classes = colors.get(type, "bg-zinc-100 border-zinc-300 text-zinc-800") %}
+{% do attrs.set(class=color_classes) %}
+{% do attrs.set(class="group relative border rounded overflow-hidden bg-opacity-90") %}
+
+{% if title -%}
+
+<details {{ attrs.render(open=open) }}>
+  <summary class="flex items-center font-bold h-12 px-5 cursor-pointer
+  ">
+    {% if show_icon -%}
+    <div class="pr-4">
+      {% Icon type=type, class="w-7 h-7 pointer-events-none opacity-70" end %}Icon %}
+    </div>
+    {%- endif %}
+    {{ title }}
+    <ArrowRight class="ml-auto rotate-90 group-open:-rotate-90 transition-transform pointer-events-none" />
+  </summary>
+  <div class="pb-6 px-7">{{content}}</div>
+</details>
+
+{%- else -%}
+
+<div {{ attrs.render(class="flex items-start py-6 px-7") }}>
+  {% if show_icon -%}
+  <div class="pr-4">
+    {% Icon type=type, class="w-7 h-7 pointer-events-none opacity-70" end %}Icon %}
+  </div>
+  {%- endif %}
+  <div>{{content}}</div>
+</div>
+
+{%- endif %}

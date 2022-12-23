@@ -1,0 +1,10 @@
+{% do attrs.set(
+  class="
+    px-5 py-7
+    bg-white dark:bg-zinc-800
+    rounded-b border border-t-0 z-10
+    border-zinc-400 dark:border-zinc-600
+    "
+) %}
+
+{% ui_TabPanel __attrs=attrs %}{{ content }}{% endui_TabPanel %}

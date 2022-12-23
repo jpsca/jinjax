@@ -1,0 +1,103 @@
+[tool.poetry]
+name = "jinjax"
+version = "0.17"
+description = "Replace your HTML templates with Python server-Side components"
+authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://jinjax.scaletti.dev/"
+repository = "https://github.com/jpsca/jinjax"
+documentation = "https://jinjax.scaletti.dev/guides/"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Typing :: Typed",
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jinja2 = ">=3.0"
+markupsafe = ">=2.0"
+whitenoise = ">=5.3"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+ipdb = "^0.13.9"
+pyright = "^1.1.282"
+pre-commit = "^2.20.0"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+flake8 = "*"
+flake8-bugbear = "*"
+pytest = ">=7.2.0"
+coverage = "*"
+tox = "*"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+include_trailing_comma=true
+atomic = true
+lines_after_imports = 2
+lines_between_types = 1
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
+
+[tool.pyright]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"

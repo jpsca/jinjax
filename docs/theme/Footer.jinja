@@ -1,0 +1,14 @@
+<footer {{ attrs.render(
+  class="
+    content py-5 text-sm
+    text-center sm:flex sm:items-center
+    border-t border-default-color
+  ",
+) }}>
+  <div class="mb-3 sm:mb-0 sm:mr-auto"><Copyright /></div>
+  <div class="hidden sm:block h-full dark:text-inherit text-zinc-500">
+    This site was
+    <a href="https://claydocs.scaletti.dev" class="underline">built using Claydocs</a>
+  </div>
+  {% ThemeSwitch class="mx-auto sm:ml-6 sm:mr-0" end %}ThemeSwitch %}
+</footer>

@@ -1,0 +1,19 @@
+{#def home=False #}
+<div
+  class="
+    content relative z-20
+    flex items-center w-full h-16
+    backdrop-blur-sm bg-white/60 dark:bg-zinc-800/60
+    tall:sticky tall:top-0
+    border-b border-default-color
+    focus:outline-accent dark:focus:outline-accent-darker
+    "
+  >
+  {% Hamburger class="ml-[-5px] mr-4 lg:hidden" end %}Hamburger %}
+  {% Logo class="mr-auto", base_url=nav.base_url end %}Logo %}
+  <nav class="hidden md:flex items-center pr-6 mr-4 border-r border-default-color">
+    {% NavLinks home=home end %}NavLinks %}
+  </nav>
+  {% LangSwitch class="mr-3", languages=nav.languages, lang=nav.lang end %}LangSwitch %}
+  {% SearchBtn end %}SearchBtn %}
+</div>

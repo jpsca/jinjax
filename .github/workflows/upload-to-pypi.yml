@@ -1,0 +1,29 @@
+name: Upload to PyPI
+
+on:
+  # Triggers the workflow when a release is created
+  release:
+    types: [released]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: "Installs dependencies"
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: "Builds and uploads to PyPI"
+        run: |
+          ~/.local/share/pypoetry/venv/bin/poetry build
+          ~/.local/share/pypoetry/venv/bin/poetry publish
+
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.TOKEN_PYPI }}
