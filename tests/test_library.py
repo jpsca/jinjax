@@ -152,3 +152,26 @@ def test_subfolder(catalog, folder):
 
     html = catalog.render("Meh")
     assert html == '<div class="tab">Meh</div>'
+
+
+def test_default_attr(catalog, folder):
+    (folder / "Greeting.jinja").write_text("""
+{#def message="Hello", world=False #}
+<div>{{ message }}{% if world %} World{% endif %}</div>
+""")
+
+    (folder / "Page.jinja").write_text("""
+{% Greeting end %}
+{% Greeting message="Hi" end %}
+{% Greeting world=True end %}
+{% Greeting world=True, end %}
+""")
+
+    html = catalog.render("Page", message="Hello")
+    print(html)
+    assert """
+<div>Hello</div>
+<div>Hi</div>
+<div>Hello World</div>
+<div>Hello World</div>
+""".strip() in html

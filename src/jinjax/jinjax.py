@@ -18,9 +18,7 @@ class JinjaX(Extension):
             def get(self, key):
                 if key in self.__dict__:
                     return self[key]
-                if key.endswith("end"):
-                    raise KeyError
-                return lambda parser: ext._parse_component(parser, key)
+                return ext._parse_component
 
         def _parse(source: str, name: str | None, filename: str | None) -> nodes.Template:
             """Overwrited internal parsing function used by `parse` and `compile`."""
@@ -30,22 +28,25 @@ class JinjaX(Extension):
 
         environment._parse = _parse
 
-    def _parse_component(self, parser: Parser, name: str) -> "Node":
+    def _parse_component(self, parser: Parser) -> "Node":
         # the first token is the token that started the tag.
         # We get the line number so that we can give
         # that line number to the nodes we create by hand.
-        lineno = next(parser.stream).lineno
+        lineno = parser.stream.current.lineno
+        tag_name = parser.stream.current.value
+        parser.stream.skip(1)
 
         args, kwargs, has_content = self._parse_args(parser)
-        args.insert(0, nodes.Const(name))
+        args.insert(0, nodes.Const(tag_name))
 
         if has_content:
-            body = parser.parse_statements((f"name:end{name}", ), drop_needle=True)
+            body = parser.parse_statements((f"name:end{tag_name}", ), drop_needle=True)
+            call_node = self.call_method("_render_component", args, kwargs)
+            return nodes.CallBlock(call_node, [], [], body).set_lineno(lineno)
         else:
-            body = ""
-
-        call_method = self.call_method("_render_component", args, kwargs)
-        return nodes.CallBlock(call_method, [], [], body).set_lineno(lineno)
+            call_node = self.call_method("_render_component", args, kwargs)
+            call = nodes.MarkSafe(call_node, lineno=lineno)
+            return nodes.Output([call], lineno=lineno)
 
     def _parse_args(self, parser: Parser) -> tuple[list, list, bool]:
         args = []
@@ -54,18 +55,8 @@ class JinjaX(Extension):
         has_content = True
 
         while parser.stream.current.type != 'block_end':
-            if parser.stream.current.test("name:end"):
-                if parser.stream.look().type == 'block_end':
-                    has_content = False
-                    parser.stream.skip(1)
-                    break
-                else:
-                    parser.fail("Invalid argument syntax", parser.stream.current.lineno)
-
-            if require_comma:
+            if require_comma and not parser.stream.current.test("name:end"):
                 parser.stream.expect('comma')
-
-                # support for trailing comma
                 if parser.stream.current.type == 'block_end':
                     break
 
@@ -78,6 +69,14 @@ class JinjaX(Extension):
                 value = parser.parse_expression()
                 kwargs.append(nodes.Keyword(key, value, lineno=value.lineno))
             else:
+                if parser.stream.current.test("name:end"):
+                    if parser.stream.look().type == 'block_end':
+                        has_content = False
+                        parser.stream.skip(1)
+                        break
+                    else:
+                        parser.fail("`end` must be at the end", parser.stream.current.lineno)
+
                 if kwargs:
                     parser.fail("Invalid argument syntax", parser.stream.current.lineno)
                 args.append(parser.parse_expression())
@@ -86,5 +85,5 @@ class JinjaX(Extension):
 
         return args, kwargs, has_content
 
-    def _render_component(self, __name: str, **kwargs) -> "Markup":
-        return self.environment.catalog.render(__name, **kwargs)  # type: ignore
+    def _render_component(self, __name: str, *args, **kwargs) -> "Markup":
+        return self.environment.catalog.render(__name, *args, **kwargs)  # type: ignore

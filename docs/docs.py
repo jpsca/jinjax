@@ -35,7 +35,10 @@ languages = {
 }
 
 docs = Docs(
-    pages, languages=languages, default="en", add_ons=[jinjax_ui]
+    pages,
+    languages=languages,
+    default="en",
+    add_ons=[jinjax_ui]
 )
 
 
