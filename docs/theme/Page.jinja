@@ -2,9 +2,9 @@
 {#css Page.css #}
 
 {% Layout title=title, description=meta.get('description', '') %}
-  {% NavBar end %}NavBar %}
+  {% NavBar end%}
   <div class="content pb-16 z-10 mx-auto flex justify-between">
-    {% SidebarGlobal class="hidden xl:block" end %}SidebarGlobal %}
+    {% SidebarGlobal class="hidden xl:block" end%}
     <main class="Page content pr-0 pt-10 2xl:mx-10 w-full max-w-full">
       <div class="prose prose-zinc dark:prose-invert max-w-full">
         {{ content }}
@@ -14,9 +14,9 @@
         curr=nav.page,
         prev=nav.prev_page,
         next=nav.next_page,
-      end %}PrevNext %}
+      end%}
     </main>
-    {% SidebarLocal class="hidden xl:block content pr-0" end %}SidebarLocal %}
+    {% SidebarLocal class="hidden xl:block content pr-0" end%}
   </div>
-  {% Menu class="lg:hidden" end %}Menu %}
+  {% Menu class="lg:hidden" end%}
 {% endLayout %}

@@ -101,7 +101,7 @@ class Catalog:
         caller: "t.Optional[t.Callable]" = None,
         **kw,
     ) -> str:
-        content = kw.pop("__content", "")
+        content = (kw.pop("__content", "") or "").strip()
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
         source = kw.pop("__source", "")
@@ -140,8 +140,7 @@ class Catalog:
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
-        props[PROP_CONTENT] = (content or (caller() if caller else "")).strip()
-
+        props[PROP_CONTENT] = content if content or not caller else caller().strip()
         return tmpl.render(**props).strip()
 
     def get_middleware(

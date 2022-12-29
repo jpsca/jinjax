@@ -25,13 +25,13 @@
     overflow-auto overscroll-contain
   ">
     <div class="content flex items-center h-16">
-      {% CloseBtn class="ml-[-5px] mr-4" aria-label="Close" data-toggle="#menu|[open]" end %}CloseBtn %}
-      {% Logo base_url=nav.base_url end %}Logo %}
-      {% SearchBtn class="ml-auto" end %}SearchBtn %}
+      {% CloseBtn class="ml-[-5px] mr-4", aria_label="Close", data_toggle="#menu|[open]", end%}
+      {% Logo base_url=nav.base_url, end%}
+      {% SearchBtn class="ml-auto", end%}
     </div>
 
     <nav class="content flex flex-col pt-5 pb-5 text-base">
-      {% Toc toc=nav.toc, page=nav.page  end %}Toc %}
+      {% Toc toc=nav.toc, page=nav.page, end%}
     </nav>
   </div>
 </div>

@@ -51,14 +51,14 @@ def test_extension(catalog, folder):
     (folder / "Card.jinja").write_text("""
 <section class="card">
 {{ content }}
-{% CloseBtn disabled=True end %}
+{% CloseBtn disabled=True end%}
 </section>
 """)
 
     (folder / "Page.jinja").write_text("""
 {#def message #}
 {% Card %}
-{% Greeting message=message end %}
+{% Greeting message=message end%}
 <button type="button">Close</button>
 {% endCard %}
 """)
@@ -102,7 +102,7 @@ def test_render_assets(catalog, folder):
 {#js shared.js #}
 {% Layout %}
 {% Card %}
-{% Greeting message=message end %}
+{% Greeting message=message end%}
 <button type="button">Close</button>
 {% endCard %}
 {% endLayout %}
@@ -161,10 +161,10 @@ def test_default_attr(catalog, folder):
 """)
 
     (folder / "Page.jinja").write_text("""
-{% Greeting end %}
-{% Greeting message="Hi" end %}
-{% Greeting world=True end %}
-{% Greeting world=True, end %}
+{% Greeting end%}
+{% Greeting message="Hi" end%}
+{% Greeting world=True end%}
+{% Greeting world=True, end%}
 """)
 
     html = catalog.render("Page", message="Hello")
@@ -174,4 +174,32 @@ def test_default_attr(catalog, folder):
 <div>Hi</div>
 <div>Hello World</div>
 <div>Hello World</div>
+""".strip() in html
+
+
+def test_raw_content(catalog, folder):
+    (folder / "Code.jinja").write_text("""
+<pre class="code">
+{{ content|e }}
+</pre>
+""")
+
+    (folder / "Page.jinja").write_text("""
+{% Code %}
+{% raw %}
+{#def message="Hello", world=False #}
+{% Header end%}
+<div>{{ message }}{% if world %} World{% endif %}</div>
+{% endraw %}
+{% endCode %}
+""")
+
+    html = catalog.render("Page")
+    print(html)
+    assert """
+<pre class="code">
+{#def message=&#34;Hello&#34;, world=False #}
+{% Header end%}
+&lt;div&gt;{{ message }}{% if world %} World{% endif %}&lt;/div&gt;
+</pre>
 """.strip() in html

@@ -1,5 +1,5 @@
 ---
 title: JinjaX
-component: PageHome
+component: HomeEs
 ---
 Hola mundo

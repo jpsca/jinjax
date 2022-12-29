@@ -1,0 +1,32 @@
+{% ui_TabGroup class="md:h-[500px] flex flex-col" %}
+  {% CodeTabs %}
+    {% CodeTab target="ex-1", active=True %}
+      PastaIndex.jinja
+    {% endCodeTab %}
+  {% endCodeTabs %}
+  {% ui_TabPanel id="ex-1", class="flex-grow" %}
+    <div class="h-full [&_.highlight]:h-full [&_pre]:h-full [&_code]:h-full text-sm mt-0">
+      {% markdown %}
+      {% raw %}
+```html+jinja
+{#def products, msg="World!" #}
+
+{% Layout title="My title" %}
+  <div>
+    <h2>Hello, {{ msg }}</h2>
+    <div>
+      {% Card header="So clean") %}
+        {% for product in products %}
+          {% Product product=product end%}
+        {% endfor %}
+      {% endCard %}
+    </div>
+  </div>
+  {% Paginator items=products end%}
+{% endLayout %}
+```
+      {% endraw %}
+      {% endmarkdown %}
+    </div>
+  {% endui_TabPanel %}
+{% endui_TabGroup %}

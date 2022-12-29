@@ -38,7 +38,8 @@ docs = Docs(
     pages,
     languages=languages,
     default="en",
-    add_ons=[jinjax_ui]
+    add_ons=[jinjax_ui],
+    search=False,
 )
 
 

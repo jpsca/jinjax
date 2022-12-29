@@ -16,9 +16,7 @@ class JinjaX(Extension):
 
         class Extensions(dict):
             def get(self, key):
-                if key in self.__dict__:
-                    return self[key]
-                return ext._parse_component
+                return super().get(key, ext._parse_component)
 
         def _parse(source: str, name: str | None, filename: str | None) -> nodes.Template:
             """Overwrited internal parsing function used by `parse` and `compile`."""
@@ -75,7 +73,7 @@ class JinjaX(Extension):
                         parser.stream.skip(1)
                         break
                     else:
-                        parser.fail("`end` must be at the end", parser.stream.current.lineno)
+                        parser.fail("Invalid argument syntax", parser.stream.current.lineno)
 
                 if kwargs:
                     parser.fail("Invalid argument syntax", parser.stream.current.lineno)
