@@ -147,13 +147,12 @@ class Catalog:
         self,
         application: "t.Callable",
         allowed_ext: "t.Optional[t.Iterable[str]]" = ALLOWED_EXTENSIONS,
-        **kw,
+        **kwargs,
     ) -> ComponentsMiddleware:
-        middleware = ComponentsMiddleware()
-        middleware.configure(
+        middleware = ComponentsMiddleware(
             application=application,
             allowed_ext=tuple(allowed_ext or []),
-            **kw
+            **kwargs
         )
 
         for prefix, loader in self.prefixes.items():

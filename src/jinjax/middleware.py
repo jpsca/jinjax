@@ -5,28 +5,13 @@ from whitenoise import WhiteNoise  # type: ignore
 if t.TYPE_CHECKING:
     from whitenoise.responders import Redirect, StaticFile  # type: ignore
 
-
 class ComponentsMiddleware(WhiteNoise):
     """WSGI middleware for serving components assets"""
-    allowed_ext = None
+    allowed_ext: "tuple[str, ...]"
 
-    def __init__(self) -> None:
-        super().__init__(application=None)
-
-    def configure(
-        self,
-        *,
-        application: t.Optional[t.Callable] = None,
-        allowed_ext: t.Optional[tuple[str, ...]] = None,
-        **kw
-    ):
-        if application:  # pragma: no cover
-            self.application = application
-        if allowed_ext:  # pragma: no cover
-            self.allowed_ext = tuple(allowed_ext)
-        for attr in self.config_attrs:
-            if attr in kw:
-                setattr(self, attr, kw[attr])
+    def __init__(self, **kwargs) -> None:
+        self.allowed_ext = kwargs.pop("allowed_ext", tuple())
+        super().__init__(**kwargs)
 
     def find_file(self, url: str) -> "t.Union[StaticFile, Redirect, None]":
         if not self.allowed_ext or url.endswith(self.allowed_ext):
