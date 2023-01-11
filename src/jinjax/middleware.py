@@ -5,6 +5,7 @@ from whitenoise import WhiteNoise  # type: ignore
 if t.TYPE_CHECKING:
     from whitenoise.responders import Redirect, StaticFile  # type: ignore
 
+
 class ComponentsMiddleware(WhiteNoise):
     """WSGI middleware for serving components assets"""
     allowed_ext: "tuple[str, ...]"
