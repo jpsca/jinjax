@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jinjax"
-version = "0.18"
+version = "0.19"
 description = "Replace your HTML templates with Python server-Side components"
 authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
 license = "MIT"

@@ -21,9 +21,8 @@ DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js")
 DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
-DELIMITER = "_"
+DELIMITER = "."
 SLASH = "/"
-ASSETS_PLACEHOLDER_KEY = "components_assets"
 PROP_ATTRS = "attrs"
 PROP_CONTENT = "content"
 
@@ -101,6 +100,7 @@ class Catalog:
         caller: "t.Optional[t.Callable]" = None,
         **kw,
     ) -> str:
+        print(f"Rendering {__name}")
         content = (kw.pop("__content", "") or "").strip()
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
