@@ -100,7 +100,6 @@ class Catalog:
         caller: "t.Optional[t.Callable]" = None,
         **kw,
     ) -> str:
-        print(f"Rendering {__name}")
         content = (kw.pop("__content", "") or "").strip()
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")

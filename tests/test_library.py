@@ -178,30 +178,30 @@ def test_default_attr(catalog, folder):
 <div>Hello World</div>
 """.strip() in html
 
-# FIXME
-# def test_raw_content(catalog, folder):
-#     (folder / "Code.jinja").write_text("""
-# <pre class="code">
-# {{ content|e }}
-# </pre>
-# """)
 
-#     (folder / "Page.jinja").write_text("""
-# <Code>
-# {% raw %}
-# {#def message="Hello", world=False #}
-# <Header />
-# <div>{{ message }}{% if world %} World{% endif %}</div>
-# {% endraw %}
-# </Code>
-# """)
+def test_raw_content(catalog, folder):
+    (folder / "Code.jinja").write_text("""
+<pre class="code">
+{{ content|e }}
+</pre>
+""")
 
-#     html = catalog.render("Page")
-#     print(html)
-#     assert """
-# <pre class="code">
-# {#def message=&#34;Hello&#34;, world=False #}
-# {% Header end%}
-# &lt;div&gt;{{ message }}{% if world %} World{% endif %}&lt;/div&gt;
-# </pre>
-# """.strip() in html
+    (folder / "Page.jinja").write_text("""
+<Code>
+{% raw %}
+{#def message="Hello", world=False #}
+<Header />
+<div>{{ message }}{% if world %} World{% endif %}</div>
+{% endraw %}
+</Code>
+""")
+
+    html = catalog.render("Page")
+    print(html)
+    assert """
+<pre class="code">
+{#def message=&#34;Hello&#34;, world=False #}
+&lt;Header /&gt;
+&lt;div&gt;{{ message }}{% if world %} World{% endif %}&lt;/div&gt;
+</pre>
+""".strip() in html

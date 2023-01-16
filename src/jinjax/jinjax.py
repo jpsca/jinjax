@@ -14,6 +14,9 @@ INLINE_CALL = INLINE_CALL.replace("<CMD>", RENDER_CMD)
 ATTR_START = "{"
 ATTR_END = "}"
 
+re_raw = r"\{%-?\s*raw\s*-?%\}.+\{%-?\s*endraw\s*-?%\}"
+RX_RAW = re.compile(re_raw, re.VERBOSE | re.DOTALL)
+
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
 re_raw_attrs = r"(?P<attrs>[^\>]*)"
 re_content = r"(?P<content>.*)"
@@ -39,15 +42,26 @@ class JinjaX(Extension):
         name: t.Optional[str],
         filename: t.Optional[str] = None,
     ) -> str:
+        raw_ranges = self._get_raw_ranges(source)
+        pos = 0
         while True:
-            match = RX_TAG.search(source)
+            match = RX_TAG.search(source, pos=pos)
             if not match:
                 break
-            source = RX_TAG.sub(self._process_tag, source)
+            tag_start = match.start("tag")
+            for start, end in raw_ranges:
+                if start <= tag_start <= end:
+                    pos = end
+                    break
+            else:
+                source = RX_TAG.sub(self._process_tag, source)
         return source
 
+    def _get_raw_ranges(self, source: str) -> list[tuple[int, int]]:
+        return [m.span(0) for m in RX_RAW.finditer(source) if m]
+
     def _process_tag(self, match: re.Match) -> str:
-        tag = (match.group("tag") or "").strip()
+        tag = match.group("tag")
         attrs = (match.group("attrs") or "").strip()
         content = (match.group("content") or "").strip()
         logger.debug(f"<{tag}> {attrs} {'inline' if not content else ''}")
@@ -80,14 +94,13 @@ class JinjaX(Extension):
             str_attrs = f", {str_attrs}"
 
         if not content:
-            call = INLINE_CALL \
-                .replace("<TAG>", tag) \
-                .replace("<ATTRS>", str_attrs)
+            call = INLINE_CALL.replace("<TAG>", tag).replace("<ATTRS>", str_attrs)
         else:
-            call = BLOCK_CALL \
-                .replace("<TAG>", tag) \
-                .replace("<ATTRS>", str_attrs) \
+            call = (
+                BLOCK_CALL.replace("<TAG>", tag)
+                .replace("<ATTRS>", str_attrs)
                 .replace("<CONTENT>", content)
+            )
 
         logger.debug(f"-> {call}")
         return call
