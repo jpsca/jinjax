@@ -239,6 +239,32 @@ def test_raw_content(catalog, folder):
 """.strip() in html
 
 
+def test_multiple_raw(catalog, folder):
+    (folder / "C.jinja").write_text("""
+<div {{ attrs.render() }}></div>
+""")
+
+    (folder / "Page.jinja").write_text("""
+<C id="1" />
+{% raw -%}
+<C id="2" />
+{%- endraw %}
+<C id="3" />
+{% raw %}<C id="4" />{% endraw %}
+<C id="5" />
+""")
+
+    html = catalog.render("Page", message="Hello")
+    print(html)
+    assert """
+<div id="1"></div>
+<C id="2" />
+<div id="3"></div>
+<C id="4" />
+<div id="5"></div>
+""".strip() in html
+
+
 def test_check_for_unclosed(catalog, folder):
     (folder / "Lorem.jinja").write_text("""
 {#def ipsum=False #}
