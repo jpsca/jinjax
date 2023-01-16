@@ -1,4 +1,5 @@
 import pytest
+from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
 
@@ -37,7 +38,7 @@ def test_render_content(catalog, folder):
 </section>""".strip()
 
 
-def test_extension(catalog, folder):
+def test_composition(catalog, folder):
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
 <div class="greeting">{{ message }}</div>
@@ -71,6 +72,37 @@ def test_extension(catalog, folder):
 <button type="button">Close</button>
 <button type="button" disabled>&times;</button>
 </section>
+""".strip() in html
+
+
+def test_just_properties(catalog, folder):
+    (folder / "Lorem.jinja").write_text("""
+{#def ipsum=False #}
+<p>lorem {{ "ipsum" if ipsum else "lorem" }}</p>
+""")
+
+    (folder / "Layout.jinja").write_text("""
+<main>
+{{ content }}
+</main>
+""")
+
+    (folder / "Page.jinja").write_text("""
+<Layout>
+<Lorem ipsum />
+<p>meh</p>
+<Lorem />
+</Layout>
+""")
+
+    html = catalog.render("Page")
+    print(html)
+    assert """
+<main>
+<p>lorem ipsum</p>
+<p>meh</p>
+<p>lorem lorem</p>
+</main>
 """.strip() in html
 
 
@@ -205,3 +237,22 @@ def test_raw_content(catalog, folder):
 &lt;div&gt;{{ message }}{% if world %} World{% endif %}&lt;/div&gt;
 </pre>
 """.strip() in html
+
+
+def test_check_for_unclosed(catalog, folder):
+    (folder / "Lorem.jinja").write_text("""
+{#def ipsum=False #}
+<p>lorem {{ "ipsum" if ipsum else "lorem" }}</p>
+""")
+
+    (folder / "Page.jinja").write_text("""
+<main>
+<Lorem ipsum>
+</main>
+""")
+    with pytest.raises(TemplateSyntaxError):
+        try:
+            catalog.render("Page")
+        except TemplateSyntaxError as err:
+            print(err)
+            raise

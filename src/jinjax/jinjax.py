@@ -2,6 +2,7 @@ import re
 import typing as t
 
 from jinja2.ext import Extension
+from jinja2.exceptions import TemplateSyntaxError
 
 from .utils import logger
 
@@ -23,6 +24,9 @@ re_content = r"(?P<content>.*)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}(/>|>{re_content}</{re_tag_name}>)"
 RX_TAG = re.compile(re_tag, re.VERBOSE | re.DOTALL)
 
+re_uncloded = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}>"
+RX_UNCLOSED = re.compile(re_uncloded, re.VERBOSE | re.DOTALL)
+
 re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)"
 re_equal = r"\s*=\s*"
 re_attr = rf"""
@@ -32,14 +36,18 @@ re_attr = rf"""
     (?P<value>".*?"|'.*?'|\{ATTR_START}.*?\{ATTR_END})
 )?
 """
-RX_ATTR = re.compile(re_attr, re.VERBOSE)
+RX_ATTR = re.compile(re_attr, re.VERBOSE | re.DOTALL)
+
+MSG_UNCLOSED_TAG = "Unclosed component {TAG}"
+
+TRawRanges = list[tuple[int, int]]
 
 
 class JinjaX(Extension):
     def preprocess(
         self,
         source: str,
-        name: t.Optional[str],
+        name: t.Optional[str] = None,
         filename: t.Optional[str] = None,
     ) -> str:
         raw_ranges = self._get_raw_ranges(source)
@@ -48,16 +56,18 @@ class JinjaX(Extension):
             match = RX_TAG.search(source, pos=pos)
             if not match:
                 break
-            tag_start = match.start("tag")
+            tag_start = match.start(0)
             for start, end in raw_ranges:
                 if start <= tag_start <= end:
                     pos = end
                     break
             else:
                 source = RX_TAG.sub(self._process_tag, source)
+
+        self._check_for_unclosed(source, raw_ranges, name, filename)
         return source
 
-    def _get_raw_ranges(self, source: str) -> list[tuple[int, int]]:
+    def _get_raw_ranges(self, source: str) -> TRawRanges:
         return [m.span(0) for m in RX_RAW.finditer(source) if m]
 
     def _process_tag(self, match: re.Match) -> str:
@@ -104,3 +114,28 @@ class JinjaX(Extension):
 
         logger.debug(f"-> {call}")
         return call
+
+    def _check_for_unclosed(
+        self,
+        source: str,
+        raw_ranges: TRawRanges,
+        name: t.Optional[str] = None,
+        filename: t.Optional[str] = None,
+    ) -> None:
+        pos = 0
+        while True:
+            match = RX_UNCLOSED.search(source, pos=pos)
+            if not match:
+                break
+            tag_start = match.start(0)
+            for start, end in raw_ranges:
+                if start <= tag_start <= end:
+                    pos = end
+                    break
+            else:
+                raise TemplateSyntaxError(
+                    message=MSG_UNCLOSED_TAG.format(TAG=match.group(0)),
+                    lineno=source[:tag_start].count("\n") + 1,
+                    name=name,
+                    filename=filename
+                )
