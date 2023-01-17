@@ -9,10 +9,10 @@ from .utils import logger
 
 
 RENDER_CMD = "catalog.render"
-BLOCK_CALL = '{% call <CMD>("<TAG>"<ATTRS>) -%}\n<CONTENT>\n{%- endcall %}'
-BLOCK_CALL = BLOCK_CALL.replace("<CMD>", RENDER_CMD)
-INLINE_CALL = '{{ <CMD>("<TAG>"<ATTRS>) }}'
-INLINE_CALL = INLINE_CALL.replace("<CMD>", RENDER_CMD)
+BLOCK_CALL = '{% call [CMD]("[TAG]"[ATTRS]) -%}\n[CONTENT]\n{%- endcall %}'
+BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD)
+INLINE_CALL = '{{ [CMD]("[TAG]"[ATTRS]) }}'
+INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD)
 ATTR_START = "{"
 ATTR_END = "}"
 
@@ -21,7 +21,7 @@ RX_RAW = re.compile(re_raw, re.DOTALL)
 
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
 re_raw_attrs = r"(?P<attrs>[^\>]*)"
-re_content = r"(?P<content>.*)"
+re_content = r"(?P<content>.*?)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}(/>|>{re_content}</{re_tag_name}>)"
 RX_TAG = re.compile(re_tag, re.DOTALL)
 
@@ -53,6 +53,10 @@ class JinjaX(Extension):
         self._check_for_unclosed(source, name, filename)
         source = self._restore_raw_blocks(source)
         self.__raw_blocks = {}
+
+        print("###############")
+        print(source)
+        print("###############")
         return source
 
     def _replace_raw_blocks(self, source: str) -> str:
@@ -60,7 +64,10 @@ class JinjaX(Extension):
             match = RX_RAW.search(source)
             if not match:
                 break
-            source = RX_RAW.sub(self._replace_raw_block, source)
+            start, end = match.span(0)
+            repl = self._replace_raw_block(match)
+            source = f"{source[:start]}{repl}{source[end:]}"
+
         return source
 
     def _replace_raw_block(self, match: re.Match) -> str:
@@ -78,7 +85,9 @@ class JinjaX(Extension):
             match = RX_TAG.search(source)
             if not match:
                 break
-            source = RX_TAG.sub(self._process_tag, source)
+            start, end = match.span(0)
+            repl = self._process_tag(match)
+            source = f"{source[:start]}{repl}{source[end:]}"
 
         return source
 
@@ -102,7 +111,7 @@ class JinjaX(Extension):
         attrs_list: list[tuple[str, str]],
         content: str = "",
     ) -> str:
-        logger.debug(f"<{tag}> {attrs_list} {'inline' if not content else ''}")
+        logger.debug(f"{tag} {attrs_list} {'inline' if not content else ''}")
         attrs = []
         for name, value in attrs_list:
             name = name.strip().replace("-", "_")
@@ -116,12 +125,12 @@ class JinjaX(Extension):
             str_attrs = f", {str_attrs}"
 
         if not content:
-            call = INLINE_CALL.replace("<TAG>", tag).replace("<ATTRS>", str_attrs)
+            call = INLINE_CALL.replace("[TAG]", tag).replace("[ATTRS]", str_attrs)
         else:
             call = (
-                BLOCK_CALL.replace("<TAG>", tag)
-                .replace("<ATTRS>", str_attrs)
-                .replace("<CONTENT>", content)
+                BLOCK_CALL.replace("[TAG]", tag)
+                .replace("[ATTRS]", str_attrs)
+                .replace("[CONTENT]", content)
             )
         return call
 
@@ -133,6 +142,9 @@ class JinjaX(Extension):
     ) -> None:
         match = RX_UNCLOSED.search(source)
         if match:
+            print("--------------")
+            print(source)
+            print("--------------")
             raise TemplateSyntaxError(
                 message=f"Unclosed component {match.group(0)}",
                 lineno=source[:match.start(0)].count("\n") + 1,
