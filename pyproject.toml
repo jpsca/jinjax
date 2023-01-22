@@ -1,3 +1,8 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
 [tool.poetry]
 name = "jinjax"
 version = "0.19"
@@ -51,14 +56,6 @@ pytest = ">=7.2.0"
 coverage = "*"
 tox = "*"
 
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
@@ -75,6 +72,7 @@ exclude = '''
 )/
 '''
 
+
 [tool.isort]
 profile = "black"
 force_single_line = true
@@ -82,6 +80,7 @@ include_trailing_comma=true
 atomic = true
 lines_after_imports = 2
 lines_between_types = 1
+
 
 [tool.coverage.run]
 branch = true
@@ -97,7 +96,37 @@ exclude_lines = [
     "if __name__ == .__main__.:"
 ]
 
+[tool.coverage.html]
+directory = "covreport"
+
+
 [tool.pyright]
+include = ["src"]
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/tests",
+]
+ignore = []
+reportPrivateImportUsage = false
+reportWildcardImportFromLibrary = false
+
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
+
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+skipsdist = True
+envlist = py39,py310,py311
+
+[testenv]
+skip_install = true
+commands =
+    pip install -U pip wheel
+    pip install pytest
+    pip install -e .
+    pytest -x src/jinjax tests
+"""
