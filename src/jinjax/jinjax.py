@@ -53,10 +53,6 @@ class JinjaX(Extension):
         self._check_for_unclosed(source, name, filename)
         source = self._restore_raw_blocks(source)
         self.__raw_blocks = {}
-
-        print("###############")
-        print(source)
-        print("###############")
         return source
 
     def _replace_raw_blocks(self, source: str) -> str:
@@ -142,9 +138,6 @@ class JinjaX(Extension):
     ) -> None:
         match = RX_UNCLOSED.search(source)
         if match:
-            print("--------------")
-            print(source)
-            print("--------------")
             raise TemplateSyntaxError(
                 message=f"Unclosed component {match.group(0)}",
                 lineno=source[:match.start(0)].count("\n") + 1,
