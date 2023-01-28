@@ -90,8 +90,13 @@ class Catalog:
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: "t.Any", *, prefix: str = "") -> None:
-        prefix = prefix or module.prefix or DEFAULT_PREFIX
-        self.add_folder(module.components_path, prefix=prefix)
+        if hasattr(module, "components_path"):
+            prefix = prefix or getattr(module, "prefix", DEFAULT_PREFIX)
+            self.add_folder(module.components_path, prefix=prefix)
+            return
+
+        for mprefix, path in module.components.items():
+            self.add_folder(path, prefix=prefix or mprefix)
 
     def render(
         self,
