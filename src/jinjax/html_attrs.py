@@ -1,6 +1,5 @@
 import re
 from typing import Any
-from xml.sax.saxutils import quoteattr
 
 
 CLASS_KEY = "class"
@@ -10,6 +9,17 @@ CLASS_KEYS = (CLASS_KEY, CLASS_ALT_KEY)
 
 def split(ssl: str) -> "list[str]":
     return re.split(r"\s+", ssl.strip())
+
+
+def quote(text: str) -> str:
+    if '"' in text:
+        if "'" in text:
+            text = text.replace('"', "&quot;")
+            return f'"{text}"'
+        else:
+            return f"'{text}'"
+
+    return f'"{text}"'
 
 
 class HTMLAttrs:
@@ -147,7 +157,7 @@ class HTMLAttrs:
         properties = sorted(list(self.__properties))
 
         html_attrs = [
-            f"{name}={quoteattr(str(value))}"
+            f"{name}={quote(str(value))}"
             for name, value in attributes.items()
         ]
         html_attrs.extend(properties)

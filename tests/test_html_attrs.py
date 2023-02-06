@@ -123,9 +123,34 @@ def test_as_dict_no_classes():
 def test_render_attrs_lik_set():
     attrs = HTMLAttrs({"class": "lorem"})
     expected = 'class="ipsum lorem" data-position="top" title="hi" open'
-    assert expected == attrs.render(
+    result = attrs.render(
         title="hi",
         data_position="top",
         classes="ipsum",
         open=True,
     )
+    print(result)
+    assert expected == result
+
+
+def test_do_not_escape_tailwind_syntax():
+    attrs = HTMLAttrs({"class": "lorem [&_a]:flex"})
+    expected = 'class="[&_a]:flex ipsum lorem" title="Hi&Stuff"'
+    result = attrs.render(**{
+        "title": "Hi&Stuff",
+        "class": "ipsum",
+    })
+    print(result)
+    assert expected == result
+
+
+def test_do_escape_quotes_inside_attrs():
+    attrs = HTMLAttrs({
+        "class": "lorem text-['red']",
+        "title": 'I say "hey"',
+        "open": True,
+    })
+    expected = """class="lorem text-['red']" title='I say "hey"' open"""
+    result = attrs.render()
+    print(result)
+    assert expected == result
