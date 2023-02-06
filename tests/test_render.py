@@ -7,19 +7,19 @@ import jinjax
 def test_render_simple(catalog, folder):
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
-<div class="greeting">{{ message }}</div>
+<div class="greeting [&_a]:flex">{{ message }}</div>
     """)
     html = catalog.render("Greeting", message="Hello world!")
-    assert html == '<div class="greeting">Hello world!</div>'
+    assert html == '<div class="greeting [&_a]:flex">Hello world!</div>'
 
 
 def test_render_source(catalog):
     source = """
 {#def message #}
-<div class="greeting">{{ message }}</div>
+<div class="greeting [&_a]:flex">{{ message }}</div>
     """
     html = catalog.render("Greeting", message="Hello world!", __source=source)
-    assert html == '<div class="greeting">Hello world!</div>'
+    assert html == '<div class="greeting [&_a]:flex">Hello world!</div>'
 
 
 def test_render_content(catalog, folder):
@@ -41,7 +41,7 @@ def test_render_content(catalog, folder):
 def test_composition(catalog, folder):
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
-<div class="greeting">{{ message }}</div>
+<div class="greeting [&_a]:flex">{{ message }}</div>
 """)
 
     (folder / "CloseBtn.jinja").write_text("""
@@ -68,7 +68,7 @@ def test_composition(catalog, folder):
     print(html)
     assert """
 <section class="card">
-<div class="greeting">Hello</div>
+<div class="greeting [&_a]:flex">Hello</div>
 <button type="button">Close</button>
 <button type="button" disabled>&times;</button>
 </section>
@@ -111,7 +111,7 @@ def test_render_assets(catalog, folder):
 {#def message #}
 {#css greeting.css #}
 {#js greeting.js #}
-<div class="greeting">{{ message }}</div>
+<div class="greeting [&_a]:flex">{{ message }}</div>
 """)
 
     (folder / "Card.jinja").write_text("""
@@ -150,7 +150,7 @@ def test_render_assets(catalog, folder):
 <script src="/static/components/card.js" defer></script>
 <script src="/static/components/greeting.js" defer></script>
 <section class="card">
-<div class="greeting">Hello</div>
+<div class="greeting [&_a]:flex">Hello</div>
 <button type="button">Close</button>
 </section>
 </html>
