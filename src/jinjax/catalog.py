@@ -228,8 +228,8 @@ class Catalog:
                         return Path(root_path), Path(curr_folder) / filename
 
         raise ComponentNotFound(
-            f"Unable to found a file named {name}{file_ext} "
-            f"nor one following the pattern {name_dot}*{file_ext}"
+            f"Unable to find a file named {name}{file_ext} "
+            f"or one following the pattern {name_dot}*{file_ext}"
         )
 
     def _render_attrs(self, attrs: dict) -> "Markup":
