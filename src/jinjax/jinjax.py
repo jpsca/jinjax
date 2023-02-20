@@ -25,8 +25,8 @@ re_content = r"(?P<content>.*?)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}(/>|>{re_content}</{re_tag_name}>)"
 RX_TAG = re.compile(re_tag, re.DOTALL)
 
-re_uncloded = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}>"
-RX_UNCLOSED = re.compile(re_uncloded, re.DOTALL)
+re_unclosed = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}>"
+RX_UNCLOSED = re.compile(re_unclosed, re.DOTALL)
 
 re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)"
 re_equal = r"\s*=\s*"
