@@ -38,6 +38,24 @@ def test_render_content(catalog, folder):
 </section>""".strip()
 
 
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("<Title>Hi</Title><Title>Hi</Title>", '<h1>Hi</h1><h1>Hi</h1>'),
+        ("<Icon /><Icon />", '<i class="icon"></i><i class="icon"></i>'),
+        ("<Title>Hi</Title><Icon />", '<h1>Hi</h1><i class="icon"></i>'),
+        ("<Icon /><Title>Hi</Title>", '<i class="icon"></i><h1>Hi</h1>'),
+    ],
+)
+def test_render_mix_of_contentful_and_contentless_components(catalog, folder, source, expected):
+    (folder / "Icon.jinja").write_text('<i class="icon"></i>')
+    (folder / "Title.jinja").write_text("<h1>{{ content }}</h1>")
+    (folder / "Page.jinja").write_text(source)
+
+    html = catalog.render("Page")
+    assert html == expected
+
+
 def test_composition(catalog, folder):
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
