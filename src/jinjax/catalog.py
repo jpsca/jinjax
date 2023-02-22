@@ -3,6 +3,7 @@ import typing as t
 from pathlib import Path
 
 import jinja2
+from jinja2.environment import load_extensions
 from markupsafe import Markup
 
 from .component import Component
@@ -45,6 +46,7 @@ class Catalog:
         filters: "t.Optional[dict[str,t.Any]]" = None,
         tests: "t.Optional[dict[str,t.Any]]" = None,
         extensions: "t.Optional[list]" = None,
+        jinja_env: "t.Optional[jinja2.Environment]" = None,
         root_url: str = DEFAULT_URL_ROOT,
         file_ext: "TFileExt" = DEFAULT_EXTENSION,
     ) -> None:
@@ -57,16 +59,21 @@ class Catalog:
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
 
-        extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
-        jinja_env = jinja2.Environment(
-            extensions=extensions,
+        jinja_env = jinja_env or jinja2.Environment(
             undefined=jinja2.StrictUndefined,
         )
+
+        extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
+        jinja_env.extensions.update(load_extensions(jinja_env, extensions))
+
         globals = globals or {}
         globals["catalog"] = self
         jinja_env.globals.update(globals)
+
         jinja_env.filters.update(filters or {})
+
         jinja_env.tests.update(tests or {})
+
         jinja_env.extend(catalog=self)
         self.jinja_env = jinja_env
 
