@@ -8,7 +8,7 @@ if t.TYPE_CHECKING:
 
 class ComponentsMiddleware(WhiteNoise):
     """WSGI middleware for serving components assets"""
-    allowed_ext: "tuple[str, ...]"
+    allowed_ext: tuple[str, ...]
 
     def __init__(self, **kwargs) -> None:
         self.allowed_ext = kwargs.pop("allowed_ext", tuple())

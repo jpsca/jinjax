@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "jinjax"
-version = "0.20"
+version = "0.21"
 description = "Replace your HTML templates with Python server-Side components"
 authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
 license = "MIT"
@@ -41,10 +41,10 @@ whitenoise = ">=5.3"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
-ipdb = "^0.13.9"
-pyright = "^1.1.282"
-pre-commit = "^2.20.0"
+black = ">=22.10.0"
+pyright = ">=1.1.282"
+pre-commit = "*"
+tox = "*"
 
 [tool.poetry.group.test]
 optional = true
@@ -54,7 +54,6 @@ flake8 = "*"
 flake8-bugbear = "*"
 pytest = ">=7.2.0"
 pytest-cov = "*"
-tox = "*"
 
 
 [tool.black]
@@ -124,9 +123,9 @@ envlist = py39,py310,py311
 
 [testenv]
 skip_install = true
+allowlist_externals = poetry
 commands =
     pip install -U pip wheel
-    pip install pytest
-    pip install -e .
+    poetry install --with test
     pytest -x src/jinjax tests
 """

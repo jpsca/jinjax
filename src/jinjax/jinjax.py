@@ -9,7 +9,7 @@ from .utils import logger
 
 
 RENDER_CMD = "catalog.render"
-BLOCK_CALL = '{% call [CMD]("[TAG]"[ATTRS]) -%}\n[CONTENT]\n{%- endcall %}'
+BLOCK_CALL = '{% call [CMD]("[TAG]"[ATTRS]) -%}[CONTENT]{%- endcall %}'
 BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD)
 INLINE_CALL = '{{ [CMD]("[TAG]"[ATTRS]) }}'
 INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD)
@@ -21,12 +21,8 @@ RX_RAW = re.compile(re_raw, re.DOTALL)
 
 re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
 re_raw_attrs = r"(?P<attrs>[^\>]*)"
-re_content = r"(?P<content>.*?)"
-re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}(/>|>{re_content}</{re_tag_name}>)"
-RX_TAG = re.compile(re_tag, re.DOTALL)
-
-re_unclosed = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}>"
-RX_UNCLOSED = re.compile(re_unclosed, re.DOTALL)
+re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}\s*/?>"
+RX_TAG = re.compile(re_tag)
 
 re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)"
 re_equal = r"\s*=\s*"
@@ -48,9 +44,10 @@ class JinjaX(Extension):
         filename: t.Optional[str] = None,
     ) -> str:
         self.__raw_blocks = {}
+        self._name = name
+        self._filename = filename
         source = self._replace_raw_blocks(source)
         source = self._process_tags(source)
-        self._check_for_unclosed(source, name, filename)
         source = self._restore_raw_blocks(source)
         self.__raw_blocks = {}
         return source
@@ -81,19 +78,34 @@ class JinjaX(Extension):
             match = RX_TAG.search(source)
             if not match:
                 break
-            start, end = match.span(0)
-            repl = self._process_tag(match)
-            source = f"{source[:start]}{repl}{source[end:]}"
-
+            source = self._process_tag(source, match)
         return source
 
-    def _process_tag(self, match: re.Match) -> str:
+    def _process_tag(self, source: str, match: re.Match) -> str:
+        start, end = match.span(0)
         tag = match.group("tag")
         attrs = (match.group("attrs") or "").strip()
-        content = (match.group("content") or "").strip()
-        logger.debug(f"{tag} {attrs} {'inline' if not content else ''}")
+        inline = match.group(0).endswith("/>")
+        logger.debug(f"{tag} {attrs} {'inline' if not inline else ''}")
+
+        if inline:
+            content = ""
+        else:
+            end_tag = f"</{tag}>"
+            index = source.find(end_tag, end, None)
+            if index == -1:
+                raise TemplateSyntaxError(
+                    message=f"Unclosed component {match.group(0)}",
+                    lineno=source[:start].count("\n") + 1,
+                    name=self._name,
+                    filename=self._filename
+                )
+            content = source[end:index]
+            end = index + len(end_tag)
+
         attrs_list = self._parse_attrs(attrs)
-        return self._build_call(tag, attrs_list, content)
+        repl = self._build_call(tag, attrs_list, content)
+        return f"{source[:start]}{repl}{source[end:]}"
 
     def _parse_attrs(self, attrs: str) -> list[tuple[str, str]]:
         attrs = attrs.replace("\n", " ").strip()
@@ -129,18 +141,3 @@ class JinjaX(Extension):
                 .replace("[CONTENT]", content)
             )
         return call
-
-    def _check_for_unclosed(
-        self,
-        source: str,
-        name: t.Optional[str] = None,
-        filename: t.Optional[str] = None,
-    ) -> None:
-        match = RX_UNCLOSED.search(source)
-        if match:
-            raise TemplateSyntaxError(
-                message=f"Unclosed component {match.group(0)}",
-                lineno=source[:match.start(0)].count("\n") + 1,
-                name=name,
-                filename=filename
-            )
