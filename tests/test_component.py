@@ -186,3 +186,15 @@ def test_ignore_repeated_js_declaration_and_everything_after():
     assert com.optional == {}
     assert com.css == ["a.css"]
     assert com.js == ["a.js"]
+
+
+def test_linejump_in_args_decl():
+    com = Component(
+        name="Test.jinja",
+        source='{#def\n  message,\n  lorem=4,\n  ipsum="bar"\n#}\n',
+    )
+    assert com.required == ["message"]
+    assert com.optional == {
+        "lorem": 4,
+        "ipsum": "bar",
+    }

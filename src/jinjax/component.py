@@ -47,13 +47,11 @@ class Component:
         self.load_metadata(source)
 
     def load_metadata(self, source: str) -> None:
-        # The metadata must be before anything else, so if it's present
-        # must be in the first three lines
-        header = source.lstrip().split("\n", maxsplit=3)[:3][::-1]
+        header = source.lstrip().split("#}", maxsplit=3)[:3][::-1]
 
         while header:
             line = header.pop()
-            line = line.strip()
+            line = line.strip() + "#}"
 
             if not (self.required or self.optional):
                 expr = self.read_metadata_line(line, RX_PROPS_START)
