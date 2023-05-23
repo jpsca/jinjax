@@ -1,7 +1,6 @@
 import re
 from typing import Any
 
-
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
 CLASS_KEYS = (CLASS_KEY, CLASS_ALT_KEY)
@@ -22,6 +21,21 @@ def quote(text: str) -> str:
     return f'"{text}"'
 
 
+class LazyString:
+    """The string representation of an object, but lazily casted to str."""
+
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
+    def __str__(self) -> str:
+        if not hasattr(self, "_value_str"):
+            self._value_str = str(self.value)
+        return self._value_str
+
+    def __eq__(self, other: Any) -> bool:
+        return str(self) == other
+
+
 class HTMLAttrs:
     def __init__(self, attrs) -> None:
         attributes: "dict[str, str]" = {}
@@ -38,7 +52,7 @@ class HTMLAttrs:
             if value is True:
                 properties.add(name)
             elif value not in (False, None):
-                attributes[name] = str(value)
+                attributes[name] = LazyString(value)
 
         self.__attributes = attributes
         self.__properties = properties
