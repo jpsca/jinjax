@@ -1,5 +1,8 @@
 import re
+from collections import UserString
+from functools import cached_property
 from typing import Any
+
 
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
@@ -21,24 +24,23 @@ def quote(text: str) -> str:
     return f'"{text}"'
 
 
-class LazyString:
-    """The string representation of an object, but lazily casted to str."""
+class LazyString(UserString):
+    """Behave like regular strings, but the actual casting of the initial value
+    is deferred until the value is actually required."""
 
-    def __init__(self, value: Any) -> None:
-        self.value = value
+    __slots__ = ("_seq",)
 
-    def __str__(self) -> str:
-        if not hasattr(self, "_value_str"):
-            self._value_str = str(self.value)
-        return self._value_str
+    def __init__(self, seq):
+        self._seq = seq
 
-    def __eq__(self, other: Any) -> bool:
-        return str(self) == other
+    @cached_property
+    def data(self):
+        return str(self._seq)
 
 
 class HTMLAttrs:
     def __init__(self, attrs) -> None:
-        attributes: "dict[str, str]" = {}
+        attributes: "dict[str, str|LazyString]" = {}
         properties: "set[str]" = set()
 
         class_names = split(" ".join([

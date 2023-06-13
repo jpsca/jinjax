@@ -168,3 +168,80 @@ def test_additional_attributes_are_lazily_evaluated_to_strings():
 
     with pytest.raises(RuntimeError):
         attrs.render()
+
+
+def test_additional_attributes_lazily_evaluated_has_string_methods():
+    class TestObject:
+        def __str__(self):
+            return 'test'
+
+    attrs = HTMLAttrs({"some_object": TestObject()})
+
+    assert attrs["some_object"].__str__
+    assert attrs["some_object"].__repr__
+    assert attrs["some_object"].__int__
+    assert attrs["some_object"].__float__
+    assert attrs["some_object"].__complex__
+    assert attrs["some_object"].__hash__
+    assert attrs["some_object"].__eq__
+    assert attrs["some_object"].__lt__
+    assert attrs["some_object"].__le__
+    assert attrs["some_object"].__gt__
+    assert attrs["some_object"].__ge__
+    assert attrs["some_object"].__contains__
+    assert attrs["some_object"].__len__
+    assert attrs["some_object"].__getitem__
+    assert attrs["some_object"].__add__
+    assert attrs["some_object"].__radd__
+    assert attrs["some_object"].__mul__
+    assert attrs["some_object"].__mod__
+    assert attrs["some_object"].__rmod__
+    assert attrs["some_object"].capitalize
+    assert attrs["some_object"].casefold
+    assert attrs["some_object"].center
+    assert attrs["some_object"].count
+    assert attrs["some_object"].removeprefix
+    assert attrs["some_object"].removesuffix
+    assert attrs["some_object"].encode
+    assert attrs["some_object"].endswith
+    assert attrs["some_object"].expandtabs
+    assert attrs["some_object"].find
+    assert attrs["some_object"].format
+    assert attrs["some_object"].format_map
+    assert attrs["some_object"].index
+    assert attrs["some_object"].isalpha
+    assert attrs["some_object"].isalnum
+    assert attrs["some_object"].isascii
+    assert attrs["some_object"].isdecimal
+    assert attrs["some_object"].isdigit
+    assert attrs["some_object"].isidentifier
+    assert attrs["some_object"].islower
+    assert attrs["some_object"].isnumeric
+    assert attrs["some_object"].isprintable
+    assert attrs["some_object"].isspace
+    assert attrs["some_object"].istitle
+    assert attrs["some_object"].isupper
+    assert attrs["some_object"].join
+    assert attrs["some_object"].ljust
+    assert attrs["some_object"].lower
+    assert attrs["some_object"].lstrip
+    assert attrs["some_object"].partition
+    assert attrs["some_object"].replace
+    assert attrs["some_object"].rfind
+    assert attrs["some_object"].rindex
+    assert attrs["some_object"].rjust
+    assert attrs["some_object"].rpartition
+    assert attrs["some_object"].rstrip
+    assert attrs["some_object"].split
+    assert attrs["some_object"].rsplit
+    assert attrs["some_object"].splitlines
+    assert attrs["some_object"].startswith
+    assert attrs["some_object"].strip
+    assert attrs["some_object"].swapcase
+    assert attrs["some_object"].title
+    assert attrs["some_object"].translate
+    assert attrs["some_object"].upper
+    assert attrs["some_object"].zfill
+
+    assert attrs["some_object"].upper() == 'TEST'
+    assert attrs["some_object"].title() == 'Test'
