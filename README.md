@@ -9,9 +9,3 @@ From chaos to clarity: The power of components in your server-side-rendered Pyth
 
 Write server-side components as single Jinja template files.
 Use them as HTML tags without doing any importing.
-
-## About
-
-- This project is developed by *Juan-Pablo Scaletti*.<br>
-- I love building products and sharing knowledge.
-
