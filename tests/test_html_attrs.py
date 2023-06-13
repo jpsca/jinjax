@@ -1,3 +1,4 @@
+import pytest
 from jinjax.html_attrs import HTMLAttrs
 
 
@@ -154,3 +155,16 @@ def test_do_escape_quotes_inside_attrs():
     result = attrs.render()
     print(result)
     assert expected == result
+
+
+def test_additional_attributes_are_lazily_evaluated_to_strings():
+    class TestObject:
+        def __str__(self):
+            raise RuntimeError("Should not be called unless rendered.")
+
+    attrs = HTMLAttrs({
+        "some_object": TestObject(),
+    })
+
+    with pytest.raises(RuntimeError):
+        attrs.render()
