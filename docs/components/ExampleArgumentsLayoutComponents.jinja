@@ -1,0 +1,42 @@
+<CodeGroup>
+  <CodeTabs>
+    <CodeTab target="components-ArchivePage" open>
+      components/ArchivePage.jinja
+    </CodeTab>
+    <CodeTab target="components-Layout">
+      components/Layout.jinja
+    </CodeTab>
+  </CodeTabs>
+
+  <CodePanel id="components-ArchivePage">
+    {% markdown %}{% raw %}
+    ```html+jinja
+    {#def posts #}
+
+    <Layout title="Archive">
+      {% for post in posts %}
+        <Post post={post} />
+      {% endfor %}
+    </Layout>
+    ```
+    {% endraw %}{% endmarkdown %}
+  </CodePanel>
+
+  <CodePanel id="components-Layout" class="hidden">
+    {% markdown %}{% raw %}
+    ```html+jinja
+    {#def title #}
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>{{ title }}</title>
+    </head>
+    <body>
+      {{ content }}
+    </body>
+    ```
+    {% endraw %}{% endmarkdown %}
+  </CodePanel>
+</CodeGroup>

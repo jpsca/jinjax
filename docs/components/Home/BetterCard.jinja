@@ -1,0 +1,19 @@
+{#def title #}
+<div>
+	<div class="flex items-center py-4 px-6
+	border border-stone-400 dark:border-stone-600 rounded-2xl bg-stone-200 dark:bg-black
+	 mx-auto max-w-md h-36 md:h-40 xl:h-52 xl:items-start xl:py-6">
+		<div>
+			<div class="flex items-center mb-2">
+				<img src="/static/img/{{ title|lower }}.svg" height="32"
+					class="w-10 max-h-[32px] dark:invert float-left pr-3" />
+				<h3 class="font-semibold text-slate-900 dark:text-slate-200">
+					{{ title }}
+				</h3>
+			</div>
+			<div class="prose prose-zinc text-zinc-600 dark:prose-dark">
+				{{ content }}
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,57 @@
+{#def title="", type="info", icon=True, open=True #}
+
+{% set colors = {
+  "note": "bg-zinc-100 border-zinc-300 text-zinc-800",
+  "info": "bg-zinc-100 border-zinc-300 text-zinc-800",
+  "tip": "bg-yellow-100 border-yellow-200 text-yellow-800",
+  "alert": "bg-orange-100 border-orange-200 text-orange-800",
+  "warning": "bg-orange-100 border-orange-200 text-orange-800",
+  "danger": "bg-rose-100 border-rose-200 text-rose-900",
+  "error": "bg-rose-100 border-rose-200 text-rose-800",
+  "internal": "bg-stone-200 border-stone-300 text-stone-900",
+  "todo": "bg-zinc-100 border-zinc-300 text-zinc-800",
+} %}
+
+{% set type = type if type in colors else "" %}
+{% set show_icon = icon and type %}
+
+{% set color_classes = colors.get(type, "bg-zinc-100 border-zinc-300 text-zinc-800") %}
+{% do attrs.set(class=color_classes) %}
+
+{% if title -%}
+
+<details {{ attrs.render(
+  open=open,
+  class="group relative sm:border-x border-y sm:rounded overflow-hidden bg-opacity-90 -mx-4 sm:mx-0",
+) }}>
+  <summary class="flex items-center font-bold h-12 px-5 cursor-pointer
+  ">
+    {% if show_icon -%}
+    <div class="pr-4 hidden sm:block">
+      <t.Icon type={type} class="w-7 h-7 pointer-events-none opacity-70"/>
+    </div>
+    {%- endif %}
+    {{ title }}
+    <t.ArrowRight class="
+      ml-auto rotate-90
+      group-open:-rotate-90 transition-transform pointer-events-none" />
+  </summary>
+  <div class="p-4 sm:px-7 sm:py-6 w-full">{{content}}</div>
+</details>
+
+{%- else -%}
+
+<div {{ attrs.render(
+  class="
+    group relative sm:border-x border-y overflow-hidden bg-opacity-90
+    flex items-start px-4 py-7 sm:px-7 -mx-4 sm:mx-0 sm:rounded
+  ") }}>
+  {% if show_icon -%}
+  <div class="pr-4 hidden sm:block">
+    <t.Icon type={type} class="w-7 h-7 pointer-events-none opacity-70" />
+  </div>
+  {%- endif %}
+  <div class="w-full">{{content}}</div>
+</div>
+
+{%- endif %}

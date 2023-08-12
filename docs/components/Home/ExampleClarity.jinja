@@ -1,0 +1,24 @@
+<div class="md:h-[500px] [&_.highlight]:h-full [&_pre]:h-full
+  [&_code]:h-full text-base sm:rounded px-4 sm:px-0 prose">
+{% markdown %}
+{% raw %}
+```html+jinja
+{#def products, msg="World!" #}
+
+<Layout title="My title">
+  <div>
+    <h2>Hello, {{ msg }}</h2>
+    <div>
+      <Card header="So clean">
+        {% for product in products %}
+          <Product product={product} />
+        {% endfor %}
+      </Card>
+    </div>
+  </div>
+  <Paginator items={products} />
+</Layout>
+```
+{% endraw %}
+{% endmarkdown %}
+</div>

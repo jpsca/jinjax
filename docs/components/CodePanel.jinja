@@ -1,0 +1,8 @@
+{% do attrs.set(
+  class="
+    bg-zinc-800 rounded-b border border-t-0 z-10 border-zinc-600
+    [&_div.highlight]:m-0 [&_div.highlight]:border-0
+    "
+) %}
+
+<ui.TabPanel __attrs={attrs}>{{ content }}</ui.TabPanel>

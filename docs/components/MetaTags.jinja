@@ -1,0 +1,15 @@
+{#def title="", description="" #}
+
+{% set DEFAULT_TITLE = "Documentation" %}
+{% set title = (title + " | " + DEFAULT_TITLE) if title else DEFAULT_TITLE %}
+
+<title>{{ title }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<script src="/static/docs.js?v={{utils.timestamp}}"></script>
+{{ catalog.render_assets() }}
+<link rel="stylesheet" href="/static/docs.css?v={{utils.timestamp}}">
+<meta property="og:title" content="{{ title }}">
+{% if description -%}
+  <meta property="og:description" content="{{ description }}">
+{%- endif %}

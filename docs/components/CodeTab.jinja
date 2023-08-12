@@ -1,0 +1,12 @@
+{% do attrs.set(class="
+  relative px-5 py-2 w-full z-10
+  text-sm text-center select-none
+  border border-r-0 last:border-r border-zinc-600
+  bg-zinc-700 text-zinc-400
+  open:z-20 open:text-white open:bg-[#181818]
+  open:border-t-accent open:border-b-0  open:border-t-2
+  disabled:cursor-not-allowed disabled:z-0
+  disabled:text-zinc-400 disabled:bg-zinc-300
+") %}
+
+<ui.Tab __attrs={attrs}>{{ content }}</ui.Tab>

@@ -1,0 +1,13 @@
+{#def tag="button" #}
+
+{% if tag == "button" %}{% do attrs.set(type="button") %}{% endif %}
+
+<{{ tag }} {{ attrs.render(class="
+appearance-none inline-block rounded py-3 px-6 font-sans text-xl font-bold text-center
+no-underline shadow shadow-black/20
+text-black hover:text-accent-darker
+bg-accent-darker hover:bg-black
+transition-colors duration-300
+") }}>
+  {{ content }}
+</{{ tag }}>
