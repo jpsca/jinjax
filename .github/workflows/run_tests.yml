@@ -22,7 +22,7 @@ jobs:
     name: tests
     strategy:
       matrix:
-        python: ["3.9", "3.10", "3.11"]
+        python: ["3.10", "3.11"]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:

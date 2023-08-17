@@ -14,7 +14,8 @@ from .html_attrs import HTMLAttrs
 from .utils import logger
 
 
-TFileExt = tuple[str, ...] | str
+if t.TYPE_CHECKING:
+    TFileExt = tuple[str, ...] | str
 
 
 DEFAULT_URL_ROOT = "/static/components/"
@@ -41,18 +42,18 @@ class Catalog:
     def __init__(
         self,
         *,
-        globals: dict[str, t.Any] | None = None,
-        filters: dict[str, t.Any] | None = None,
-        tests: dict[str, t.Any] | None = None,
-        extensions: list | None = None,
-        jinja_env: jinja2.Environment | None = None,
+        globals: "dict[str, t.Any] | None" = None,
+        filters: "dict[str, t.Any] | None" = None,
+        tests: "dict[str, t.Any] | None" = None,
+        extensions: "list | None" = None,
+        jinja_env: "jinja2.Environment | None" = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: TFileExt = DEFAULT_EXTENSION,
+        file_ext: "TFileExt" = DEFAULT_EXTENSION,
     ) -> None:
-        self.components: dict[str, Component] = {}
-        self.prefixes: dict[str, jinja2.FileSystemLoader] = {}
-        self.collected_css: list[str] = []
-        self.collected_js: list[str] = []
+        self.components: "dict[str, Component]" = {}
+        self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
+        self.collected_css: "list[str]" = []
+        self.collected_js: "list[str]" = []
         self.file_ext = file_ext
 
         root_url = root_url.strip().rstrip(SLASH)
@@ -78,7 +79,7 @@ class Catalog:
 
     def add_folder(
         self,
-        root_path: str | Path,
+        root_path: "str | Path",
         *,
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
@@ -108,7 +109,7 @@ class Catalog:
         self,
         __name: str,
         *,
-        caller: t.Callable | None = None,
+        caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
         content = (kw.pop("__content", "") or "").strip()
@@ -155,10 +156,10 @@ class Catalog:
 
     def get_middleware(
         self,
-        application: t.Callable,
-        allowed_ext: t.Iterable[str] | None = ALLOWED_EXTENSIONS,
+        application: "t.Callable",
+        allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
         **kwargs,
-    ) -> ComponentsMiddleware:
+    ) -> "ComponentsMiddleware":
         logger.info("Creating middleware")
         middleware = ComponentsMiddleware(
             application=application,
@@ -173,7 +174,7 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str, file_ext: TFileExt = "") -> str:
+    def get_source(self, cname: str, file_ext: "TFileExt" = "") -> str:
         prefix, name = self._split_name(cname)
         _root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
         return Path(path).read_text()
@@ -191,7 +192,7 @@ class Catalog:
 
     # Private
 
-    def _split_name(self, cname: str) -> tuple[str, str]:
+    def _split_name(self, cname: str) -> "tuple[str, str]":
         cname = cname.strip().strip(DELIMITER)
         if DELIMITER not in cname:
             return DEFAULT_PREFIX, cname
@@ -210,7 +211,7 @@ class Catalog:
         return url_prefix
 
     def _get_component_path(
-        self, prefix: str, name: str, file_ext: TFileExt = ""
+        self, prefix: str, name: str, file_ext: "TFileExt" = ""
     ) -> "tuple[Path, Path]":
         name = name.replace(DELIMITER, SLASH)
         name_dot = f"{name}."
@@ -238,7 +239,7 @@ class Catalog:
             f"or one following the pattern {name_dot}*{file_ext}"
         )
 
-    def _render_attrs(self, attrs: dict) -> Markup:
+    def _render_attrs(self, attrs: "dict") -> "Markup":
         html_attrs = []
         for name, value in attrs.items():
             if value != "":
