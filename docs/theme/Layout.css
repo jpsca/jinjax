@@ -1,0 +1,35 @@
+:root {
+  /* https://github.com/argyleink/open-props/blob/main/src/props.easing.css */
+  --ease-3: cubic-bezier(0.25, 0, 0.3, 1);
+  --ease-out-5: cubic-bezier(0, 0, 0, 1);
+  --ease-elastic-3: cubic-bezier(0.5, 1.25, 0.75, 1.25);
+  --ease-elastic-4: cubic-bezier(0.5, 1.5, 0.75, 1.25);
+}
+.scrollbar-thin {
+scrollbar-width: thin; /* Firefox */
+}
+.scrollbar-thin::-webkit-scrollbar {
+/* Safari and Chrome */
+width: 2px;
+background-color: ButtonFace;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+background-color: var(--accent);
+}
+body.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+background-color: var(--accent-dark);
+}
+.scrollbar-default {
+-ms-overflow-style: auto; /* IE and Edge */
+scrollbar-width: auto; /* Firefox */
+}
+.scrollbar-default::-webkit-scrollbar {
+/* Safari and Chrome */
+width: auto;
+}
+.macos-only, .macos .macos-hidden {
+display: none;
+}
+.macos .macos-only {
+display: block;
+}

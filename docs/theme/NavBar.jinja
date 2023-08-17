@@ -1,0 +1,19 @@
+<section class="
+  relative z-20
+  flex items-center w-full h-16
+  backdrop-blur-sm bg-white/60 dark:bg-zinc-800/60
+  tall:sticky tall:top-0
+  border-b border-zinc-200 dark:border-zinc-600
+  focus:outline-accent dark:focus:outline-accent-darker
+  pl-[max(0.75rem,env(safe-area-inset-left))]
+  pr-[max(0.75rem,env(safe-area-inset-right))]
+  sm:px-6 lg:px-8
+">
+  <Logo class="mr-auto" base_url={nav.base_url} />
+  <nav class="hidden md:flex items-center space-x-8">
+    <NavLinks></NavLinks>
+  </nav>
+  <LangSwitch class="ml-3" languages={nav.languages} lang={nav.lang} />
+  <ThemeSwitch class="ml-3" text={false} />
+  <Hamburger class="ml-3 lg:hidden" />
+</section>

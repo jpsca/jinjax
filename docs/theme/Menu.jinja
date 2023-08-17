@@ -1,0 +1,56 @@
+{#js toggle.js #}
+
+<div {{ attrs.render(
+  id="menu",
+  class="group fixed inset z-30 hidden open:block open:lg:hidden w-full",
+) }}>
+  <div
+    class="
+      hidden sm:block fixed inset-0
+      transition-all
+      bg-black/0 group-open:bg-black/20
+      dark:bg-white/0 group-open:dark:bg-white/20
+      backdrop-blur-none group-open:backdrop-blur-sm
+    "
+    data-toggle="#menu|[open]"
+  ></div>
+
+
+  <div class="
+    text-sm pb-12
+    bg-white dark:bg-zinc-900
+    sm:border-l dark:sm:border-l-zinc-600
+    fixed top-0 bottom-0 right-0
+    w-full max-w-screen-sm
+    overflow-auto overscroll-contain
+  ">
+    <div class="flex items-center h-16
+      pl-[max(0.75rem,env(safe-area-inset-left))]
+      pr-[max(0.75rem,env(safe-area-inset-right))]
+      sm:px-6 lg:px-8 mb-3
+      border-b border-zinc-200 dark:border-zinc-600
+    ">
+      <Logo base_url={nav.base_url} />
+      <CloseBtn class="ml-auto" aria_label="Close" data_toggle="#menu|[open]" />
+    </div>
+
+    <nav class="flex items-center justify-start pb-3 space-x-4
+      border-b border-zinc-200 dark:border-zinc-600
+      text-base
+      pl-[max(1rem,env(safe-area-inset-left))]
+      pr-[max(1rem,env(safe-area-inset-right))]
+      sm:px-6 lg:px-8
+    ">
+      <NavLinks></NavLinks>
+    </nav>
+
+    <nav class="
+      flex flex-col mb-5 text-base
+      pl-[max(1rem,env(safe-area-inset-left))]
+      pr-[max(1rem,env(safe-area-inset-right))]
+      sm:px-6 lg:px-8
+    ">
+      <Toc toc={nav.toc} page={nav.page} />
+    </nav>
+  </div>
+</div>

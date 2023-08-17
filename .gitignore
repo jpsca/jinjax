@@ -1,5 +1,4 @@
-docs/en/site
-docs/es/site
+docs/build
 .DS_Store
 .vscode
 

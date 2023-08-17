@@ -324,14 +324,16 @@
     line-height: 1.7142857;
     margin-left: 0;
     margin-right: 0;
-    margin-top: 1.7142857em;
-    margin-bottom: 1.7142857em;
+    margin-top: 0;
+    margin-bottom: 0;
     border-radius: 0.375rem;
     padding-top: 0.8571429em;
     padding-right: 1.1428571em;
     padding-bottom: 0.8571429em;
     padding-left: 1.1428571em;
     white-space: pre;
+    position: relative;
+    z-index: 100;
   }
 
   @media (max-width: 640px) {
@@ -344,12 +346,16 @@
     }
   }
 
-  .prose :where(pre .filename):not(:where([class~="not-prose"] *)) {
-    display: block;
-    padding: 0.4em 1em;
+  .prose :where(.filename):not(:where([class~="not-prose"] *)) {
+    display: inline-block;
+    padding: 0.4em 1em 0.8em;
     font-weight: 500;
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgb(var(--border-color));
+    font-size: 0.8rem;
+    border: 1px solid var(--tw-prose-hr);
+    border-radius: 0.375rem 0.375rem 0 0;
+    border-bottom: none;
+    margin-bottom: -0.375rem;
+    font-family: monospace;
   }
 
   .prose :where(pre a):not(:where([class~="not-prose"] *)) {

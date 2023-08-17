@@ -1,0 +1,11 @@
+<div {{ attrs.render(
+  class="
+    sticky top-0 tall:top-16 z-0 pr-4 border-r border-zinc-200 dark:border-zinc-600
+    w-72 text-sm 2xl:text-base
+    overflow-y-auto scrollbar-thin
+  ",
+) }}>
+  <nav class="flex flex-col pb-14 w-full">
+    <Toc toc={nav.toc} page={nav.page} />
+  </nav>
+</div>

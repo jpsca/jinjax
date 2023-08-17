@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "watch": "tailwindcss -i ./static/_docs.css -o ./static/docs.css --watch",
+    "build": "tailwindcss -i ./static/_docs.css  -o ./static/docs.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.2.4"
+  }
+}
