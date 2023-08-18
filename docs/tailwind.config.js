@@ -10,7 +10,8 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
-      colors: {
+      fontFamily: {
+        'sans': ['silka', 'sans-serif'],
       },
       screens: {
         'tall': { 'raw': '(min-height: 768px)' },

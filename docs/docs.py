@@ -60,6 +60,7 @@ docs = Docs(
     pages,
     # languages=languages,
     # default="en",
+    DEFAULT_COMPONENT="Page",
 )
 docs.catalog.add_module(jinjax_ui, prefix="UI")
 

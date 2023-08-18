@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: silka; src: url("./silka.woff2") format("woff2"); font-display: swap;
+    font-style: normal; font-weight: 300;
+  }
+  @font-face {
+    font-family: silka; src: url("./silka-medium.woff2") format("woff2"); font-display: swap;
+    font-style: normal; font-weight: 400;
+  }
+  @font-face {
+    font-family: silka; src: url("./silka-semibold.woff2") format("woff2"); font-display: swap;
+    font-style: normal; font-weight: 600;
+  }
+
   :root {
     --ease-3: cubic-bezier(0.25, 0, 0.3, 1);
     --ease-out-5: cubic-bezier(0, 0, 0, 1);
