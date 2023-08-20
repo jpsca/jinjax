@@ -2,7 +2,7 @@
 
 <div {{ attrs.render(
   id="menu",
-  class="group fixed inset z-30 hidden open:block open:lg:hidden w-full",
+  class="group fixed inset z-50 hidden open:block open:lg:hidden w-full h-screen overscroll-contain",
 ) }}>
   <div
     class="
@@ -22,9 +22,9 @@
     sm:border-l dark:sm:border-l-zinc-600
     fixed top-0 bottom-0 right-0
     w-full max-w-screen-sm
-    overflow-auto overscroll-contain
+    overscroll-contain
   ">
-    <div class="flex items-center h-16
+    <div class="flex items-center h-14
       pl-[max(0.75rem,env(safe-area-inset-left))]
       pr-[max(0.75rem,env(safe-area-inset-right))]
       sm:px-6 lg:px-8 mb-3
@@ -39,7 +39,7 @@
       text-base
       pl-[max(1rem,env(safe-area-inset-left))]
       pr-[max(1rem,env(safe-area-inset-right))]
-      sm:px-6 lg:px-8
+      sm:px-6 lg:px-8 overscroll-contain
     ">
       <NavLinks></NavLinks>
     </nav>
@@ -48,7 +48,7 @@
       flex flex-col mb-5 text-base
       pl-[max(1rem,env(safe-area-inset-left))]
       pr-[max(1rem,env(safe-area-inset-right))]
-      sm:px-6 lg:px-8
+      sm:px-6 lg:px-8 overscroll-contain
     ">
       <Toc toc={nav.toc} page={nav.page} />
     </nav>

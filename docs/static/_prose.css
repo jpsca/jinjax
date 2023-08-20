@@ -333,7 +333,7 @@
     padding-left: 1.1428571em;
     white-space: pre;
     position: relative;
-    z-index: 40;
+    z-index: 30;
   }
 
   @media (max-width: 640px) {
