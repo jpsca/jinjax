@@ -1,10 +1,9 @@
 {#def title="" #}
 <Layout title={title} description={meta.get('description', '')}>
   <NavBar />
-  <div class="px-4 sm:px-6 lg:px-8 pb-16 z-10 mx-auto flex justify-between
-  ">
+  <div class="px-4 sm:px-6 pb-16 z-10 flex mx-auto max-w-[100rem]">
     <SidebarGlobal class="hidden lg:block" />
-    <main class="lg:pl-8 pt-10 2xl:mx-10 w-full max-w-full">
+    <main class="lg:pl-8 pt-10 2xl:mx-10 w-full">
       <div class="Page prose">
         {{ content }}
       </div>

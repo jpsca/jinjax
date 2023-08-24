@@ -1,17 +1,16 @@
 <footer {{ attrs.render(
   class="
-    pl-[max(1rem,env(safe-area-inset-left)]
-    pr-[max(1rem,env(safe-area-inset-right))]
-    sm:px-6 lg:px-8 py-5
-    text-sm text-center sm:flex sm:items-center
+    py-5 text-sm text-center
     border-t border-zinc-200 dark:border-zinc-600",
 ) }}>
-  <div class="ml-auto mr-auto mb-3 sm:mb-0 sm:ml-0">
-    <Copyright />
+  <div class="sm:flex sm:items-center px-4 sm:px-6 mx-auto max-w-[100rem]">
+    <div class="ml-auto mr-auto mb-3 sm:mb-0 sm:ml-0">
+      <Copyright />
+    </div>
+    <div class="hidden sm:block mx-auto sm:m-0 h-full dark:text-inherit text-zinc-500">
+      This site was
+      <a title="Coming soon!" class="underline cursor-pointer">built using Claydocs</a>
+    </div>
+    <ThemeSwitch class="ml-auto mr-auto sm:ml-6 sm:mr-0" />
   </div>
-  <div class="hidden sm:block mx-auto sm:m-0 h-full dark:text-inherit text-zinc-500">
-    This site was
-    <a title="Coming soon!" class="underline cursor-pointer">built using Claydocs</a>
-  </div>
-  <ThemeSwitch class="ml-auto mr-auto sm:ml-6 sm:mr-0" />
 </footer>
