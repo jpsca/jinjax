@@ -77,6 +77,13 @@ class Catalog:
         jinja_env.extend(catalog=self)
         self.jinja_env = jinja_env
 
+    @property
+    def paths(self) -> "list[Path]":
+        _paths = []
+        for loader in self.prefixes.values():
+            _paths.extend(loader.searchpath)
+        return _paths
+
     def add_folder(
         self,
         root_path: "str | Path",
