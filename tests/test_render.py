@@ -300,3 +300,22 @@ def test_check_for_unclosed(catalog, folder):
         except TemplateSyntaxError as err:
             print(err)
             raise
+
+
+def test_dict_as_attr(catalog, folder):
+    (folder / "CitiesList.jinja").write_text("""
+{#def cities #}
+{% for city, country in cities.items() -%}
+<p>{{ city }}, {{ country }}</p>
+{%- endfor %}
+""")
+
+    (folder / "Page.jinja").write_text("""
+<CitiesList cities={{
+    "Lima": "Peru",
+    "New York": "USA",
+}}/>
+""")
+
+    html = catalog.render("Page")
+    assert html == '<p>Lima, Peru</p><p>New York, USA</p>'

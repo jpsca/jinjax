@@ -13,8 +13,6 @@ BLOCK_CALL = '{% call [CMD]("[TAG]"[ATTRS]) -%}[CONTENT]{%- endcall %}'
 BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD)
 INLINE_CALL = '{{ [CMD]("[TAG]"[ATTRS]) }}'
 INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD)
-ATTR_START = "{"
-ATTR_END = "}"
 
 re_raw = r"\{%-?\s*raw\s*-?%\}.+?\{%-?\s*endraw\s*-?%\}"
 RX_RAW = re.compile(re_raw, re.DOTALL)
@@ -24,14 +22,17 @@ re_raw_attrs = r"(?P<attrs>[^\>]*)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}\s*/?>"
 RX_TAG = re.compile(re_tag)
 
-re_attr_name = r"(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)"
-re_equal = r"\s*=\s*"
-re_attr = rf"""
-{re_attr_name}
+ATTR_START = "{"
+ATTR_END = "}"
+re_attr_name = r""
+re_equal = r""
+re_attr = r"""
+(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)
 (?:
-    {re_equal}
-    (?P<value>".*?"|'.*?'|\{ATTR_START}.*?\{ATTR_END})
+    \s*=\s*
+    (?P<value>".*?"|'.*?'|\{.*?\})
 )?
+(?:\s+|/|$)
 """
 RX_ATTR = re.compile(re_attr, re.VERBOSE | re.DOTALL)
 
@@ -104,6 +105,7 @@ class JinjaX(Extension):
             end = index + len(end_tag)
 
         attrs_list = self._parse_attrs(attrs)
+        print(attrs_list)
         repl = self._build_call(tag, attrs_list, content)
         return f"{source[:start]}{repl}{source[end:]}"
 
@@ -123,12 +125,16 @@ class JinjaX(Extension):
         attrs = []
         for name, value in attrs_list:
             name = name.strip().replace("-", "_")
+            value = value.strip()
             if not value:
                 attrs.append(f"{name}=True")
             else:
-                attrs.append(f"{name}={value.strip(' {}')}")
+                if value.startswith(ATTR_START) and value.endswith(ATTR_END):
+                    value = value[1:-1].strip()
+                attrs.append(f"{name}={value}")
 
         str_attrs = ", ".join(attrs)
+        print(str_attrs)
         if str_attrs:
             str_attrs = f", {str_attrs}"
 

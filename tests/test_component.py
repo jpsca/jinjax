@@ -27,6 +27,25 @@ def test_expression_args():
     }
 
 
+def test_dict_args():
+    com = Component(
+        name="Test.jinja",
+        source="{#def expr={'a': 'b', 'c': 'd'} -#}\n",
+    )
+    assert com.optional == {
+        "expr": {"a": "b", "c": "d"},
+    }
+
+    com = Component(
+        name="Test.jinja",
+        source='{#def a=1, expr={"a": "b", "c": "d"} -#}\n',
+    )
+    assert com.optional == {
+        "a": 1,
+        "expr": {"a": "b", "c": "d"},
+    }
+
+
 def test_lowercase_booleans():
     com = Component(
         name="Test.jinja",
