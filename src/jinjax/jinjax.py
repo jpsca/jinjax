@@ -105,7 +105,6 @@ class JinjaX(Extension):
             end = index + len(end_tag)
 
         attrs_list = self._parse_attrs(attrs)
-        print(attrs_list)
         repl = self._build_call(tag, attrs_list, content)
         return f"{source[:start]}{repl}{source[end:]}"
 
@@ -134,7 +133,6 @@ class JinjaX(Extension):
                 attrs.append(f"{name}={value}")
 
         str_attrs = ", ".join(attrs)
-        print(str_attrs)
         if str_attrs:
             str_attrs = f", {str_attrs}"
 
