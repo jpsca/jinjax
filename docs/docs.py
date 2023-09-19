@@ -5,7 +5,7 @@ import jinjax_ui
 from claydocs import Docs
 
 
-logging.getLogger("jinjax").setLevel(logging.INFO)
+logging.getLogger("jinjax").setLevel(logging.DEBUG)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
 
 pages = [
