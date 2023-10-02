@@ -54,7 +54,7 @@ catalog.collected_css
 
 You can add the `<link>` and `<script>` tags in your page automatically by calling `catalog.render_assets()` like this:
 
-```html+jinja title="components/Layout.jinja" hl_lines="7"
+```html+jinja title="components/Layout.jinja" hl_lines="8"
 {#def title #}
 
 <!DOCTYPE html>
@@ -107,7 +107,7 @@ app.wsgi_app = catalog.get_middleware(
 The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and it will only respond to the *.css* and *.js* files inside the component(s) folder(s). You can configure it to also return files with other extensions. For example:
 
 ```python
-catalog.get_middleware(app, allowed_ext=[".css", ".js", ".svg", ".png"]
+catalog.get_middleware(app, allowed_ext=[".css", ".js", ".svg", ".png"])
 ```
 
 Be aware that, if you use this option, `get_middleware()` must be called **after** all folders are added.
