@@ -119,6 +119,17 @@ class Catalog:
         caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
+        self.collected_css = []
+        self.collected_js = []
+        return self.irender(__name, caller=caller, **kw)
+
+    def irender(
+        self,
+        __name: str,
+        *,
+        caller: "t.Callable | None" = None,
+        **kw,
+    ) -> str:
         content = (kw.pop("__content", "") or "").strip()
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
