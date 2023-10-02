@@ -319,3 +319,44 @@ def test_dict_as_attr(catalog, folder):
 
     html = catalog.render("Page")
     assert html == '<p>Lima, Peru</p><p>New York, USA</p>'
+
+
+def test_cleanup_assets(catalog, folder):
+    (folder / "Layout.jinja").write_text("""
+<html>
+{{ catalog.render_assets() }}
+{{ content }}
+</html>
+""")
+
+    (folder / "Foo.jinja").write_text("""
+{#js foo.js #}
+<Layout>
+<p>Foo</p>
+</Layout>
+""")
+
+    (folder / "Bar.jinja").write_text("""
+{#js bar.js #}
+<Layout>
+<p>Bar</p>
+</Layout>
+""")
+
+    html = catalog.render("Foo")
+    print(html, "\n")
+    assert """
+<html>
+<script type="module" src="/static/components/foo.js"></script>
+<p>Foo</p>
+</html>
+""".strip() in html
+
+    html = catalog.render("Bar")
+    print(html)
+    assert """
+<html>
+<script type="module" src="/static/components/bar.js"></script>
+<p>Bar</p>
+</html>
+""".strip() in html
