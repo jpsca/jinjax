@@ -97,10 +97,10 @@ class Catalog:
             loader = self.prefixes[prefix]
             if root_path in loader.searchpath:
                 return
-            logger.info(f"Adding folder `{root_path}` with the prefix `{prefix}`")
+            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             loader.searchpath.append(root_path)
         else:
-            logger.info(f"Adding folder `{root_path}` with the prefix `{prefix}`")
+            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: t.Any, *, prefix: str = "") -> None:
@@ -167,7 +167,7 @@ class Catalog:
         allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
         **kwargs,
     ) -> "ComponentsMiddleware":
-        logger.info("Creating middleware")
+        logger.debug("Creating middleware")
         middleware = ComponentsMiddleware(
             application=application,
             allowed_ext=tuple(allowed_ext or []),
