@@ -11,12 +11,15 @@ Your components might need custom styles or custom JavaScript for many reasons. 
 
 The css and/or the js of a component must be declared in the metatada header with `{#css ... #}` and `{#js ... #}`
 
-```
-{#css lorem.css ipsum.css #}
-{#js foo.js bar.js #}
+```html+jinja
+{#css lorem.css, ipsum.css #}
+{#js foo.js, bar.js #}
 ```
 
-The filepaths must be relative to the root of your components catalog (e.g.: `components/`). Both of these list are optional.
+- The filepaths must be relative to the root of your components catalog (e.g.: `components/`).
+- Multiple assets must be separated by commas.
+- Only **one** {#css ... #} and **one** {#js ... #} tag is allowed per component,
+  but both are optional.
 
 
 ## Including assets in your pages
@@ -73,9 +76,9 @@ The variable will be rendered as:
 <link rel="stylesheet" href="/static/components/mypage.css">
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/button.css">
-<script src="/static/components/mypage.js" defer></script>
-<script src="/static/components/card.js" defer></script>
-<script src="/static/components/button.js" defer></script>
+<script type="module" src="/static/components/mypage.js"></script>
+<script type="module" src="/static/components/card.js"></script>
+<script type="module" src="/static/components/button.js"></script>
 ```
 
 ## Middleware
@@ -157,38 +160,13 @@ document.querySelectorAll('.Card button.share')
 /* ... etc ... */
 ```
 
-A solution can be using the `MutationObserver` JS API to detect changes to the document and attach the events to all the new inserted components:
+A solution can be using event delegation:
 
 ```js title="components/card.js"
-new MutationObserver( (mutationList) => {
-  mutationList.forEach( (mutation) => {
-    if (mutation.type !== "childList") return
-    mutation.addedNodes.forEach( (node) => {
-      if (node.nodeType === 1) {
-        addEvents(node)
-      }
-    })
-  })
+// This will work for any Card component inserted after page load
+document.addEventListener("click", (event) => {
+  if (event.target.matches(".Card button.share")) {
+    handleClick(event)
+  }
 })
-.observe(document.body, {
-    subtree: true,
-    childList: true,
-    attributes: false,
-    characterData: false
-})
-
-function addEvents (root) {
-  /* Attach events to all the child components
-  of the new node */
-  root.querySelectorAll('.Card button.share')
-    .forEach( (node) => {
-      node.addEventListener("click", handleClick)
-    })
-}
-
-// We call it a first time to attach the events for the
-// components present on the document on page load
-addEvents(document)
-
-/* ... etc ... */
 ```

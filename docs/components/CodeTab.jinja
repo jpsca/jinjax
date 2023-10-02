@@ -3,10 +3,16 @@
   text-sm text-center select-none
   border border-r-0 last:border-r border-zinc-600
   bg-zinc-800 text-zinc-500
-  open:z-20 open:text-white open:bg-[#181818]
-  open:border-t-accent open:border-b-0  open:border-t-2
-  disabled:cursor-not-allowed disabled:z-0
-  disabled:text-zinc-400 disabled:bg-zinc-300
+  [&.ui-selected]:z-20
+  [&.ui-selected]:text-white
+  [&.ui-selected]:bg-[#181818]
+  [&.ui-selected]:border-t-accent
+  [&.ui-selected]:border-b-0
+  [&.ui-selected]:border-t-2
+  [&..ui-disabled]:cursor-not-allowed
+  [&..ui-disabled]:z-0
+  [&..ui-disabled]:text-zinc-400
+  [&..ui-disabled]:bg-zinc-300
 ") %}
 
-<UI.Tab __attrs={attrs}>{{ content }}</UI.Tab>
+<Tab __attrs={attrs}>{{ content }}</Tab>

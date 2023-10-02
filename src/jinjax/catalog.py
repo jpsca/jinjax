@@ -19,7 +19,7 @@ if t.TYPE_CHECKING:
 
 
 DEFAULT_URL_ROOT = "/static/components/"
-ALLOWED_EXTENSIONS = (".css", ".js")
+ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
 DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
 DELIMITER = "."
@@ -192,7 +192,7 @@ class Catalog:
             for css in self.collected_css
         ]
         html_js = [
-            f'<script src="{self.root_url}{js}" defer></script>'
+            f'<script type="module" src="{self.root_url}{js}"></script>'
             for js in self.collected_js
         ]
         return Markup("\n".join(html_css + html_js))

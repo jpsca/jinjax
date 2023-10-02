@@ -4,6 +4,7 @@
     "build": "tailwindcss -i ./static/_docs.css  -o ./static/docs.css --minify"
   },
   "devDependencies": {
+    "caniuse-lite": "^1.0.30001542",
     "tailwindcss": "^3.2.4"
   }
 }

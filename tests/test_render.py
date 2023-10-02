@@ -164,9 +164,9 @@ def test_render_assets(catalog, folder):
 <html>
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
-<script src="/static/components/shared.js" defer></script>
-<script src="/static/components/card.js" defer></script>
-<script src="/static/components/greeting.js" defer></script>
+<script type="module" src="/static/components/shared.js"></script>
+<script type="module" src="/static/components/card.js"></script>
+<script type="module" src="/static/components/greeting.js"></script>
 <section class="card">
 <div class="greeting [&_a]:flex">Hello</div>
 <button type="button">Close</button>
