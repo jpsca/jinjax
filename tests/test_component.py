@@ -112,7 +112,7 @@ def test_comma_in_default_value():
 def test_load_assets():
     com = Component(
         name="Test.jinja",
-        source='{#css a.css, "b.css", /c.css -#}\n{#js a.js, b.js, c.js -#}\n',
+        source='{#css a.css, "b.css", c.css -#}\n{#js a.js, b.js, c.js -#}\n',
         url_prefix="/static/"
     )
     assert com.css == ["/static/a.css", "/static/b.css", "/static/c.css"]
@@ -217,3 +217,15 @@ def test_linejump_in_args_decl():
         "lorem": 4,
         "ipsum": "bar",
     }
+
+
+def test_global_assets():
+    com = Component(
+        name="Test.jinja",
+        source="""
+        {#css a.css, /static/shared/b.css, http://example.com/cdn.css #}
+        {#js "http://example.com/cdn.js", a.js, /static/shared/b.js #}
+        """,
+    )
+    assert com.css == ["a.css", "/static/shared/b.css", "http://example.com/cdn.css"]
+    assert com.js == ["http://example.com/cdn.js", "a.js", "/static/shared/b.js"]

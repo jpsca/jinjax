@@ -11,15 +11,49 @@ Your components might need custom styles or custom JavaScript for many reasons. 
 
 The css and/or the js of a component must be declared in the metatada header with `{#css ... #}` and `{#js ... #}`
 
-```html+jinja
+```html
 {#css lorem.css, ipsum.css #}
 {#js foo.js, bar.js #}
 ```
 
 - The filepaths must be relative to the root of your components catalog (e.g.: `components/`).
 - Multiple assets must be separated by commas.
-- Only **one** {#css ... #} and **one** {#js ... #} tag is allowed per component,
+- Only **one** {#css ... #} and **one** {#js ... #} tag is allowed per component at most,
   but both are optional.
+
+
+### Global assets
+
+Best practice is to store both CSS and JS files of the component within the same folder.
+Doing that has several advantages, including easier component reuse in other
+projects, improved code readability, and simplified debugging.
+
+However, there are instances when you may need to rely on global CSS or JS files,
+such as third-party libraries. In such cases, you can specify these dependencies
+in the component's metadata using URLs that start with either
+"/", "http://," or "https://."
+
+When you do this, JinjaX will render them as is; instead of prepending them
+with the component's prefix like it normally does.
+
+For example, this code:
+
+```html+jinja
+{#css foo.css, bar.css, /static/bootstrap.min.css #}
+{#js http://example.com/cdn/moment.js, bar.js  #}
+
+{{ catalog.render_assets() }}
+```
+
+will be render as this HTML output:
+
+```html
+<link rel="stylesheet" href="/static/components/foo.css">
+<link rel="stylesheet" href="/static/components/bar.css">
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<script type="module" src="http://example.com/cdn/moment.js"></script>
+<script type="module" src="/static/components/bar.js"></script>
+```
 
 
 ## Including assets in your pages

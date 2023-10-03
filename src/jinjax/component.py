@@ -106,8 +106,12 @@ class Component:
     def parse_files_expr(self, expr: str) -> "list[str]":
         files = []
         for url in RX_COMMA.split(expr):
-            url = url.strip("\"'/")
-            if url:
+            url = url.strip("\"'").rstrip("/")
+            if not url:
+                continue
+            if url.startswith(("/", "http://", "https://")):
+                files.append(url)
+            else:
                 files.append(f"{self.url_prefix}{url}")
         return files
 
