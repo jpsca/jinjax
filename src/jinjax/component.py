@@ -29,7 +29,10 @@ def eval_expression(input_string):
     for name in code.co_names:
         if name not in ALLOWED_NAMES_IN_EXPRESSION_VALUES:
             raise InvalidArgument(f"Use of {name} not allowed")
-    return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
+    try:
+        return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
+    except NameError as err:
+        raise InvalidArgument(err)
 
 
 def is_valid_variable_name(name):
