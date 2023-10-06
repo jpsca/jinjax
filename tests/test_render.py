@@ -1,4 +1,5 @@
 import pytest
+import jinja2
 from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
@@ -360,3 +361,53 @@ def test_cleanup_assets(catalog, folder):
 <p>Bar</p>
 </html>
 """.strip() in html
+
+
+def test_do_not_mess_with_external_jinja_env(folder_t, folder):
+    """https://github.com/jpsca/jinjax/issues/19"""
+    (folder_t / "greeting.html").write_text("Jinja still works")
+    (folder / "Greeting.jinja").write_text("JinjaX works")
+
+    jinja_env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(folder_t),
+        extensions=['jinja2.ext.i18n'],
+    )
+    jinja_env.globals = {"glo": "bar"}
+    jinja_env.filters = {"fil": lambda x: x}
+    jinja_env.tests = {"tes": lambda x: x}
+
+    catalog = jinjax.Catalog(
+        jinja_env=jinja_env,
+        extensions=["jinja2.ext.debug"],
+        globals={"xglo": "foo"},
+        filters={"xfil": lambda x: x},
+        tests={"xtes": lambda x: x},
+    )
+    catalog.add_folder(folder)
+
+    html = catalog.render("Greeting")
+    assert html == "JinjaX works"
+
+    assert catalog.jinja_env.globals["catalog"] == catalog
+    assert catalog.jinja_env.globals["glo"] == "bar"
+    assert catalog.jinja_env.globals["xglo"] == "foo"
+    assert catalog.jinja_env.filters["fil"]
+    assert catalog.jinja_env.filters["xfil"]
+    assert catalog.jinja_env.tests["tes"]
+    assert catalog.jinja_env.tests["xtes"]
+    assert "jinja2.ext.InternationalizationExtension" in catalog.jinja_env.extensions
+    assert "jinja2.ext.DebugExtension" in catalog.jinja_env.extensions
+    assert "jinja2.ext.ExprStmtExtension" in catalog.jinja_env.extensions
+
+    tmpl = jinja_env.get_template("greeting.html")
+    assert tmpl.render() == "Jinja still works"
+
+    assert jinja_env.globals["catalog"] == catalog
+    assert jinja_env.globals["glo"] == "bar"
+    assert "xglo" not in jinja_env.globals
+    assert jinja_env.filters["fil"]
+    assert "xfil" not in jinja_env.filters
+    assert jinja_env.tests["tes"]
+    assert "xtes" not in jinja_env.tests
+    assert "jinja2.ext.InternationalizationExtension" in jinja_env.extensions
+    assert "jinja2.ext.DebugExtension" not in jinja_env.extensions

@@ -1,6 +1,6 @@
 .PHONY: test
 test:
-	poetry run pytest -x -vv src/jinjax tests
+	poetry run pytest -x src/jinjax tests
 
 .PHONY: lint
 lint:
