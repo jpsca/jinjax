@@ -3,7 +3,6 @@ import typing as t
 from pathlib import Path
 
 import jinja2
-from jinja2.environment import load_extensions
 from markupsafe import Markup
 
 from .component import Component
@@ -59,23 +58,34 @@ class Catalog:
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
 
-        jinja_env = jinja_env or jinja2.Environment(
+        env = jinja2.Environment(
             undefined=jinja2.StrictUndefined,
         )
 
-        extensions = (extensions or []) + ["jinja2.ext.do", JinjaX]
-        jinja_env.extensions.update(load_extensions(jinja_env, extensions))
-
+        extensions = [*(extensions or []), "jinja2.ext.do", JinjaX]
         globals = globals or {}
+        filters = filters or {}
+        tests = tests or {}
+
+        if jinja_env:
+            env.extensions.update(jinja_env.extensions)
+            globals.update(jinja_env.globals)
+            filters.update(jinja_env.filters)
+            tests.update(jinja_env.tests)
+            jinja_env.globals["catalog"] = self
+            jinja_env.filters["catalog"] = self
+
         globals["catalog"] = self
-        jinja_env.globals.update(globals)
+        filters["catalog"] = self
 
-        jinja_env.filters.update(filters or {})
+        for ext in extensions:
+            env.add_extension(ext)
+        env.globals.update(globals)
+        env.filters.update(filters)
+        env.tests.update(tests)
+        env.extend(catalog=self)
 
-        jinja_env.tests.update(tests or {})
-
-        jinja_env.extend(catalog=self)
-        self.jinja_env = jinja_env
+        self.jinja_env = env
 
     @property
     def paths(self) -> "list[Path]":

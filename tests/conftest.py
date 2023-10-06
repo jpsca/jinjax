@@ -10,6 +10,13 @@ def folder(tmp_path):
 
 
 @pytest.fixture()
+def folder_t(tmp_path):
+    d = tmp_path / "templates"
+    d.mkdir()
+    return d
+
+
+@pytest.fixture()
 def catalog(folder):
     catalog = jinjax.Catalog()
     catalog.add_folder(folder)
