@@ -1,3 +1,5 @@
+import time
+
 import pytest
 import jinja2
 from jinja2.exceptions import TemplateSyntaxError
@@ -411,3 +413,54 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder):
     assert "xtes" not in jinja_env.tests
     assert "jinja2.ext.InternationalizationExtension" in jinja_env.extensions
     assert "jinja2.ext.DebugExtension" not in jinja_env.extensions
+
+
+def test_auto_reload(catalog, folder):
+    (folder / "Layout.jinja").write_text("""
+<html>
+{{ content }}
+</html>
+""")
+
+    (folder / "Foo.jinja").write_text("""
+<Layout>
+<p>Foo</p>
+<Bar></Bar>
+</Layout>
+""")
+
+    bar_file = folder / "Bar.jinja"
+    bar_file.write_text("<p>Bar</p>")
+
+    html1 = catalog.render("Foo")
+    print(bar_file.stat().st_mtime)
+    print(html1, "\n")
+    assert """
+<html>
+<p>Foo</p>
+<p>Bar</p>
+</html>
+""".strip() in html1
+
+    # Give it some time so the st_mtime are different
+    time.sleep(0.1)
+
+    catalog.auto_reload = False
+    bar_file.write_text("<p>Ignored</p>")
+    print(bar_file.stat().st_mtime)
+    html2 = catalog.render("Foo")
+    print(html2, "\n")
+
+    catalog.auto_reload = True
+    bar_file.write_text("<p>Updated</p>")
+    print(bar_file.stat().st_mtime)
+    html3 = catalog.render("Foo")
+    print(html3, "\n")
+
+    assert html1 == html2
+    assert """
+<html>
+<p>Foo</p>
+<p>Updated</p>
+</html>
+""".strip() in html3

@@ -29,13 +29,15 @@ PROP_CONTENT = "content"
 
 class Catalog:
     __slots__ = (
-        "components",
         "prefixes",
         "root_url",
         "file_ext",
         "jinja_env",
         "collected_css",
         "collected_js",
+        "auto_reload",
+        "use_cache",
+        "_cache",
     )
 
     def __init__(
@@ -48,20 +50,20 @@ class Catalog:
         jinja_env: "jinja2.Environment | None" = None,
         root_url: str = DEFAULT_URL_ROOT,
         file_ext: "TFileExt" = DEFAULT_EXTENSION,
+        use_cache: bool = True,
+        auto_reload: bool = True,
     ) -> None:
-        self.components: "dict[str, Component]" = {}
         self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
         self.collected_css: "list[str]" = []
         self.collected_js: "list[str]" = []
         self.file_ext = file_ext
+        self.use_cache = use_cache
+        self.auto_reload = auto_reload
 
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
 
-        env = jinja2.Environment(
-            undefined=jinja2.StrictUndefined,
-        )
-
+        env = jinja2.Environment(undefined=jinja2.StrictUndefined)
         extensions = [*(extensions or []), "jinja2.ext.do", JinjaX]
         globals = globals or {}
         filters = filters or {}
@@ -86,6 +88,8 @@ class Catalog:
         env.extend(catalog=self)
 
         self.jinja_env = env
+
+        self._cache: "dict[str, dict]" = {}
 
     @property
     def paths(self) -> "list[Path]":
@@ -144,24 +148,31 @@ class Catalog:
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
         source = kw.pop("__source", "")
+
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
         self.jinja_env.loader = self.prefixes[prefix]
 
         if source:
             logger.debug("Rendering from source %s", __name)
-            tmpl = self.jinja_env.from_string(source)
+            component = self._get_from_source(
+                name=name, url_prefix=url_prefix, source=source
+            )
+        elif self.use_cache:
+            logger.debug("Rendering from cache or file %s", __name)
+            component = self._get_from_cache(
+                prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
+            )
         else:
-            root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
-            tmpl_name = str(path.relative_to(root_path))
-            logger.debug("Rendering %s", tmpl_name)
-            tmpl = self.jinja_env.get_template(tmpl_name)
-            source = path.read_text()
+            logger.debug("Rendering from file %s", __name)
+            component = self._get_from_file(
+                prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
+            )
 
-        component = Component(name=__name, url_prefix=url_prefix, source=source)
         for css in component.css:
             if css not in self.collected_css:
                 self.collected_css.append(css)
+
         for js in component.js:
             if js not in self.collected_js:
                 self.collected_js.append(js)
@@ -180,7 +191,7 @@ class Catalog:
             ) from exc
 
         props[PROP_CONTENT] = content if content or not caller else caller().strip()
-        return tmpl.render(**props).strip()
+        return component.render(**props)
 
     def get_middleware(
         self,
@@ -204,8 +215,8 @@ class Catalog:
 
     def get_source(self, cname: str, file_ext: "TFileExt" = "") -> str:
         prefix, name = self._split_name(cname)
-        _root_path, path = self._get_component_path(prefix, name, file_ext=file_ext)
-        return Path(path).read_text()
+        path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
+        return path.read_text()
 
     def render_assets(self) -> str:
         html_css = [
@@ -219,6 +230,49 @@ class Catalog:
         return Markup("\n".join(html_css + html_js))
 
     # Private
+
+    def _get_from_source(self, *, name: str, url_prefix: str, source: str) -> "Component":
+        tmpl = self.jinja_env.from_string(source)
+        component = Component(name=name, url_prefix=url_prefix, source=source, tmpl=tmpl)
+        return component
+
+    def _get_from_cache(self, *, prefix: str, name: str, url_prefix: str, file_ext: str) -> "Component":
+        key = f"{prefix}.{name}.{file_ext}"
+        cache = self._from_cache(key)
+        if cache:
+            component = Component.from_cache(cache, auto_reload=self.auto_reload)
+            if component:
+                return component
+
+        logger.debug("Loading %s", key)
+        component = self._get_from_file(
+            prefix=prefix,
+            name=name,
+            url_prefix=url_prefix,
+            file_ext=file_ext,
+        )
+        self._to_cache(key, component)
+        return component
+
+    def _from_cache(self, key: str) -> "dict[str, t.Any]":
+        if key not in self._cache:
+            return {}
+        cache = self._cache[key]
+        logger.debug("Loading from cache %s", key)
+        return cache
+
+    def _to_cache(self, key: str, component: Component) -> None:
+        self._cache[key] = component.serialize()
+
+    def _get_from_file(self, *, prefix: str, name: str, url_prefix: str, file_ext: str) -> "Component":
+        path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
+        component = Component(
+            name=name,
+            url_prefix=url_prefix,
+            path=path,
+        )
+        component.tmpl = self.jinja_env.get_template(tmpl_name)
+        return component
 
     def _split_name(self, cname: str) -> "tuple[str, str]":
         cname = cname.strip().strip(DELIMITER)
@@ -240,14 +294,14 @@ class Catalog:
 
     def _get_component_path(
         self, prefix: str, name: str, file_ext: "TFileExt" = ""
-    ) -> "tuple[Path, Path]":
+    ) -> "tuple[Path, str]":
         name = name.replace(DELIMITER, SLASH)
+        root_paths = self.prefixes[prefix].searchpath
         name_dot = f"{name}."
         file_ext = file_ext or self.file_ext
-        root_paths = self.prefixes[prefix].searchpath
 
         for root_path in root_paths:
-            for curr_folder, _folders, files in os.walk(
+            for curr_folder, _, files in os.walk(
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
@@ -260,7 +314,7 @@ class Catalog:
                     else:
                         filepath = filename
                     if filepath.startswith(name_dot) and filepath.endswith(file_ext):
-                        return Path(root_path), Path(curr_folder) / filename
+                        return Path(curr_folder) / filename, filepath
 
         raise ComponentNotFound(
             f"Unable to find a file named {name}{file_ext} "
