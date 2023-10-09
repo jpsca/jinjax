@@ -18,6 +18,6 @@ def folder_t(tmp_path):
 
 @pytest.fixture()
 def catalog(folder):
-    catalog = jinjax.Catalog()
+    catalog = jinjax.Catalog(auto_reload=False)
     catalog.add_folder(folder)
     return catalog

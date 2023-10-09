@@ -1,9 +1,13 @@
 import ast
 import re
+import typing as t
 from keyword import iskeyword
-from typing import Any
+from pathlib import Path
 
 from .exceptions import InvalidArgument, MissingRequiredArgument
+
+if t.TYPE_CHECKING:
+    from jinja2 import Template
 
 
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
@@ -40,14 +44,75 @@ def is_valid_variable_name(name):
 
 
 class Component:
-    def __init__(self, *, name: str, source: str, url_prefix: str = "") -> None:
+    __slots__ = (
+        "name",
+        "url_prefix",
+        "required",
+        "optional",
+        "css",
+        "js",
+        "path",
+        "mtime",
+        "tmpl",
+    )
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        url_prefix: str = "",
+        source: str = "",
+        mtime: float = 0,
+        tmpl: "Template | None" = None,
+        path: "Path | None" = None,
+    ) -> None:
         self.name = name
         self.url_prefix = url_prefix
         self.required: "list[str]" = []
-        self.optional: "dict[str, Any]" = {}
+        self.optional: "dict[str, t.Any]" = {}
         self.css: "list[str]" = []
         self.js: "list[str]" = []
-        self.load_metadata(source)
+
+        if path is not None:
+            source = source or path.read_text()
+            mtime = mtime or path.stat().st_mtime
+        if source:
+            self.load_metadata(source)
+
+        self.path = path
+        self.mtime = mtime
+        self.tmpl = tmpl
+
+    @classmethod
+    def from_cache(cls, cache: "dict[str, t.Any]", auto_reload: bool = True) -> "Component | None":
+        path = cache["path"]
+        mtime = cache["mtime"]
+
+        if auto_reload:
+            if not path.is_file() or path.stat().st_mtime != mtime:
+                return None
+
+        self = cls(name=cache["name"])
+        self.required = cache["required"]
+        self.optional = cache["optional"]
+        self.css = cache["css"]
+        self.js = cache["js"]
+        self.path = path
+        self.mtime = cache["mtime"]
+        self.tmpl = cache["tmpl"]
+        return self
+
+    def serialize(self) -> "dict[str, t.Any]":
+        return {
+            "name": self.name,
+            "required": self.required,
+            "optional": self.optional,
+            "css": self.css,
+            "js": self.js,
+            "path": self.path,
+            "mtime": self.mtime,
+            "tmpl": self.tmpl,
+        }
 
     def load_metadata(self, source: str) -> None:
         header = source.lstrip().split("#}", maxsplit=3)[:3][::-1]
@@ -86,7 +151,7 @@ class Component:
             raise InvalidArgument(self.name)
         return source[start.end() : end.start()].strip()
 
-    def parse_args_expr(self, expr: str) -> "tuple[list[str], dict[str, Any]]":
+    def parse_args_expr(self, expr: str) -> "tuple[list[str], dict[str, t.Any]]":
         expr = expr.strip(" *,/")
         required = []
         optional = {}
@@ -119,8 +184,8 @@ class Component:
         return files
 
     def filter_args(
-        self, kw: "dict[str, Any]"
-    ) -> "tuple[dict[str, Any], dict[str, Any]]":
+        self, kw: "dict[str, t.Any]"
+    ) -> "tuple[dict[str, t.Any], dict[str, t.Any]]":
         props = {}
 
         for key in self.required:
@@ -128,10 +193,14 @@ class Component:
                 raise MissingRequiredArgument(self.name, key)
             props[key] = kw.pop(key)
 
-        for key, default_value in self.optional.items():
-            props[key] = kw.pop(key, default_value)
+        for key in self.optional:
+            props[key] = kw.pop(key, self.optional[key])
         extra = kw.copy()
         return props, extra
+
+    def render(self, **kwargs):
+        assert self.tmpl, f"Component {self.name} has no template"
+        return self.tmpl.render(**kwargs).strip()
 
     def __repr__(self) -> str:
         return f'<Component "{self.name}">'
