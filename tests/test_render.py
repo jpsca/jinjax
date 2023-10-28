@@ -464,3 +464,29 @@ def test_auto_reload(catalog, folder):
 <p>Updated</p>
 </html>
 """.strip() in html3
+
+
+def test_autoescape_doesnot_escape_subcomponents(catalog, folder):
+    """Issue https://github.com/jpsca/jinjax/issues/32"""
+    (folder / "Page.jinja").write_text("""
+{#def message #}
+<html>
+<p>lorem ipsum</p>
+<Subcomponent />
+{{ message }}
+</html>
+""")
+
+    (folder / "Subcomponent.jinja").write_text("""
+<p>foo bar</p>
+""")
+
+    catalog.jinja_env.autoescape = True
+    html = catalog.render("Page", message="<3")
+    assert html == """
+<html>
+<p>lorem ipsum</p>
+<p>foo bar</p>
+&lt;3
+</html>
+""".strip()

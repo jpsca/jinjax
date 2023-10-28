@@ -2,6 +2,7 @@ import ast
 import re
 import typing as t
 from keyword import iskeyword
+from markupsafe import Markup
 from pathlib import Path
 
 from .exceptions import InvalidArgument, MissingRequiredArgument
@@ -200,7 +201,7 @@ class Component:
 
     def render(self, **kwargs):
         assert self.tmpl, f"Component {self.name} has no template"
-        return self.tmpl.render(**kwargs).strip()
+        return Markup(self.tmpl.render(**kwargs).strip())
 
     def __repr__(self) -> str:
         return f'<Component "{self.name}">'
