@@ -1,5 +1,6 @@
-import pytest
+import jinja2
 import jinjax
+import pytest
 
 
 @pytest.fixture()
@@ -19,5 +20,13 @@ def folder_t(tmp_path):
 @pytest.fixture()
 def catalog(folder):
     catalog = jinjax.Catalog(auto_reload=False)
+    catalog.add_folder(folder)
+    return catalog
+
+
+@pytest.fixture()
+def autoescaped_catalog(folder):
+    jinja_env = jinja2.Environment(autoescape=True)
+    catalog = jinjax.Catalog(auto_reload=False, jinja_env=jinja_env)
     catalog.add_folder(folder)
     return catalog

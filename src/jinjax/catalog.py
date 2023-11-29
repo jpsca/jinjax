@@ -71,6 +71,7 @@ class Catalog:
 
         if jinja_env:
             env.extensions.update(jinja_env.extensions)
+            env.autoescape = jinja_env.autoescape
             globals.update(jinja_env.globals)
             filters.update(jinja_env.filters)
             tests.update(jinja_env.tests)
