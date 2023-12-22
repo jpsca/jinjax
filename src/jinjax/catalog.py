@@ -4,6 +4,7 @@ from pathlib import Path
 
 import jinja2
 from markupsafe import Markup
+from urllib.parse import urlparse
 
 from .component import Component
 from .exceptions import ComponentNotFound, InvalidArgument
@@ -137,6 +138,12 @@ class Catalog:
         self.collected_js = []
         return self.irender(__name, caller=caller, **kw)
 
+    def expand_url(self, url: str) -> str:
+        parsed_url = urlparse(url)
+        if parsed_url.scheme:
+            return url
+        return f"{self.root_url}{url}"
+
     def irender(
         self,
         __name: str,
@@ -170,12 +177,12 @@ class Catalog:
             )
 
         for css in component.css:
-            if css not in self.collected_css:
-                self.collected_css.append(css)
+            if (url := self.expand_url(css)) not in self.collected_css:
+                self.collected_css.append(url)
 
         for js in component.js:
-            if js not in self.collected_js:
-                self.collected_js.append(js)
+            if (url := self.expand_url(js)) not in self.collected_js:
+                self.collected_js.append(url)
 
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
@@ -220,11 +227,11 @@ class Catalog:
 
     def render_assets(self) -> str:
         html_css = [
-            f'<link rel="stylesheet" href="{self.root_url}{css}">'
+            f'<link rel="stylesheet" href="{css}">'
             for css in self.collected_css
         ]
         html_js = [
-            f'<script type="module" src="{self.root_url}{js}"></script>'
+            f'<script type="module" src="{js}"></script>'
             for js in self.collected_js
         ]
         return Markup("\n".join(html_css + html_js))

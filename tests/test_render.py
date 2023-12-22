@@ -152,7 +152,7 @@ def test_render_assets(catalog, folder):
 
     (folder / "Page.jinja").write_text("""
 {#def message #}
-{#js shared.js #}
+{#js https://somewhere.com/blabla.js, shared.js #}
 <Layout>
 <Card>
 <Greeting message={message} />
@@ -167,6 +167,7 @@ def test_render_assets(catalog, folder):
 <html>
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
+<script type="module" src="https://somewhere.com/blabla.js"></script>
 <script type="module" src="/static/components/shared.js"></script>
 <script type="module" src="/static/components/card.js"></script>
 <script type="module" src="/static/components/greeting.js"></script>
