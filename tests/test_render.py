@@ -136,7 +136,7 @@ def test_render_assets(catalog, folder):
 """)
 
     (folder / "Card.jinja").write_text("""
-{#css card.css #}
+{#css https://somewhere.com/style.css, card.css #}
 {#js card.js, shared.js #}
 <section class="card">
 {{ content }}
@@ -165,6 +165,7 @@ def test_render_assets(catalog, folder):
     print(html)
     assert """
 <html>
+<link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
 <script type="module" src="https://somewhere.com/blabla.js"></script>
