@@ -1,7 +1,12 @@
 import time
 
 import pytest
+<<<<<<< HEAD
 import jinja2
+=======
+from pathlib import Path
+
+>>>>>>> 281fd27 (Optional fingerprinting)
 from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
@@ -416,12 +421,6 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder):
 
 
 def test_auto_reload(catalog, folder):
-    (folder / "Layout.jinja").write_text("""
-<html>
-{{ content }}
-</html>
-""")
-
     (folder / "Foo.jinja").write_text("""
 <Layout>
 <p>Foo</p>
@@ -490,3 +489,26 @@ def test_autoescape_doesnot_escape_subcomponents(catalog, folder):
 &lt;3
 </html>
 """.strip()
+
+
+def test_fingerprint_assets(catalog, folder: Path):
+    (folder / "Layout.jinja").write_text("""
+<html>
+{{ content }}
+</html>
+""")
+
+    (folder / "Page.jinja").write_text("""
+{#css app.css #}
+{#js app.js #}
+<Layout>Hi</Layout>
+""")
+
+    (folder / "app.css").write_text("")
+
+    catalog.fingerprint = True
+    html = catalog.render("Page", message="Hello")
+    print(html)
+
+    assert 'src="/static/components/app.js"' in html
+    assert 'href="/static/components/app-' in html

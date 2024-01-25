@@ -1,5 +1,6 @@
 import os
 import typing as t
+from hashlib import sha256
 from pathlib import Path
 
 import jinja2
@@ -28,11 +29,41 @@ PROP_CONTENT = "content"
 
 
 class Catalog:
+    """
+    Attributes:
+
+    - globals:
+
+    - filters:
+
+    - tests:
+
+    - extensions:
+
+    - jinja_env:
+
+    - root_url:
+
+    - file_ext:
+
+    - fingerprint [False]:
+        If True, adds, insert a hash of the updated time to the URL of the
+        asset files (after the name of,but before the extension).
+        This strategy encourages long-term caching while ensuring that new copies
+        are only requested when the content changes, as any modification alter
+        the fingerprint and thus the filename.
+
+        *WARNING*: Only works if the server know how to filter the fingerprint
+        to get the real name of the file.
+
+    """
+
     __slots__ = (
         "prefixes",
         "root_url",
         "file_ext",
         "jinja_env",
+        "fingerprint",
         "collected_css",
         "collected_js",
         "auto_reload",
@@ -52,6 +83,7 @@ class Catalog:
         file_ext: "TFileExt" = DEFAULT_EXTENSION,
         use_cache: bool = True,
         auto_reload: bool = True,
+        fingerprint: bool = False,
     ) -> None:
         self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
         self.collected_css: "list[str]" = []
@@ -59,6 +91,7 @@ class Catalog:
         self.file_ext = file_ext
         self.use_cache = use_cache
         self.auto_reload = auto_reload
+        self.fingerprint = fingerprint
 
         root_url = root_url.strip().rstrip(SLASH)
         self.root_url = f"{root_url}{SLASH}"
@@ -152,6 +185,7 @@ class Catalog:
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
         self.jinja_env.loader = self.prefixes[prefix]
+        root_path = None
 
         if source:
             logger.debug("Rendering from source %s", __name)
@@ -169,11 +203,17 @@ class Catalog:
                 prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
             )
 
+        component = Component(name=__name, url_prefix=url_prefix, source=source)
+
         for css in component.css:
+            if root_path and self.fingerprint:
+                css = self._fingerprint(root_path, css)
             if css not in self.collected_css:
                 self.collected_css.append(css)
 
         for js in component.js:
+            if root_path and self.fingerprint:
+                js = self._fingerprint(root_path, js)
             if js not in self.collected_js:
                 self.collected_js.append(js)
 
@@ -218,7 +258,7 @@ class Catalog:
         path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
         return path.read_text()
 
-    def render_assets(self) -> str:
+    def render_assets(self, fingerprint: bool = False) -> str:
         html_css = [
             f'<link rel="stylesheet" href="{self.root_url}{css}">'
             for css in self.collected_css
@@ -230,6 +270,22 @@ class Catalog:
         return Markup("\n".join(html_css + html_js))
 
     # Private
+
+    def _fingerprint(self, root: Path, filename: str) -> str:
+        relpath = Path(filename.lstrip(os.path.sep))
+        filepath = root / relpath
+        if not filepath.is_file():
+            return filename
+
+        stat = filepath.stat()
+        fingerprint = sha256(str(stat.st_mtime).encode()).hexdigest()
+
+        ext = "".join(relpath.suffixes)
+        stem = relpath.name.removesuffix(ext)
+        parent = str(relpath.parent)
+        parent = "" if parent == "." else f"{parent}/"
+
+        return f"{parent}{stem}-{fingerprint}{ext}"
 
     def _get_from_source(self, *, name: str, url_prefix: str, source: str) -> "Component":
         tmpl = self.jinja_env.from_string(source)
