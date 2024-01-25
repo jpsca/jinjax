@@ -205,17 +205,23 @@ class Catalog:
 
         component = Component(name=__name, url_prefix=url_prefix, source=source)
 
-        for css in component.css:
-            if root_path and self.fingerprint:
-                css = self._fingerprint(root_path, css)
-            if css not in self.collected_css:
-                self.collected_css.append(css)
+        for url in component.css:
+            if not url.startswith(("http://", "https://")):
+                if root_path and self.fingerprint:
+                    url = self._fingerprint(root_path, url)
+                url = f"{self.root_url}{url}"
 
-        for js in component.js:
-            if root_path and self.fingerprint:
-                js = self._fingerprint(root_path, js)
-            if js not in self.collected_js:
-                self.collected_js.append(js)
+            if url not in self.collected_css:
+                self.collected_css.append(url)
+
+        for url in component.js:
+            if not url.startswith(("http://", "https://")):
+                if root_path and self.fingerprint:
+                    url = self._fingerprint(root_path, url)
+                url = f"{self.root_url}{url}"
+
+            if url not in self.collected_js:
+                self.collected_js.append(url)
 
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
@@ -260,12 +266,12 @@ class Catalog:
 
     def render_assets(self, fingerprint: bool = False) -> str:
         html_css = [
-            f'<link rel="stylesheet" href="{self.root_url}{css}">'
-            for css in self.collected_css
+            f'<link rel="stylesheet" href="{url}">'
+            for url in self.collected_css
         ]
         html_js = [
-            f'<script type="module" src="{self.root_url}{js}"></script>'
-            for js in self.collected_js
+            f'<script type="module" src="{url}"></script>'
+            for url in self.collected_js
         ]
         return Markup("\n".join(html_css + html_js))
 

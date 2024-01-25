@@ -1,12 +1,8 @@
 import time
-
-import pytest
-<<<<<<< HEAD
-import jinja2
-=======
 from pathlib import Path
 
->>>>>>> 281fd27 (Optional fingerprinting)
+import pytest
+import jinja2
 from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
@@ -141,7 +137,7 @@ def test_render_assets(catalog, folder):
 """)
 
     (folder / "Card.jinja").write_text("""
-{#css card.css #}
+{#css https://somewhere.com/style.css, card.css #}
 {#js card.js, shared.js #}
 <section class="card">
 {{ content }}
@@ -157,7 +153,7 @@ def test_render_assets(catalog, folder):
 
     (folder / "Page.jinja").write_text("""
 {#def message #}
-{#js shared.js #}
+{#js https://somewhere.com/blabla.js, shared.js #}
 <Layout>
 <Card>
 <Greeting message={message} />
@@ -170,8 +166,10 @@ def test_render_assets(catalog, folder):
     print(html)
     assert """
 <html>
+<link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
+<script type="module" src="https://somewhere.com/blabla.js"></script>
 <script type="module" src="/static/components/shared.js"></script>
 <script type="module" src="/static/components/card.js"></script>
 <script type="module" src="/static/components/greeting.js"></script>
