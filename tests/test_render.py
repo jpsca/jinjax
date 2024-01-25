@@ -131,7 +131,7 @@ def test_just_properties(catalog, folder):
 def test_render_assets(catalog, folder):
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
-{#css greeting.css #}
+{#css greeting.css, http://example.com/super.css #}
 {#js greeting.js #}
 <div class="greeting [&_a]:flex">{{ message }}</div>
 """)
@@ -169,6 +169,7 @@ def test_render_assets(catalog, folder):
 <link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
+<link rel="stylesheet" href="http://example.com/super.css">
 <script type="module" src="https://somewhere.com/blabla.js"></script>
 <script type="module" src="/static/components/shared.js"></script>
 <script type="module" src="/static/components/card.js"></script>
@@ -419,6 +420,12 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder):
 
 
 def test_auto_reload(catalog, folder):
+    (folder / "Layout.jinja").write_text("""
+<html>
+{{ content }}
+</html>
+""")
+
     (folder / "Foo.jinja").write_text("""
 <Layout>
 <p>Foo</p>
@@ -492,17 +499,18 @@ def test_autoescape_doesnot_escape_subcomponents(catalog, folder):
 def test_fingerprint_assets(catalog, folder: Path):
     (folder / "Layout.jinja").write_text("""
 <html>
+{{ catalog.render_assets() }}
 {{ content }}
 </html>
 """)
 
     (folder / "Page.jinja").write_text("""
-{#css app.css #}
+{#css app.css, http://example.com/super.css #}
 {#js app.js #}
 <Layout>Hi</Layout>
 """)
 
-    (folder / "app.css").write_text("")
+    (folder / "app.css").write_text("...")
 
     catalog.fingerprint = True
     html = catalog.render("Page", message="Hello")
@@ -510,3 +518,4 @@ def test_fingerprint_assets(catalog, folder: Path):
 
     assert 'src="/static/components/app.js"' in html
     assert 'href="/static/components/app-' in html
+    assert 'href="http://example.com/super.css' in html

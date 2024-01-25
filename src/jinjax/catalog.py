@@ -185,7 +185,6 @@ class Catalog:
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
         self.jinja_env.loader = self.prefixes[prefix]
-        root_path = None
 
         if source:
             logger.debug("Rendering from source %s", __name)
@@ -203,22 +202,26 @@ class Catalog:
                 prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
             )
 
-        component = Component(name=__name, url_prefix=url_prefix, source=source)
+        root_path = component.path.parent if component.path else None
 
         for url in component.css:
-            if not url.startswith(("http://", "https://")):
-                if root_path and self.fingerprint:
-                    url = self._fingerprint(root_path, url)
-                url = f"{self.root_url}{url}"
+            if (
+                root_path
+                and self.fingerprint
+                and not url.startswith(("http://", "https://"))
+            ):
+                url = self._fingerprint(root_path, url)
 
             if url not in self.collected_css:
                 self.collected_css.append(url)
 
         for url in component.js:
-            if not url.startswith(("http://", "https://")):
-                if root_path and self.fingerprint:
-                    url = self._fingerprint(root_path, url)
-                url = f"{self.root_url}{url}"
+            if (
+                root_path
+                and self.fingerprint
+                and not url.startswith(("http://", "https://"))
+            ):
+                url = self._fingerprint(root_path, url)
 
             if url not in self.collected_js:
                 self.collected_js.append(url)
@@ -265,14 +268,18 @@ class Catalog:
         return path.read_text()
 
     def render_assets(self, fingerprint: bool = False) -> str:
-        html_css = [
-            f'<link rel="stylesheet" href="{url}">'
-            for url in self.collected_css
-        ]
-        html_js = [
-            f'<script type="module" src="{url}"></script>'
-            for url in self.collected_js
-        ]
+        html_css = []
+        for url in self.collected_css:
+            if not url.startswith(("http://", "https://")):
+                url = f"{self.root_url}{url}"
+            html_css.append(f'<link rel="stylesheet" href="{url}">')
+
+        html_js = []
+        for url in self.collected_js:
+            if not url.startswith(("http://", "https://")):
+                url = f"{self.root_url}{url}"
+            html_js.append(f'<script type="module" src="{url}"></script>')
+
         return Markup("\n".join(html_css + html_js))
 
     # Private
