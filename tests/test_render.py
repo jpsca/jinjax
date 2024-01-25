@@ -1,12 +1,8 @@
 import time
-
-import pytest
-<<<<<<< HEAD
-import jinja2
-=======
 from pathlib import Path
 
->>>>>>> 281fd27 (Optional fingerprinting)
+import pytest
+import jinja2
 from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
