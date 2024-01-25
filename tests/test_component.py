@@ -112,8 +112,11 @@ def test_comma_in_default_value():
 def test_load_assets():
     com = Component(
         name="Test.jinja",
-        source='{#css a.css, "b.css", c.css -#}\n{#js a.js, b.js, c.js -#}\n',
-        url_prefix="/static/"
+        url_prefix="/static/",
+        source="""
+        {#css a.css, "b.css", c.css -#}
+        {#js a.js, b.js, c.js -#}
+        """,
     )
     assert com.css == ["/static/a.css", "/static/b.css", "/static/c.css"]
     assert com.js == ["/static/a.js", "/static/b.js", "/static/c.js"]
