@@ -132,7 +132,7 @@ class JinjaX(Extension):
                     value = value[1:-1].strip()
                 attrs.append(f"\"{name}\"={value}")
 
-        str_attrs = "**{" + ", ".join([a.replace("=", ":") for a in attrs]) + "}"
+        str_attrs = "**{" + ", ".join([a.replace("=", ":", 1) for a in attrs]) + "}"
         if str_attrs:
             str_attrs = f", {str_attrs}"
 
