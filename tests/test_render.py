@@ -526,9 +526,9 @@ def test_colon_in_attrs(catalog, folder):
 """)
 
     (folder / "Page.jinja").write_text("""
-<C hx-on:click="1" />
+<C hx-on:click="show = !show" />
 """)
 
     html = catalog.render("Page", message="Hello")
     print(html)
-    assert """<div hx-on:click="1"></div>""" in html
+    assert """<div hx-on:click="show = !show"></div>""" in html
