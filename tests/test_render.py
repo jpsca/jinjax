@@ -518,3 +518,17 @@ def test_fingerprint_assets(catalog, folder: Path):
     assert 'src="/static/components/app.js"' in html
     assert 'href="/static/components/app-' in html
     assert 'href="http://example.com/super.css' in html
+
+
+def test_colon_in_attrs(catalog, folder):
+    (folder / "C.jinja").write_text("""
+<div {{ attrs.render() }}></div>
+""")
+
+    (folder / "Page.jinja").write_text("""
+<C hx-on:click="show = !show" />
+""")
+
+    html = catalog.render("Page", message="Hello")
+    print(html)
+    assert """<div hx-on:click="show = !show"></div>""" in html

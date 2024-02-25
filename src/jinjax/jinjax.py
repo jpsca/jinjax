@@ -27,7 +27,7 @@ ATTR_END = "}"
 re_attr_name = r""
 re_equal = r""
 re_attr = r"""
-(?P<name>[a-zA-Z_][0-9a-zA-Z_-]*)
+(?P<name>[a-zA-Z_][0-9a-zA-Z:_-]*)
 (?:
     \s*=\s*
     (?P<value>".*?"|'.*?'|\{.*?\})
@@ -126,13 +126,13 @@ class JinjaX(Extension):
             name = name.strip().replace("-", "_")
             value = value.strip()
             if not value:
-                attrs.append(f"{name}=True")
+                attrs.append(f"\"{name}\"=True")
             else:
                 if value.startswith(ATTR_START) and value.endswith(ATTR_END):
                     value = value[1:-1].strip()
-                attrs.append(f"{name}={value}")
+                attrs.append(f"\"{name}\"={value}")
 
-        str_attrs = ", ".join(attrs)
+        str_attrs = "**{" + ", ".join([a.replace("=", ":", 1) for a in attrs]) + "}"
         if str_attrs:
             str_attrs = f", {str_attrs}"
 
