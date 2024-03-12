@@ -236,7 +236,7 @@ class Catalog:
             props[PROP_ATTRS] = HTMLAttrs(extra)
         except Exception as exc:
             raise InvalidArgument(
-                f"The arguments of the component <{component.name}>"
+                f"The arguments of the component <{component.name}> "
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
