@@ -68,6 +68,7 @@ class Catalog:
         "collected_js",
         "auto_reload",
         "use_cache",
+        "globals",
         "_cache",
     )
 
@@ -124,6 +125,7 @@ class Catalog:
         self.jinja_env = env
 
         self._cache: "dict[str, dict]" = {}
+        self.globals: "dict[str, t.Any] | None" = None
 
     @property
     def paths(self) -> "list[Path]":
@@ -169,6 +171,7 @@ class Catalog:
     ) -> str:
         self.collected_css = []
         self.collected_js = []
+        self.globals = kw.pop("__globals", None)
         return self.irender(__name, caller=caller, **kw)
 
     def irender(
@@ -190,17 +193,25 @@ class Catalog:
         if source:
             logger.debug("Rendering from source %s", __name)
             component = self._get_from_source(
-                name=name, url_prefix=url_prefix, source=source
+                name=name, url_prefix=url_prefix, source=source, globals=self.globals
             )
         elif self.use_cache:
             logger.debug("Rendering from cache or file %s", __name)
             component = self._get_from_cache(
-                prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
+                prefix=prefix,
+                name=name,
+                url_prefix=url_prefix,
+                file_ext=file_ext,
+                globals=self.globals,
             )
         else:
             logger.debug("Rendering from file %s", __name)
             component = self._get_from_file(
-                prefix=prefix, name=name, url_prefix=url_prefix, file_ext=file_ext
+                prefix=prefix,
+                name=name,
+                url_prefix=url_prefix,
+                file_ext=file_ext,
+                globals=self.globals,
             )
 
         root_path = component.path.parent if component.path else None
@@ -236,7 +247,7 @@ class Catalog:
             props[PROP_ATTRS] = HTMLAttrs(extra)
         except Exception as exc:
             raise InvalidArgument(
-                f"The arguments of the component <{component.name}> "
+                f"The arguments of the component <{component.name}>"
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
@@ -251,9 +262,7 @@ class Catalog:
     ) -> "ComponentsMiddleware":
         logger.debug("Creating middleware")
         middleware = ComponentsMiddleware(
-            application=application,
-            allowed_ext=tuple(allowed_ext or []),
-            **kwargs
+            application=application, allowed_ext=tuple(allowed_ext or []), **kwargs
         )
         for prefix, loader in self.prefixes.items():
             url_prefix = self._get_url_prefix(prefix)
@@ -301,12 +310,29 @@ class Catalog:
 
         return f"{parent}{stem}-{fingerprint}{ext}"
 
-    def _get_from_source(self, *, name: str, url_prefix: str, source: str) -> "Component":
-        tmpl = self.jinja_env.from_string(source)
-        component = Component(name=name, url_prefix=url_prefix, source=source, tmpl=tmpl)
+    def _get_from_source(
+        self,
+        *,
+        name: str,
+        url_prefix: str,
+        source: str,
+        globals: "dict[str, t.Any] | None",
+    ) -> "Component":
+        tmpl = self.jinja_env.from_string(source, globals=globals)
+        component = Component(
+            name=name, url_prefix=url_prefix, source=source, tmpl=tmpl
+        )
         return component
 
-    def _get_from_cache(self, *, prefix: str, name: str, url_prefix: str, file_ext: str) -> "Component":
+    def _get_from_cache(
+        self,
+        *,
+        prefix: str,
+        name: str,
+        url_prefix: str,
+        file_ext: str,
+        globals: "dict[str, t.Any] | None",
+    ) -> "Component":
         key = f"{prefix}.{name}.{file_ext}"
         cache = self._from_cache(key)
         if cache:
@@ -320,6 +346,7 @@ class Catalog:
             name=name,
             url_prefix=url_prefix,
             file_ext=file_ext,
+            globals=globals,
         )
         self._to_cache(key, component)
         return component
@@ -334,14 +361,22 @@ class Catalog:
     def _to_cache(self, key: str, component: Component) -> None:
         self._cache[key] = component.serialize()
 
-    def _get_from_file(self, *, prefix: str, name: str, url_prefix: str, file_ext: str) -> "Component":
+    def _get_from_file(
+        self,
+        *,
+        prefix: str,
+        name: str,
+        url_prefix: str,
+        file_ext: str,
+        globals: "dict[str, t.Any] | None",
+    ) -> "Component":
         path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
         component = Component(
             name=name,
             url_prefix=url_prefix,
             path=path,
         )
-        component.tmpl = self.jinja_env.get_template(tmpl_name)
+        component.tmpl = self.jinja_env.get_template(tmpl_name, globals=globals)
         return component
 
     def _split_name(self, cname: str) -> "tuple[str, str]":

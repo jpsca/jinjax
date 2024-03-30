@@ -521,14 +521,49 @@ def test_fingerprint_assets(catalog, folder: Path):
 
 
 def test_colon_in_attrs(catalog, folder):
-    (folder / "C.jinja").write_text("""
+    (folder / "C.jinja").write_text(
+        """
 <div {{ attrs.render() }}></div>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <C hx-on:click="show = !show" />
-""")
+"""
+    )
 
     html = catalog.render("Page", message="Hello")
     print(html)
     assert """<div hx-on:click="show = !show"></div>""" in html
+
+
+def test_template_globals(catalog, folder):
+    (folder / "Input.jinja").write_text(
+        """
+{# def name, value #}<input type="text" name="{{name}}" value="{{value}}">
+"""
+    )
+    (folder / "CsrfToken.jinja").write_text(
+        """
+<input type="hidden" name="{{csrf.name}}" value="{{csrf.value}}">
+"""
+    )
+    (folder / "Form.jinja").write_text(
+        """
+<form><CsrfToken/>{{content}}</form>
+"""
+    )
+
+    (folder / "Page.jinja").write_text(
+        """
+{# def value #}
+<Form><Input name="foo" value={value}/></Form>
+"""
+    )
+
+    html = catalog.render(
+        "Page", value="bar", __globals={"csrf": {"name": "csrft", "value": "abc"}}
+    )
+    print(html)
+    assert """<input type="hidden" name="csrft" value="abc">""" in html

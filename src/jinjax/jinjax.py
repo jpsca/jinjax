@@ -88,7 +88,6 @@ class JinjaX(Extension):
         attrs = (match.group("attrs") or "").strip()
         inline = match.group(0).endswith("/>")
         logger.debug(f"{tag} {attrs} {'inline' if not inline else ''}")
-
         if inline:
             content = ""
         else:
