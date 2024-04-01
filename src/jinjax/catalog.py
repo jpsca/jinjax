@@ -338,6 +338,8 @@ class Catalog:
         if cache:
             component = Component.from_cache(cache, auto_reload=self.auto_reload)
             if component:
+                if globals and component.tmpl:
+                    component.tmpl.globals.update(globals)
                 return component
 
         logger.debug("Loading %s", key)
