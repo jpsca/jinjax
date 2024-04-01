@@ -96,9 +96,9 @@ catalog = jinjax.Catalog(jinja_env=app.jinja_env)
  **Django**:
 (configure jinja in setting.py and [jinja_env.py](https://docs.djangoproject.com/en/5.0/topics/templates/#django.template.backends.jinja2.Jinja2))
 ```python
-    env.add_extension(JinjaX)
-    catalog = Catalog(jinja_env=env)
-    catalog.add_folder("components")
+env.add_extension(JinjaX)
+catalog = Catalog(jinja_env=env)
+catalog.add_folder("components")
 
 ```
 
