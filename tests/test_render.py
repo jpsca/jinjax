@@ -9,10 +9,12 @@ import jinjax
 
 
 def test_render_simple(catalog, folder):
-    (folder / "Greeting.jinja").write_text("""
+    (folder / "Greeting.jinja").write_text(
+        """
 {#def message #}
 <div class="greeting [&_a]:flex">{{ message }}</div>
-    """)
+    """
+    )
     html = catalog.render("Greeting", message="Hello world!")
     assert html == '<div class="greeting [&_a]:flex">Hello world!</div>'
 
@@ -27,31 +29,38 @@ def test_render_source(catalog):
 
 
 def test_render_content(catalog, folder):
-    (folder / "Card.jinja").write_text("""
+    (folder / "Card.jinja").write_text(
+        """
 <section class="card">
 {{ content }}
 </section>
-    """)
+    """
+    )
 
     content = '<button type="button">Close</button>'
     html = catalog.render("Card", __content=content)
     print(html)
-    assert html == f"""
+    assert (
+        html
+        == f"""
 <section class="card">
 {content}
 </section>""".strip()
+    )
 
 
 @pytest.mark.parametrize(
     "source, expected",
     [
-        ("<Title>Hi</Title><Title>Hi</Title>", '<h1>Hi</h1><h1>Hi</h1>'),
+        ("<Title>Hi</Title><Title>Hi</Title>", "<h1>Hi</h1><h1>Hi</h1>"),
         ("<Icon /><Icon />", '<i class="icon"></i><i class="icon"></i>'),
         ("<Title>Hi</Title><Icon />", '<h1>Hi</h1><i class="icon"></i>'),
         ("<Icon /><Title>Hi</Title>", '<i class="icon"></i><h1>Hi</h1>'),
     ],
 )
-def test_render_mix_of_contentful_and_contentless_components(catalog, folder, source, expected):
+def test_render_mix_of_contentful_and_contentless_components(
+    catalog, folder, source, expected
+):
     (folder / "Icon.jinja").write_text('<i class="icon"></i>')
     (folder / "Title.jinja").write_text("<h1>{{ content }}</h1>")
     (folder / "Page.jinja").write_text(source)
@@ -61,97 +70,124 @@ def test_render_mix_of_contentful_and_contentless_components(catalog, folder, so
 
 
 def test_composition(catalog, folder):
-    (folder / "Greeting.jinja").write_text("""
+    (folder / "Greeting.jinja").write_text(
+        """
 {#def message #}
 <div class="greeting [&_a]:flex">{{ message }}</div>
-""")
+"""
+    )
 
-    (folder / "CloseBtn.jinja").write_text("""
+    (folder / "CloseBtn.jinja").write_text(
+        """
 {#def disabled=False -#}
 <button type="button"{{ " disabled" if disabled else "" }}>&times;</button>
-""")
+"""
+    )
 
-    (folder / "Card.jinja").write_text("""
+    (folder / "Card.jinja").write_text(
+        """
 <section class="card">
 {{ content }}
 <CloseBtn disabled />
 </section>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 {#def message #}
 <Card>
 <Greeting message={message} />
 <button type="button">Close</button>
 </Card>
-""")
+"""
+    )
 
     html = catalog.render("Page", message="Hello")
     print(html)
-    assert """
+    assert (
+        """
 <section class="card">
 <div class="greeting [&_a]:flex">Hello</div>
 <button type="button">Close</button>
 <button type="button" disabled>&times;</button>
 </section>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_just_properties(catalog, folder):
-    (folder / "Lorem.jinja").write_text("""
+    (folder / "Lorem.jinja").write_text(
+        """
 {#def ipsum=False #}
 <p>lorem {{ "ipsum" if ipsum else "lorem" }}</p>
-""")
+"""
+    )
 
-    (folder / "Layout.jinja").write_text("""
+    (folder / "Layout.jinja").write_text(
+        """
 <main>
 {{ content }}
 </main>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <Layout>
 <Lorem ipsum />
 <p>meh</p>
 <Lorem />
 </Layout>
-""")
+"""
+    )
 
     html = catalog.render("Page")
     print(html)
-    assert """
+    assert (
+        """
 <main>
 <p>lorem ipsum</p>
 <p>meh</p>
 <p>lorem lorem</p>
 </main>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_render_assets(catalog, folder):
-    (folder / "Greeting.jinja").write_text("""
+    (folder / "Greeting.jinja").write_text(
+        """
 {#def message #}
 {#css greeting.css, http://example.com/super.css #}
 {#js greeting.js #}
 <div class="greeting [&_a]:flex">{{ message }}</div>
-""")
+"""
+    )
 
-    (folder / "Card.jinja").write_text("""
+    (folder / "Card.jinja").write_text(
+        """
 {#css https://somewhere.com/style.css, card.css #}
 {#js card.js, shared.js #}
 <section class="card">
 {{ content }}
 </section>
-""")
+"""
+    )
 
-    (folder / "Layout.jinja").write_text("""
+    (folder / "Layout.jinja").write_text(
+        """
 <html>
 {{ catalog.render_assets() }}
 {{ content }}
 </html>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 {#def message #}
 {#js https://somewhere.com/blabla.js, shared.js #}
 <Layout>
@@ -160,11 +196,13 @@ def test_render_assets(catalog, folder):
 <button type="button">Close</button>
 </Card>
 </Layout>
-""")
+"""
+    )
 
     html = catalog.render("Page", message="Hello")
     print(html)
-    assert """
+    assert (
+        """
 <html>
 <link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
@@ -179,7 +217,9 @@ def test_render_assets(catalog, folder):
 <button type="button">Close</button>
 </section>
 </html>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_global_values(catalog, folder):
@@ -192,10 +232,12 @@ def test_global_values(catalog, folder):
 
 
 def test_required_attr_are_required(catalog, folder):
-    (folder / "Greeting.jinja").write_text("""
+    (folder / "Greeting.jinja").write_text(
+        """
 {#def message #}
 <div class="greeting">{{ message }}</div>
-""")
+"""
+    )
 
     with pytest.raises(jinjax.MissingRequiredArgument):
         catalog.render("Greeting")
@@ -212,38 +254,48 @@ def test_subfolder(catalog, folder):
 
 
 def test_default_attr(catalog, folder):
-    (folder / "Greeting.jinja").write_text("""
+    (folder / "Greeting.jinja").write_text(
+        """
 {#def message="Hello", world=False #}
 <div>{{ message }}{% if world %} World{% endif %}</div>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <Greeting />
 <Greeting message="Hi" />
 <Greeting world={False} />
 <Greeting world={True} />
 <Greeting world />
-""")
+"""
+    )
 
     html = catalog.render("Page", message="Hello")
     print(html)
-    assert """
+    assert (
+        """
 <div>Hello</div>
 <div>Hi</div>
 <div>Hello</div>
 <div>Hello World</div>
 <div>Hello World</div>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_raw_content(catalog, folder):
-    (folder / "Code.jinja").write_text("""
+    (folder / "Code.jinja").write_text(
+        """
 <pre class="code">
 {{ content|e }}
 </pre>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <Code>
 {% raw %}
 {#def message="Hello", world=False #}
@@ -251,25 +303,32 @@ def test_raw_content(catalog, folder):
 <div>{{ message }}{% if world %} World{% endif %}</div>
 {% endraw %}
 </Code>
-""")
+"""
+    )
 
     html = catalog.render("Page")
     print(html)
-    assert """
+    assert (
+        """
 <pre class="code">
 {#def message=&#34;Hello&#34;, world=False #}
 &lt;Header /&gt;
 &lt;div&gt;{{ message }}{% if world %} World{% endif %}&lt;/div&gt;
 </pre>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_multiple_raw(catalog, folder):
-    (folder / "C.jinja").write_text("""
+    (folder / "C.jinja").write_text(
+        """
 <div {{ attrs.render() }}></div>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <C id="1" />
 {% raw -%}
 <C id="2" />
@@ -277,30 +336,38 @@ def test_multiple_raw(catalog, folder):
 <C id="3" />
 {% raw %}<C id="4" />{% endraw %}
 <C id="5" />
-""")
+"""
+    )
 
     html = catalog.render("Page", message="Hello")
     print(html)
-    assert """
+    assert (
+        """
 <div id="1"></div>
 <C id="2" />
 <div id="3"></div>
 <C id="4" />
 <div id="5"></div>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_check_for_unclosed(catalog, folder):
-    (folder / "Lorem.jinja").write_text("""
+    (folder / "Lorem.jinja").write_text(
+        """
 {#def ipsum=False #}
 <p>lorem {{ "ipsum" if ipsum else "lorem" }}</p>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <main>
 <Lorem ipsum>
 </main>
-""")
+"""
+    )
     with pytest.raises(TemplateSyntaxError):
         try:
             catalog.render("Page")
@@ -310,63 +377,79 @@ def test_check_for_unclosed(catalog, folder):
 
 
 def test_dict_as_attr(catalog, folder):
-    (folder / "CitiesList.jinja").write_text("""
+    (folder / "CitiesList.jinja").write_text(
+        """
 {#def cities #}
 {% for city, country in cities.items() -%}
 <p>{{ city }}, {{ country }}</p>
 {%- endfor %}
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 <CitiesList cities={{
     "Lima": "Peru",
     "New York": "USA",
 }}/>
-""")
+"""
+    )
 
     html = catalog.render("Page")
-    assert html == '<p>Lima, Peru</p><p>New York, USA</p>'
+    assert html == "<p>Lima, Peru</p><p>New York, USA</p>"
 
 
 def test_cleanup_assets(catalog, folder):
-    (folder / "Layout.jinja").write_text("""
+    (folder / "Layout.jinja").write_text(
+        """
 <html>
 {{ catalog.render_assets() }}
 {{ content }}
 </html>
-""")
+"""
+    )
 
-    (folder / "Foo.jinja").write_text("""
+    (folder / "Foo.jinja").write_text(
+        """
 {#js foo.js #}
 <Layout>
 <p>Foo</p>
 </Layout>
-""")
+"""
+    )
 
-    (folder / "Bar.jinja").write_text("""
+    (folder / "Bar.jinja").write_text(
+        """
 {#js bar.js #}
 <Layout>
 <p>Bar</p>
 </Layout>
-""")
+"""
+    )
 
     html = catalog.render("Foo")
     print(html, "\n")
-    assert """
+    assert (
+        """
 <html>
 <script type="module" src="/static/components/foo.js"></script>
 <p>Foo</p>
 </html>
-""".strip() in html
+""".strip()
+        in html
+    )
 
     html = catalog.render("Bar")
     print(html)
-    assert """
+    assert (
+        """
 <html>
 <script type="module" src="/static/components/bar.js"></script>
 <p>Bar</p>
 </html>
-""".strip() in html
+""".strip()
+        in html
+    )
 
 
 def test_do_not_mess_with_external_jinja_env(folder_t, folder):
@@ -376,7 +459,7 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder):
 
     jinja_env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(folder_t),
-        extensions=['jinja2.ext.i18n'],
+        extensions=["jinja2.ext.i18n"],
     )
     jinja_env.globals = {"glo": "bar"}
     jinja_env.filters = {"fil": lambda x: x}
@@ -420,18 +503,22 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder):
 
 
 def test_auto_reload(catalog, folder):
-    (folder / "Layout.jinja").write_text("""
+    (folder / "Layout.jinja").write_text(
+        """
 <html>
 {{ content }}
 </html>
-""")
+"""
+    )
 
-    (folder / "Foo.jinja").write_text("""
+    (folder / "Foo.jinja").write_text(
+        """
 <Layout>
 <p>Foo</p>
 <Bar></Bar>
 </Layout>
-""")
+"""
+    )
 
     bar_file = folder / "Bar.jinja"
     bar_file.write_text("<p>Bar</p>")
@@ -439,12 +526,15 @@ def test_auto_reload(catalog, folder):
     html1 = catalog.render("Foo")
     print(bar_file.stat().st_mtime)
     print(html1, "\n")
-    assert """
+    assert (
+        """
 <html>
 <p>Foo</p>
 <p>Bar</p>
 </html>
-""".strip() in html1
+""".strip()
+        in html1
+    )
 
     # Give it some time so the st_mtime are different
     time.sleep(0.1)
@@ -462,52 +552,66 @@ def test_auto_reload(catalog, folder):
     print(html3, "\n")
 
     assert html1 == html2
-    assert """
+    assert (
+        """
 <html>
 <p>Foo</p>
 <p>Updated</p>
 </html>
-""".strip() in html3
+""".strip()
+        in html3
+    )
 
 
 def test_autoescape_doesnot_escape_subcomponents(autoescaped_catalog, folder):
     """Issue https://github.com/jpsca/jinjax/issues/32"""
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 {#def message #}
 <html>
 <p>lorem ipsum</p>
 <Subcomponent />
 {{ message }}
 </html>
-""")
+"""
+    )
 
-    (folder / "Subcomponent.jinja").write_text("""
+    (folder / "Subcomponent.jinja").write_text(
+        """
 <p>foo bar</p>
-""")
+"""
+    )
 
     html = autoescaped_catalog.render("Page", message="<3")
-    assert html == """
+    assert (
+        html
+        == """
 <html>
 <p>lorem ipsum</p>
 <p>foo bar</p>
 &lt;3
 </html>
 """.strip()
+    )
 
 
 def test_fingerprint_assets(catalog, folder: Path):
-    (folder / "Layout.jinja").write_text("""
+    (folder / "Layout.jinja").write_text(
+        """
 <html>
 {{ catalog.render_assets() }}
 {{ content }}
 </html>
-""")
+"""
+    )
 
-    (folder / "Page.jinja").write_text("""
+    (folder / "Page.jinja").write_text(
+        """
 {#css app.css, http://example.com/super.css #}
 {#js app.js #}
 <Layout>Hi</Layout>
-""")
+"""
+    )
 
     (folder / "app.css").write_text("...")
 
@@ -546,7 +650,7 @@ def test_template_globals(catalog, folder):
     )
     (folder / "CsrfToken.jinja").write_text(
         """
-<input type="hidden" name="{{csrf.name}}" value="{{csrf.value}}">
+<input type="hidden" name="csrft" value="{{csrf_token}}">
 """
     )
     (folder / "Form.jinja").write_text(
@@ -562,8 +666,23 @@ def test_template_globals(catalog, folder):
 """
     )
 
-    html = catalog.render(
-        "Page", value="bar", __globals={"csrf": {"name": "csrft", "value": "abc"}}
-    )
+    html = catalog.render("Page", value="bar", __globals={"csrf_token": "abc"})
     print(html)
     assert """<input type="hidden" name="csrft" value="abc">""" in html
+
+
+def test_template_globals_update_cache(catalog, folder):
+    (folder / "CsrfToken.jinja").write_text(
+        """
+<input type="hidden" name="csrft" value="{{csrf_token}}">
+"""
+    )
+    (folder / "Page.jinja").write_text("""<CsrfToken/>""")
+
+    html = catalog.render("Page", __globals={"csrf_token": "abc"})
+    print(html)
+    assert """<input type="hidden" name="csrft" value="abc">""" in html
+
+    html = catalog.render("Page", __globals={"csrf_token": "xyz"})
+    print(html)
+    assert """<input type="hidden" name="csrft" value="xyz">""" in html
