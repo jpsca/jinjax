@@ -83,13 +83,22 @@ catalog.jinja_env.tests.update({ ... })
 catalog.jinja_env.extensions.extend([ ... ])
 ```
 
-You can also reuse an existing Jinja Environment, for example, the one from **Flask**:
+You can also reuse an existing Jinja Environment, for example:
+ **Flask**:
 
 ```python
 app = Flask(__name__)
 
 # Here we add the flask Jinja globals, filters, etc. like `url_for()`
 catalog = jinjax.Catalog(jinja_env=app.jinja_env)
+
+```
+ **Django**:
+(configure jinja in setting.py and [jinja_env.py](https://docs.djangoproject.com/en/5.0/topics/templates/#django.template.backends.jinja2.Jinja2))
+```python
+    env.add_extension(JinjaX)
+    catalog = Catalog(jinja_env=env)
+    catalog.add_folder("components")
 
 ```
 
