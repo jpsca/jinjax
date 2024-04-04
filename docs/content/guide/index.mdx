@@ -95,11 +95,24 @@ catalog = jinjax.Catalog(jinja_env=app.jinja_env)
 ```
  **Django**:
 (configure jinja in setting.py and [jinja_env.py](https://docs.djangoproject.com/en/5.0/topics/templates/#django.template.backends.jinja2.Jinja2))
+To have a separate "components" folder for shared components and also have "components" subfolder at each django app level
 ```python
-env.add_extension(JinjaX)
-catalog = Catalog(jinja_env=env)
-catalog.add_folder("components")
+import jinjax
+from jinja2.loaders import FileSystemLoader
 
+def environment(loader: FileSystemLoader, **options):
+    env = Environment(loader=loader, **options)
+
+    ...
+
+    env.add_extension(jinjax.JinjaX)
+    catalog = jinjax.Catalog(jinja_env=env)
+
+    catalog.add_folder("components")
+    for dir in loader.searchpath:
+        catalog.add_folder(os.path.join(dir, "components"))
+
+    return env
 ```
 
 The ["do" extension](https://jinja.palletsprojects.com/en/3.0.x/extensions/#expression-statement) is enabled by default, so you can write things like:
