@@ -1,23 +1,23 @@
 .PHONY: test
 test:
-	pytest -x src/jinjax tests
+	poetry run pytest -x src/jinjax tests
 
 .PHONY: lint
 lint:
-	ruff check src/jinjax tests
+	poetry run ruff check src/jinjax tests
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=pyproject.toml --cov-report html --cov jinjax src/jinjax tests
+	poetry run pytest --cov-config=pyproject.toml --cov-report html --cov jinjax src/jinjax tests
 
 .PHONY: types
 types:
-	pyright src/jinjax
+	poetry run pyright src/jinjax
 
 .PHONY: install
 install:
 	poetry install --with dev,test
-	pre-commit install
+	poetry run pre-commit install
 
 .PHONY: docs
 docs:

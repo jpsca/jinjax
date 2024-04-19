@@ -10,6 +10,10 @@ from markupsafe import Markup
 from .exceptions import InvalidArgument, MissingRequiredArgument
 
 
+if t.TYPE_CHECKING:
+    from typing_extensions import Self
+
+
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
@@ -89,7 +93,7 @@ class Component:
         cache: dict[str, t.Any],
         auto_reload: bool = True,
         globals: t.MutableMapping[str, t.Any] | None = None,
-    ) -> t.Self | None:
+    ) -> "Self | None":
         path = cache["path"]
         mtime = cache["mtime"]
 

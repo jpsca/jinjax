@@ -3,8 +3,8 @@ fail_fast: true
 repos:
   - repo: local
     hooks:
-      - id: flake8
-        name: flake8
+      - id: lint
+        name: lint
         entry: make lint
         language: system
         types: [python]

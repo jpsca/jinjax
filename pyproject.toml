@@ -43,7 +43,7 @@ optional = true
 pyright = ">=1.1.282"
 pre-commit = "*"
 tox = "*"
-ruff = ">0.3"
+typing-extensions = "^4.11.0"
 
 [tool.poetry.group.test]
 optional = true
@@ -51,6 +51,7 @@ optional = true
 [tool.poetry.group.test.dependencies]
 pytest = "^8.1.1"
 pytest-cov = "*"
+ruff = ">0.3"
 
 
 [tool.coverage.run]
