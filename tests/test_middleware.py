@@ -1,30 +1,41 @@
+import typing as t
+from pathlib import Path
+
 import jinjax
 
 
-def application(environ, start_response):
+def application(environ, start_response) -> list[bytes]:
     status = "200 OK"
     headers = [("Content-type", "text/plain")]
     start_response(status, headers)
     return [b"NOPE"]
 
 
-def make_environ(**kw):
+def make_environ(**kw) -> dict[str, t.Any]:
     kw.setdefault("PATH_INFO", "/")
     kw.setdefault("REQUEST_METHOD", "GET")
     return kw
 
 
-def mock_start_response(status, headers):
+def mock_start_response(status: str, headers: dict[str, t.Any]):
     pass
 
 
-def get_catalog(folder, **kw):
+def get_catalog(folder: str | Path, **kw) -> jinjax.Catalog:
     catalog = jinjax.Catalog(**kw)
     catalog.add_folder(folder)
     return catalog
 
 
-def run_middleware(middleware, url):
+TMiddleware = t.Callable[
+    [
+        dict[str, t.Any],
+        t.Callable[[str, dict[str, t.Any]], None],
+    ],
+    t.Any
+]
+
+def run_middleware(middleware: TMiddleware, url: str):
     return middleware(make_environ(PATH_INFO=url), mock_start_response)
 
 

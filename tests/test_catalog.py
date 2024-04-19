@@ -1,5 +1,6 @@
-import jinjax
 import pytest
+
+import jinjax
 
 
 def test_add_folder_with_default_prefix():

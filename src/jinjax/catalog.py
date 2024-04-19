@@ -8,15 +8,13 @@ from markupsafe import Markup
 
 from .component import Component
 from .exceptions import ComponentNotFound, InvalidArgument
+from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
 from .middleware import ComponentsMiddleware
-from .html_attrs import HTMLAttrs
 from .utils import logger
 
 
-if t.TYPE_CHECKING:
-    TFileExt = tuple[str, ...] | str
-
+TFileExt = tuple[str, ...] | str
 
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
@@ -32,29 +30,29 @@ class Catalog:
     """
     Attributes:
 
-    - globals:
+        globals:
 
-    - filters:
+        filters:
 
-    - tests:
+        tests:
 
-    - extensions:
+        extensions:
 
-    - jinja_env:
+        jinja_env:
 
-    - root_url:
+        root_url:
 
-    - file_ext:
+        file_ext:
 
-    - fingerprint [False]:
-        If True, adds, insert a hash of the updated time to the URL of the
-        asset files (after the name of,but before the extension).
-        This strategy encourages long-term caching while ensuring that new copies
-        are only requested when the content changes, as any modification alter
-        the fingerprint and thus the filename.
+        fingerprint [False]:
+            If True, adds, insert a hash of the updated time to the URL of the
+            asset files (after the name of,but before the extension).
+            This strategy encourages long-term caching while ensuring that new copies
+            are only requested when the content changes, as any modification alter
+            the fingerprint and thus the filename.
 
-        *WARNING*: Only works if the server know how to filter the fingerprint
-        to get the real name of the file.
+            *WARNING*: Only works if the server know how to filter the fingerprint
+            to get the real name of the file.
 
     """
 
@@ -67,28 +65,28 @@ class Catalog:
         "collected_css",
         "collected_js",
         "auto_reload",
+        "tmpl_globals",
         "use_cache",
-        "globals",
         "_cache",
     )
 
     def __init__(
         self,
         *,
-        globals: "dict[str, t.Any] | None" = None,
-        filters: "dict[str, t.Any] | None" = None,
-        tests: "dict[str, t.Any] | None" = None,
-        extensions: "list | None" = None,
-        jinja_env: "jinja2.Environment | None" = None,
+        globals: dict[str, t.Any] | None = None,
+        filters: dict[str, t.Any] | None = None,
+        tests: dict[str, t.Any] | None = None,
+        extensions: list | None = None,
+        jinja_env: jinja2.Environment | None = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: "TFileExt" = DEFAULT_EXTENSION,
+        file_ext: TFileExt = DEFAULT_EXTENSION,
         use_cache: bool = True,
         auto_reload: bool = True,
         fingerprint: bool = False,
     ) -> None:
-        self.prefixes: "dict[str, jinja2.FileSystemLoader]" = {}
-        self.collected_css: "list[str]" = []
-        self.collected_js: "list[str]" = []
+        self.prefixes: dict[str, jinja2.FileSystemLoader] = {}
+        self.collected_css: list[str] = []
+        self.collected_js: list[str] = []
         self.file_ext = file_ext
         self.use_cache = use_cache
         self.auto_reload = auto_reload
@@ -124,11 +122,11 @@ class Catalog:
 
         self.jinja_env = env
 
-        self._cache: "dict[str, dict]" = {}
-        self.globals: "dict[str, t.Any] | None" = None
+        self.tmpl_globals: t.MutableMapping[str, t.Any] | None = None
+        self._cache: dict[str, dict] = {}
 
     @property
-    def paths(self) -> "list[Path]":
+    def paths(self) -> list[Path]:
         _paths = []
         for loader in self.prefixes.values():
             _paths.extend(loader.searchpath)
@@ -136,7 +134,7 @@ class Catalog:
 
     def add_folder(
         self,
-        root_path: "str | Path",
+        root_path: str | Path,
         *,
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
@@ -166,19 +164,19 @@ class Catalog:
         self,
         __name: str,
         *,
-        caller: "t.Callable | None" = None,
+        caller: t.Callable | None = None,
         **kw,
     ) -> str:
         self.collected_css = []
         self.collected_js = []
-        self.globals = kw.pop("__globals", None)
+        self.tmpl_globals = kw.pop("__globals", None)
         return self.irender(__name, caller=caller, **kw)
 
     def irender(
         self,
         __name: str,
         *,
-        caller: "t.Callable | None" = None,
+        caller: t.Callable | None = None,
         **kw,
     ) -> str:
         content = (kw.pop("__content", "") or "").strip()
@@ -193,7 +191,7 @@ class Catalog:
         if source:
             logger.debug("Rendering from source %s", __name)
             component = self._get_from_source(
-                name=name, url_prefix=url_prefix, source=source, globals=self.globals
+                name=name, url_prefix=url_prefix, source=source
             )
         elif self.use_cache:
             logger.debug("Rendering from cache or file %s", __name)
@@ -202,7 +200,6 @@ class Catalog:
                 name=name,
                 url_prefix=url_prefix,
                 file_ext=file_ext,
-                globals=self.globals,
             )
         else:
             logger.debug("Rendering from file %s", __name)
@@ -211,7 +208,6 @@ class Catalog:
                 name=name,
                 url_prefix=url_prefix,
                 file_ext=file_ext,
-                globals=self.globals,
             )
 
         root_path = component.path.parent if component.path else None
@@ -256,10 +252,10 @@ class Catalog:
 
     def get_middleware(
         self,
-        application: "t.Callable",
-        allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
+        application: t.Callable,
+        allowed_ext: t.Iterable[str] | None = ALLOWED_EXTENSIONS,
         **kwargs,
-    ) -> "ComponentsMiddleware":
+    ) -> ComponentsMiddleware:
         logger.debug("Creating middleware")
         middleware = ComponentsMiddleware(
             application=application, allowed_ext=tuple(allowed_ext or []), **kwargs
@@ -272,7 +268,7 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str, file_ext: "TFileExt" = "") -> str:
+    def get_source(self, cname: str, file_ext: TFileExt = "") -> str:
         prefix, name = self._split_name(cname)
         path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
         return path.read_text()
@@ -316,9 +312,8 @@ class Catalog:
         name: str,
         url_prefix: str,
         source: str,
-        globals: "dict[str, t.Any] | None",
-    ) -> "Component":
-        tmpl = self.jinja_env.from_string(source, globals=globals)
+    ) -> Component:
+        tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
         component = Component(
             name=name, url_prefix=url_prefix, source=source, tmpl=tmpl
         )
@@ -331,15 +326,14 @@ class Catalog:
         name: str,
         url_prefix: str,
         file_ext: str,
-        globals: "dict[str, t.Any] | None",
-    ) -> "Component":
+    ) -> Component:
         key = f"{prefix}.{name}.{file_ext}"
         cache = self._from_cache(key)
         if cache:
-            component = Component.from_cache(cache, auto_reload=self.auto_reload)
+            component = Component.from_cache(
+                cache, auto_reload=self.auto_reload, globals=self.tmpl_globals
+            )
             if component:
-                if globals and component.tmpl:
-                    component.tmpl.globals.update(globals)
                 return component
 
         logger.debug("Loading %s", key)
@@ -348,12 +342,11 @@ class Catalog:
             name=name,
             url_prefix=url_prefix,
             file_ext=file_ext,
-            globals=globals,
         )
         self._to_cache(key, component)
         return component
 
-    def _from_cache(self, key: str) -> "dict[str, t.Any]":
+    def _from_cache(self, key: str) -> dict[str, t.Any]:
         if key not in self._cache:
             return {}
         cache = self._cache[key]
@@ -370,18 +363,19 @@ class Catalog:
         name: str,
         url_prefix: str,
         file_ext: str,
-        globals: "dict[str, t.Any] | None",
-    ) -> "Component":
+    ) -> Component:
         path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
         component = Component(
             name=name,
             url_prefix=url_prefix,
             path=path,
         )
-        component.tmpl = self.jinja_env.get_template(tmpl_name, globals=globals)
+        component.tmpl = self.jinja_env.get_template(
+            tmpl_name, globals=self.tmpl_globals
+        )
         return component
 
-    def _split_name(self, cname: str) -> "tuple[str, str]":
+    def _split_name(self, cname: str) -> tuple[str, str]:
         cname = cname.strip().strip(DELIMITER)
         if DELIMITER not in cname:
             return DEFAULT_PREFIX, cname
@@ -400,8 +394,8 @@ class Catalog:
         return url_prefix
 
     def _get_component_path(
-        self, prefix: str, name: str, file_ext: "TFileExt" = ""
-    ) -> "tuple[Path, str]":
+        self, prefix: str, name: str, file_ext: TFileExt = ""
+    ) -> tuple[Path, str]:
         name = name.replace(DELIMITER, SLASH)
         root_paths = self.prefixes[prefix].searchpath
         name_dot = f"{name}."
@@ -428,7 +422,7 @@ class Catalog:
             f"or one following the pattern {name_dot}*{file_ext}"
         )
 
-    def _render_attrs(self, attrs: "dict") -> "Markup":
+    def _render_attrs(self, attrs: dict[str, t.Any]) -> Markup:
         html_attrs = []
         for name, value in attrs.items():
             if value != "":

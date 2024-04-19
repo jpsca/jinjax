@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "jinjax"
-version = "0.31"
+version = "0.32"
 description = "Replace your HTML templates with Python server-Side components"
 authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
 license = "MIT"
@@ -19,7 +19,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -41,44 +40,17 @@ whitenoise = ">=5.3"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = ">=22.10.0"
 pyright = ">=1.1.282"
 pre-commit = "*"
 tox = "*"
+ruff = ">0.3"
 
 [tool.poetry.group.test]
 optional = true
 
 [tool.poetry.group.test.dependencies]
-flake8 = "*"
-flake8-bugbear = "*"
-pytest = ">=7.2.0"
+pytest = "^8.1.1"
 pytest-cov = "*"
-
-
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.tox
-  | \.venv
-  | _build
-  | build
-  | dist
-)/
-'''
-
-
-[tool.isort]
-profile = "black"
-force_single_line = true
-include_trailing_comma=true
-atomic = true
-lines_after_imports = 2
-lines_between_types = 1
 
 
 [tool.coverage.run]
@@ -119,7 +91,7 @@ addopts = "--doctest-modules"
 legacy_tox_ini = """
 [tox]
 skipsdist = True
-envlist = py39,py310,py311,py312,pypy3.10
+envlist = py310,py311,py312,pypy3.10
 
 [testenv]
 skip_install = true
@@ -129,3 +101,88 @@ commands =
     poetry install --with test
     pytest -x src/jinjax tests
 """
+
+
+[tool.ruff]
+line-length = 90
+indent-width = 4
+target-version = "py311"
+
+exclude = [
+  ".*",
+  "_build",
+  "build",
+  "covreport",
+  "dist",
+]
+include = ["*.py"]
+
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+
+ignore = [
+	# x is too complex
+	"C901",
+	# whitespace before ':'
+	"E203",
+	"E501",
+	# x defined from star imports
+	"F405",
+	# line break before binary operator
+	"W505",
+	"W605",
+]
+select = [
+	# bugbear
+	"B",
+	# mccabe"", comprehensions, commas
+	"C",
+	# pycodestyle errors
+	"E",
+	# pyflakes
+	"F",
+	# logging format
+	"G",
+	# imports
+	"I",
+	# quotes
+	"Q",
+	# pycodestyle warnings
+	"W",
+]
+
+
+[tool.ruff.lint.isort]
+known-first-party = ["jinjax"]
+
+# Use two line after imports.
+lines-after-imports = 2

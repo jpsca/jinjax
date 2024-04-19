@@ -9,7 +9,7 @@ CLASS_ALT_KEY = "classes"
 CLASS_KEYS = (CLASS_KEY, CLASS_ALT_KEY)
 
 
-def split(ssl: str) -> "list[str]":
+def split(ssl: str) -> list[str]:
     return re.split(r"\s+", ssl.strip())
 
 
@@ -34,14 +34,14 @@ class LazyString(UserString):
         self._seq = seq
 
     @cached_property
-    def data(self):
+    def data(self):  # type: ignore
         return str(self._seq)
 
 
 class HTMLAttrs:
     def __init__(self, attrs) -> None:
-        attributes: "dict[str, str|LazyString]" = {}
-        properties: "set[str]" = set()
+        attributes: dict[str, str|LazyString] = {}
+        properties: set[str] = set()
 
         class_names = split(" ".join([
             attrs.pop(CLASS_KEY, ""),
@@ -61,7 +61,7 @@ class HTMLAttrs:
 
     @property
     def classes(self) -> str:
-        return " ".join(sorted(list(self.__classes)))
+        return " ".join(sorted((self.__classes)))
 
     @property
     def as_dict(self) -> dict[str, Any]:
@@ -71,7 +71,7 @@ class HTMLAttrs:
             attributes[CLASS_KEY] = classes
 
         out: dict[str, Any] = dict(sorted(attributes.items()))
-        for name in sorted(list(self.__properties)):
+        for name in sorted((self.__properties)):
             out[name] = True
         return out
 
@@ -170,7 +170,7 @@ class HTMLAttrs:
             attributes[CLASS_KEY] = classes
 
         attributes = dict(sorted(attributes.items()))
-        properties = sorted(list(self.__properties))
+        properties = sorted((self.__properties))
 
         html_attrs = [
             f"{name}={quote(str(value))}"

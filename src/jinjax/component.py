@@ -2,13 +2,12 @@ import ast
 import re
 import typing as t
 from keyword import iskeyword
-from markupsafe import Markup
 from pathlib import Path
 
-from .exceptions import InvalidArgument, MissingRequiredArgument
+from jinja2 import Template
+from markupsafe import Markup
 
-if t.TYPE_CHECKING:
-    from jinja2 import Template
+from .exceptions import InvalidArgument, MissingRequiredArgument
 
 
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
@@ -37,7 +36,7 @@ def eval_expression(input_string):
     try:
         return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
     except NameError as err:
-        raise InvalidArgument(err)
+        raise InvalidArgument(err) from err
 
 
 def is_valid_variable_name(name):
@@ -64,15 +63,15 @@ class Component:
         url_prefix: str = "",
         source: str = "",
         mtime: float = 0,
-        tmpl: "Template | None" = None,
-        path: "Path | None" = None,
+        tmpl: Template | None = None,
+        path: Path | None = None,
     ) -> None:
         self.name = name
         self.url_prefix = url_prefix
-        self.required: "list[str]" = []
-        self.optional: "dict[str, t.Any]" = {}
-        self.css: "list[str]" = []
-        self.js: "list[str]" = []
+        self.required: list[str] = []
+        self.optional: dict[str, t.Any] = {}
+        self.css: list[str] = []
+        self.js: list[str] = []
 
         if path is not None:
             source = source or path.read_text()
@@ -85,7 +84,12 @@ class Component:
         self.tmpl = tmpl
 
     @classmethod
-    def from_cache(cls, cache: "dict[str, t.Any]", auto_reload: bool = True) -> "Component | None":
+    def from_cache(
+        cls,
+        cache: dict[str, t.Any],
+        auto_reload: bool = True,
+        globals: t.MutableMapping[str, t.Any] | None = None,
+    ) -> t.Self | None:
         path = cache["path"]
         mtime = cache["mtime"]
 
@@ -101,9 +105,14 @@ class Component:
         self.path = path
         self.mtime = cache["mtime"]
         self.tmpl = cache["tmpl"]
+
+        if globals:
+            # updating the template globals, does not affect the environment globals
+            self.tmpl.globals.update(globals)
+
         return self
 
-    def serialize(self) -> "dict[str, t.Any]":
+    def serialize(self) -> dict[str, t.Any]:
         return {
             "name": self.name,
             "required": self.required,
@@ -152,7 +161,7 @@ class Component:
             raise InvalidArgument(self.name)
         return source[start.end() : end.start()].strip()
 
-    def parse_args_expr(self, expr: str) -> "tuple[list[str], dict[str, t.Any]]":
+    def parse_args_expr(self, expr: str) -> tuple[list[str], dict[str, t.Any]]:
         expr = expr.strip(" *,/")
         required = []
         optional = {}
@@ -160,10 +169,11 @@ class Component:
         try:
             p = ast.parse(f"def component(*, {expr}): pass")
         except SyntaxError as err:
-            raise InvalidArgument(err)
+            raise InvalidArgument(err) from err
+
         args = p.body[0].args  # type: ignore
         arg_names = [arg.arg for arg in args.kwonlyargs]
-        for name, value in zip(arg_names, args.kw_defaults):
+        for name, value in zip(arg_names, args.kw_defaults, strict=True):
             if value is None:
                 required.append(name)
                 continue
@@ -172,7 +182,7 @@ class Component:
 
         return required, optional
 
-    def parse_files_expr(self, expr: str) -> "list[str]":
+    def parse_files_expr(self, expr: str) -> list[str]:
         files = []
         for url in RX_COMMA.split(expr):
             url = url.strip("\"'").rstrip("/")
@@ -185,8 +195,8 @@ class Component:
         return files
 
     def filter_args(
-        self, kw: "dict[str, t.Any]"
-    ) -> "tuple[dict[str, t.Any], dict[str, t.Any]]":
+        self, kw: dict[str, t.Any]
+    ) -> tuple[dict[str, t.Any], dict[str, t.Any]]:
         props = {}
 
         for key in self.required:

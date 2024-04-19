@@ -1,6 +1,7 @@
 import jinja2
-import jinjax
 import pytest
+
+import jinjax
 
 
 @pytest.fixture()

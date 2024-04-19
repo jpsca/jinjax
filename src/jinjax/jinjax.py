@@ -2,8 +2,8 @@ import re
 import typing as t
 from uuid import uuid4
 
-from jinja2.ext import Extension
 from jinja2.exceptions import TemplateSyntaxError
+from jinja2.ext import Extension
 
 from .utils import logger
 
@@ -125,11 +125,11 @@ class JinjaX(Extension):
             name = name.strip().replace("-", "_")
             value = value.strip()
             if not value:
-                attrs.append(f"\"{name}\"=True")
+                attrs.append(f'"{name}"=True')
             else:
                 if value.startswith(ATTR_START) and value.endswith(ATTR_END):
                     value = value[1:-1].strip()
-                attrs.append(f"\"{name}\"={value}")
+                attrs.append(f'"{name}"={value}')
 
         str_attrs = "**{" + ", ".join([a.replace("=", ":", 1) for a in attrs]) + "}"
         if str_attrs:

@@ -2,10 +2,8 @@ import re
 import typing as t
 from pathlib import Path
 
-from whitenoise import WhiteNoise  # type: ignore
-
-if t.TYPE_CHECKING:
-    from whitenoise.responders import Redirect, StaticFile  # type: ignore
+from whitenoise import WhiteNoise
+from whitenoise.responders import Redirect, StaticFile
 
 
 RX_FINGERPRINT = re.compile("(.*)-([abcdef0-9]{64})")
@@ -16,10 +14,10 @@ class ComponentsMiddleware(WhiteNoise):
     allowed_ext: tuple[str, ...]
 
     def __init__(self, **kwargs) -> None:
-        self.allowed_ext = kwargs.pop("allowed_ext", tuple())
+        self.allowed_ext = kwargs.pop("allowed_ext", ())
         super().__init__(**kwargs)
 
-    def find_file(self, url: str) -> "StaticFile|Redirect|None":
+    def find_file(self, url: str) -> StaticFile|Redirect|None:
 
         if self.allowed_ext and not url.endswith(self.allowed_ext):
             return None
@@ -36,6 +34,6 @@ class ComponentsMiddleware(WhiteNoise):
 
         return super().find_file(str(relpath))
 
-    def add_file_to_dictionary(self, url: str, path: str, stat_cache: t.Any) -> None:
+    def add_file_to_dictionary(self, url: str, path: str, stat_cache: t.Any = None) -> None:
         if not self.allowed_ext or url.endswith(self.allowed_ext):
             super().add_file_to_dictionary(url, path, stat_cache)

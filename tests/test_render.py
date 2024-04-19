@@ -1,8 +1,8 @@
 import time
 from pathlib import Path
 
-import pytest
 import jinja2
+import pytest
 from jinja2.exceptions import TemplateSyntaxError
 
 import jinjax
