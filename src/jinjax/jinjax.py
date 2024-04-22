@@ -27,7 +27,7 @@ ATTR_END = "}"
 re_attr_name = r""
 re_equal = r""
 re_attr = r"""
-(?P<name>[a-zA-Z_][0-9a-zA-Z:_-]*)
+(?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-]*)
 (?:
     \s*=\s*
     (?P<value>".*?"|'.*?'|\{.*?\})

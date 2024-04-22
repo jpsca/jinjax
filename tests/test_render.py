@@ -686,3 +686,28 @@ def test_template_globals_update_cache(catalog, folder):
     html = catalog.render("Page", __globals={"csrf_token": "xyz"})
     print(html)
     assert """<input type="hidden" name="csrft" value="xyz">""" in html
+
+
+def test_alpine_sintax(catalog, folder):
+    (folder / "Greeting.jinja").write_text("""
+{#def message #}
+<button @click="alert('{{ message }}')">Say Hi</button>""")
+
+    html = catalog.render("Greeting", message="Hello world!")
+    print(html)
+    expected = """<button @click="alert('Hello world!')">Say Hi</button>"""
+    assert html == expected
+
+
+def test_alpine_sintax_in_component(catalog, folder):
+    (folder / "Button.jinja").write_text(
+        """<button {{ attrs.render() }}>{{ content }}</button>"""
+    )
+
+    (folder / "Greeting.jinja").write_text(
+        """<Button @click="alert('Hello world!')">Say Hi</Button>"""
+    )
+
+    html = catalog.render("Greeting")
+    print(html)
+    assert html == """<button @click="alert('Hello world!')">Say Hi</button>"""
