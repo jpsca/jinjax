@@ -67,8 +67,8 @@ class Component:
         url_prefix: str = "",
         source: str = "",
         mtime: float = 0,
-        tmpl: Template | None = None,
-        path: Path | None = None,
+        tmpl: "Template | None" = None,
+        path: "Path | None" = None,
     ) -> None:
         self.name = name
         self.url_prefix = url_prefix
@@ -92,7 +92,7 @@ class Component:
         cls,
         cache: dict[str, t.Any],
         auto_reload: bool = True,
-        globals: t.MutableMapping[str, t.Any] | None = None,
+        globals: "t.MutableMapping[str, t.Any] | None" = None,
     ) -> "Self | None":
         path = cache["path"]
         mtime = cache["mtime"]
@@ -177,7 +177,7 @@ class Component:
 
         args = p.body[0].args  # type: ignore
         arg_names = [arg.arg for arg in args.kwonlyargs]
-        for name, value in zip(arg_names, args.kw_defaults, strict=True):
+        for name, value in zip(arg_names, args.kw_defaults):  # noqa: B905
             if value is None:
                 required.append(name)
                 continue

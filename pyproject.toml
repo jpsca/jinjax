@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "jinjax"
-version = "0.32"
+version = "0.33"
 description = "Replace your HTML templates with Python server-Side components"
 authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
 license = "MIT"
@@ -92,7 +92,7 @@ addopts = "--doctest-modules"
 legacy_tox_ini = """
 [tox]
 skipsdist = True
-envlist = py310,py311,py312,pypy3.10
+envlist = py3.9,py310,py311,py312,pypy3.10
 
 [testenv]
 skip_install = true

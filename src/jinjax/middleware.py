@@ -17,7 +17,7 @@ class ComponentsMiddleware(WhiteNoise):
         self.allowed_ext = kwargs.pop("allowed_ext", ())
         super().__init__(**kwargs)
 
-    def find_file(self, url: str) -> StaticFile|Redirect|None:
+    def find_file(self, url: str) -> "StaticFile | Redirect | None":
 
         if self.allowed_ext and not url.endswith(self.allowed_ext):
             return None

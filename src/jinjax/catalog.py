@@ -14,7 +14,7 @@ from .middleware import ComponentsMiddleware
 from .utils import logger
 
 
-TFileExt = tuple[str, ...] | str
+TFileExt = t.Union[tuple[str, ...], str]
 
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
@@ -73,11 +73,11 @@ class Catalog:
     def __init__(
         self,
         *,
-        globals: dict[str, t.Any] | None = None,
-        filters: dict[str, t.Any] | None = None,
-        tests: dict[str, t.Any] | None = None,
-        extensions: list | None = None,
-        jinja_env: jinja2.Environment | None = None,
+        globals: "dict[str, t.Any] | None" = None,
+        filters: "dict[str, t.Any] | None" = None,
+        tests: "dict[str, t.Any] | None" = None,
+        extensions: "list | None" = None,
+        jinja_env: "jinja2.Environment | None" = None,
         root_url: str = DEFAULT_URL_ROOT,
         file_ext: TFileExt = DEFAULT_EXTENSION,
         use_cache: bool = True,
@@ -122,7 +122,7 @@ class Catalog:
 
         self.jinja_env = env
 
-        self.tmpl_globals: t.MutableMapping[str, t.Any] | None = None
+        self.tmpl_globals: "t.MutableMapping[str, t.Any] | None" = None
         self._cache: dict[str, dict] = {}
 
     @property
@@ -134,7 +134,7 @@ class Catalog:
 
     def add_folder(
         self,
-        root_path: str | Path,
+        root_path: "str | Path",
         *,
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
@@ -164,7 +164,7 @@ class Catalog:
         self,
         __name: str,
         *,
-        caller: t.Callable | None = None,
+        caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
         self.collected_css = []
@@ -176,7 +176,7 @@ class Catalog:
         self,
         __name: str,
         *,
-        caller: t.Callable | None = None,
+        caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
         content = (kw.pop("__content", "") or "").strip()
@@ -253,7 +253,7 @@ class Catalog:
     def get_middleware(
         self,
         application: t.Callable,
-        allowed_ext: t.Iterable[str] | None = ALLOWED_EXTENSIONS,
+        allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
         **kwargs,
     ) -> ComponentsMiddleware:
         logger.debug("Creating middleware")

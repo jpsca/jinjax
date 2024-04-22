@@ -40,7 +40,7 @@ class LazyString(UserString):
 
 class HTMLAttrs:
     def __init__(self, attrs) -> None:
-        attributes: dict[str, str|LazyString] = {}
+        attributes: "dict[str, str | LazyString]" = {}
         properties: set[str] = set()
 
         class_names = split(" ".join([

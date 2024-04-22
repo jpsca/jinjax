@@ -21,7 +21,7 @@ def mock_start_response(status: str, headers: dict[str, t.Any]):
     pass
 
 
-def get_catalog(folder: str | Path, **kw) -> jinjax.Catalog:
+def get_catalog(folder: "str | Path", **kw) -> jinjax.Catalog:
     catalog = jinjax.Catalog(**kw)
     catalog.add_folder(folder)
     return catalog
