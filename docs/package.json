@@ -1,9 +1,11 @@
 {
+  "devDependencies": {
+    "lunr": "^2.3.9",
+    "lunr-languages": "^1.14.0",
+    "tailwindcss": "*"
+  },
   "scripts": {
     "watch": "tailwindcss -i ./static/_docs.css -o ./static/docs.css --watch",
     "build": "tailwindcss -i ./static/_docs.css  -o ./static/docs.css --minify"
-  },
-  "devDependencies": {
-    "tailwindcss": "^3.2.4"
   }
 }
