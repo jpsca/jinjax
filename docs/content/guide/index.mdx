@@ -83,8 +83,17 @@ catalog.jinja_env.tests.update({ ... })
 catalog.jinja_env.extensions.extend([ ... ])
 ```
 
+The ["do" extension](https://jinja.palletsprojects.com/en/3.0.x/extensions/#expression-statement) is enabled by default, so you can write things like:
+
+```html+jinja
+{% do attrs.set(class="btn", disabled=True) %}
+```
+
+### Reusing an existing Jinja Environment
+
 You can also reuse an existing Jinja Environment, for example:
- **Flask**:
+
+#### Flask:
 
 ```python
 app = Flask(__name__)
@@ -93,9 +102,13 @@ app = Flask(__name__)
 catalog = jinjax.Catalog(jinja_env=app.jinja_env)
 
 ```
- **Django**:
-(configure jinja in setting.py and [jinja_env.py](https://docs.djangoproject.com/en/5.0/topics/templates/#django.template.backends.jinja2.Jinja2))
+
+#### Django:
+
+First, configure Jinja in setting.py and [jinja_env.py](https://docs.djangoproject.com/en/5.0/topics/templates/#django.template.backends.jinja2.Jinja2))
+
 To have a separate "components" folder for shared components and also have "components" subfolder at each django app level
+
 ```python
 import jinjax
 from jinja2.loaders import FileSystemLoader
@@ -115,8 +128,3 @@ def environment(loader: FileSystemLoader, **options):
     return env
 ```
 
-The ["do" extension](https://jinja.palletsprojects.com/en/3.0.x/extensions/#expression-statement) is enabled by default, so you can write things like:
-
-```html+jinja
-{% do attrs.set(class="btn", disabled=True) %}
-```
