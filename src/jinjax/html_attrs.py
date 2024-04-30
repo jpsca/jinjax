@@ -3,6 +3,8 @@ from collections import UserString
 from functools import cached_property
 from typing import Any
 
+from markupsafe import Markup
+
 
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
@@ -178,4 +180,4 @@ class HTMLAttrs:
         ]
         html_attrs.extend(properties)
 
-        return " ".join(html_attrs)
+        return Markup(" ".join(html_attrs))

@@ -247,7 +247,9 @@ class Catalog:
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
-        props[PROP_CONTENT] = content if content or not caller else caller().strip()
+        props[PROP_CONTENT] = Markup(
+            content if content or not caller else caller().strip()
+        )
         return component.render(**props)
 
     def get_middleware(
