@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from jinja2.exceptions import TemplateSyntaxError
 from jinja2.ext import Extension
+from jinja2.filters import do_forceescape
 
 from .utils import logger
 
@@ -66,7 +67,7 @@ class JinjaX(Extension):
 
     def _replace_raw_block(self, match: re.Match) -> str:
         uid = f"--RAW-{uuid4().hex}--"
-        self.__raw_blocks[uid] = match.group(0)
+        self.__raw_blocks[uid] = do_forceescape(match.group(0))
         return uid
 
     def _restore_raw_blocks(self, source: str) -> str:
