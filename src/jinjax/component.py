@@ -8,6 +8,7 @@ from jinja2 import Template
 from markupsafe import Markup
 
 from .exceptions import InvalidArgument, MissingRequiredArgument
+from .utils import DELIMITER
 
 
 if t.TYPE_CHECKING:
@@ -82,6 +83,18 @@ class Component:
             mtime = mtime or path.stat().st_mtime
         if source:
             self.load_metadata(source)
+
+        if path is not None:
+            folder = path.parent
+            default_name = self.name.rsplit(DELIMITER, 1)[-1]
+
+            default_css = f"{default_name}.css"
+            if (folder / default_css).is_file():
+                self.css.extend(self.parse_files_expr(default_css))
+
+            default_js = f"{default_name}.js"
+            if (folder / default_js).is_file():
+                self.js.extend(self.parse_files_expr(default_js))
 
         self.path = path
         self.mtime = mtime
