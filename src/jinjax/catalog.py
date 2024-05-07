@@ -11,7 +11,7 @@ from .exceptions import ComponentNotFound, InvalidArgument
 from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
 from .middleware import ComponentsMiddleware
-from .utils import logger
+from .utils import DELIMITER, SLASH, logger
 
 
 TFileExt = t.Union[tuple[str, ...], str]
@@ -20,8 +20,6 @@ DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
 DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
-DELIMITER = "."
-SLASH = "/"
 PROP_ATTRS = "attrs"
 PROP_CONTENT = "content"
 

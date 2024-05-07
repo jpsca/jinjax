@@ -813,3 +813,47 @@ def test_autoescaped_attrs(catalog, folder, autoescape):
     print(html)
     expected = """<div class="border border-red-500 relative"></div>"""
     assert html == Markup(expected)
+
+
+@pytest.mark.parametrize("autoescape", [True, False])
+def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
+    catalog.jinja_env.autoescape = autoescape
+
+    (folder / "Layout.jinja").write_text(
+        """{{ catalog.render_assets() }}\n{{ content }}"""
+    )
+
+    (folder / "FooBar.css").touch()
+
+    (folder / "common").mkdir()
+    (folder / "common" / "Form.jinja").write_text(
+        """
+{#js "shared.js" #}
+<form></form>"""
+    )
+
+    (folder / "common" / "Form.css").touch()
+    (folder / "common" / "Form.js").touch()
+
+    (folder / "Page.jinja").write_text(
+        """
+{#css "Page.css" #}
+<Layout><common.Form></common.Form></Layout>"""
+    )
+
+    (folder / "Page.css").touch()
+    (folder / "Page.js").touch()
+
+    html = catalog.render("Page")
+    print(html)
+
+    expected  = """
+<link rel="stylesheet" href="/static/components/Page.css">
+<link rel="stylesheet" href="/static/components/Form.css">
+<script type="module" src="/static/components/Page.js"></script>
+<script type="module" src="/static/components/shared.js"></script>
+<script type="module" src="/static/components/Form.js"></script>
+<form></form>
+""".strip()
+
+    assert html == Markup(expected)
