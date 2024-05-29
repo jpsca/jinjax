@@ -31,9 +31,9 @@ re_attr = r"""
 (?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-]*)
 (?:
     \s*=\s*
-    (?P<value>".*?"|'.*?'|\{.*?\})
+    (?P<value>".*?"|'.*?'|\{\s*.*?\s*\})
 )?
-(?:\s+|/|$)
+(?:\s+|/|"|$)
 """
 RX_ATTR = re.compile(re_attr, re.VERBOSE | re.DOTALL)
 

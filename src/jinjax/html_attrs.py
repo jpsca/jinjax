@@ -83,6 +83,9 @@ class HTMLAttrs:
     def __delitem__(self, name: str) -> None:
         self._remove(name)
 
+    def __str__(self) -> str:
+        return str(self.as_dict)
+
     def set(self, **kw) -> None:
         """
         Sets an attribute or property:

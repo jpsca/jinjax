@@ -181,7 +181,6 @@ class Catalog:
         attrs = kw.pop("__attrs", None) or {}
         file_ext = kw.pop("__file_ext", "")
         source = kw.pop("__source", "")
-
         prefix, name = self._split_name(__name)
         url_prefix = self._get_url_prefix(prefix)
         self.jinja_env.loader = self.prefixes[prefix]
@@ -235,7 +234,6 @@ class Catalog:
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
         kw = attrs
-
         props, extra = component.filter_args(kw)
         try:
             props[PROP_ATTRS] = HTMLAttrs(extra)
