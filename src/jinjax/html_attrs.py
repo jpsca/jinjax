@@ -55,7 +55,7 @@ class HTMLAttrs:
             name = name.replace("_", "-")
             if value is True:
                 properties.add(name)
-            elif value not in (False, None):
+            elif value is not False and value is not None:
                 attributes[name] = LazyString(value)
 
         self.__attributes = attributes
@@ -98,7 +98,7 @@ class HTMLAttrs:
         """
         for name, value in kw.items():
             name = name.replace("_", "-")
-            if value in (False, None):
+            if value is False or value is None:
                 self._remove(name)
                 continue
 

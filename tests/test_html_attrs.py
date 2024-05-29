@@ -11,6 +11,8 @@ def test_parse_initial_attrs():
             "class": "z4 c3 a1 z4 b2",
             "open": True,
             "disabled": False,
+            "value": 0,
+            "foobar": None,
         }
     )
     assert attrs.classes == "a1 b2 c3 z4"
@@ -20,7 +22,16 @@ def test_parse_initial_attrs():
     assert attrs.get("title") == "hi"
     assert attrs.get("open") is True
     assert attrs.get("disabled", "meh") == "meh"
+    assert attrs.get("value") == "0"
 
+    assert attrs.get("disabled") is None
+    assert attrs.get("foobar") is None
+
+    attrs.set(data_value=0)
+    attrs.set(data_position=False)
+    assert attrs.get("data-value") == 0
+    assert attrs.get("data-position") is None
+    assert attrs.get("data_position") is None
 
 def test_getattr():
     attrs = HTMLAttrs(
