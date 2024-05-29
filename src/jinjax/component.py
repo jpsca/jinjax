@@ -228,7 +228,8 @@ class Component:
 
     def render(self, **kwargs):
         assert self.tmpl, f"Component {self.name} has no template"
-        return Markup(self.tmpl.render(**kwargs).strip())
+        html = self.tmpl.render(**kwargs).strip()
+        return Markup(html)
 
     def __repr__(self) -> str:
         return f'<Component "{self.name}">'

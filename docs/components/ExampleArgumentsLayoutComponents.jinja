@@ -9,7 +9,8 @@
   </CodeTabs>
 
   <CodePanel id="components-ArchivePage">
-    {% markdown %}{% raw %}
+    {% filter markdown %}
+    {% raw %}
     ```html+jinja
     {#def posts #}
 
@@ -19,11 +20,13 @@
       {% endfor %}
     </Layout>
     ```
-    {% endraw %}{% endmarkdown %}
+    {% endraw %}
+    {% endfilter %}
   </CodePanel>
 
   <CodePanel id="components-Layout" hidden>
-    {% markdown %}{% raw %}
+    {% filter markdown %}
+    {% raw %}
     ```html+jinja
     {#def title #}
 
@@ -37,6 +40,7 @@
       {{ content }}
     </body>
     ```
-    {% endraw %}{% endmarkdown %}
+    {% endraw %}
+    {% endfilter %}
   </CodePanel>
 </CodeGroup>

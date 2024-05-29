@@ -5,7 +5,7 @@ import jinjax_ui
 from claydocs import Docs
 
 
-logging.getLogger("jinjax").setLevel(logging.DEBUG)
+logging.getLogger("jinjax").setLevel(logging.INFO)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
 
 pages = [
@@ -36,10 +36,12 @@ docs = Docs(
     # languages=languages,
     # default="en",
     DEFAULT_COMPONENT="Page",
-    add_ons=[jinjax_ui]
+    add_ons=[jinjax_ui],
 )
 docs.add_folder("components")
 docs.add_folder("theme")
+
+docs.catalog.use_cache = False
 
 
 if __name__ == "__main__":
