@@ -149,14 +149,9 @@ class Catalog:
             logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
-    def add_module(self, module: t.Any, *, prefix: str = "") -> None:
-        if hasattr(module, "components_path"):
-            prefix = prefix or getattr(module, "prefix", DEFAULT_PREFIX)
-            self.add_folder(module.components_path, prefix=prefix)
-            return
-
-        for mprefix, path in module.components.items():
-            self.add_folder(path, prefix=prefix or mprefix)
+    def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
+        mprefix = prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
+        self.add_folder(module.components_path, prefix=mprefix)
 
     def render(
         self,

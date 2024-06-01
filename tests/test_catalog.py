@@ -78,36 +78,6 @@ def test_add_module_legacy_with_custom_prefix():
     assert "legacy_path" in catalog.prefixes["custom"].searchpath
 
 
-def test_add_module():
-    class Module:
-        components = {
-            "theme": "theme_path",
-            "": "extra_path",
-        }
-
-    catalog = jinjax.Catalog()
-    module = Module()
-    catalog.add_module(module)
-
-    assert "theme_path" in catalog.prefixes["theme"].searchpath
-    assert "extra_path" in catalog.prefixes[""].searchpath
-
-
-def test_add_module_with_custom_prefix():
-    class Module:
-        components = {
-            "theme": "theme_path",
-            "": "extra_path",
-        }
-
-    catalog = jinjax.Catalog()
-    module = Module()
-    catalog.add_module(module, prefix="custom")
-
-    assert "theme_path" in catalog.prefixes["custom"].searchpath
-    assert "extra_path" in catalog.prefixes["custom"].searchpath
-
-
 def test_add_module_fails_with_other_modules():
     class Module:
         pass
