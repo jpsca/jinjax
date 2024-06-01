@@ -8,7 +8,7 @@ from jinja2 import Template
 from markupsafe import Markup
 
 from .exceptions import InvalidArgument, MissingRequiredArgument
-from .utils import DELIMITER
+from .utils import DELIMITER, get_url_prefix
 
 
 if t.TYPE_CHECKING:
@@ -51,6 +51,7 @@ def is_valid_variable_name(name):
 class Component:
     __slots__ = (
         "name",
+        "prefix",
         "url_prefix",
         "required",
         "optional",
@@ -65,6 +66,7 @@ class Component:
         self,
         *,
         name: str,
+        prefix: str = "",
         url_prefix: str = "",
         source: str = "",
         mtime: float = 0,
@@ -72,7 +74,8 @@ class Component:
         path: "Path | None" = None,
     ) -> None:
         self.name = name
-        self.url_prefix = url_prefix
+        self.prefix = prefix
+        self.url_prefix = url_prefix or get_url_prefix(prefix)
         self.required: list[str] = []
         self.optional: dict[str, t.Any] = {}
         self.css: list[str] = []
@@ -115,6 +118,8 @@ class Component:
                 return None
 
         self = cls(name=cache["name"])
+        self.prefix = cache["prefix"]
+        self.url_prefix = cache["url_prefix"]
         self.required = cache["required"]
         self.optional = cache["optional"]
         self.css = cache["css"]
@@ -132,6 +137,8 @@ class Component:
     def serialize(self) -> dict[str, t.Any]:
         return {
             "name": self.name,
+            "prefix": self.prefix,
+            "url_prefix": self.url_prefix,
             "required": self.required,
             "optional": self.optional,
             "css": self.css,
