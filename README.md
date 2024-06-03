@@ -13,6 +13,6 @@ Use them as HTML tags without doing any importing.
 
 ## Roadmap
 
-- Slots
-- Autoloading assets (optional?) (`Card.jinja` autoloads `Card.css` and/or `Card.js` if exists)
+[ ] Slots
+[x] Autoloading assets (optional?) (`Card.jinja` autoloads `Card.css` and/or `Card.js` if exists)
 - ...
