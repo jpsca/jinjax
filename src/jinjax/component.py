@@ -88,15 +88,14 @@ class Component:
             self.load_metadata(source)
 
         if path is not None:
-            folder = path.parent
-            default_name = self.name.rsplit(DELIMITER, 1)[-1]
+            default_name = self.name.replace(DELIMITER, "/")
 
             default_css = f"{default_name}.css"
-            if (folder / default_css).is_file():
+            if (path.with_suffix(".css")).is_file():
                 self.css.extend(self.parse_files_expr(default_css))
 
             default_js = f"{default_name}.js"
-            if (folder / default_js).is_file():
+            if (path.with_suffix(".js")).is_file():
                 self.js.extend(self.parse_files_expr(default_js))
 
         self.path = path
