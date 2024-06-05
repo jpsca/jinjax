@@ -849,10 +849,10 @@ def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
 
     expected  = """
 <link rel="stylesheet" href="/static/components/Page.css">
-<link rel="stylesheet" href="/static/components/Form.css">
+<link rel="stylesheet" href="/static/components/common/Form.css">
 <script type="module" src="/static/components/Page.js"></script>
 <script type="module" src="/static/components/shared.js"></script>
-<script type="module" src="/static/components/Form.js"></script>
+<script type="module" src="/static/components/common/Form.js"></script>
 <form></form>
 """.strip()
 
