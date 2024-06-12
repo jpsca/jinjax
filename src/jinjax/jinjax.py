@@ -23,15 +23,13 @@ re_raw_attrs = r"(?P<attrs>[^\>]*)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}\s*/?>"
 RX_TAG = re.compile(re_tag)
 
-ATTR_START = "{"
-ATTR_END = "}"
 re_attr_name = r""
 re_equal = r""
 re_attr = r"""
 (?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-]*)
 (?:
     \s*=\s*
-    (?P<value>".*?"|'.*?'|\{\s*.*?\s*\})
+    (?P<value>".*?"|'.*?')
 )?
 (?:\s+|/|"|$)
 """
@@ -125,10 +123,13 @@ class JinjaX(Extension):
         for name, value in attrs_list:
             name = name.strip().replace("-", "_")
             value = value.strip()
+
             if not value:
+                name = name.lstrip(":")
                 attrs.append(f'"{name}"=True')
             else:
-                if value.startswith(ATTR_START) and value.endswith(ATTR_END):
+                if name.startswith(":"):
+                    name = name.lstrip(":")
                     value = value[1:-1].strip()
                 attrs.append(f'"{name}"={value}')
 

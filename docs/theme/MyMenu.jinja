@@ -26,9 +26,9 @@
   ">
     <div class="mb-3 border-b border-zinc-200 dark:border-zinc-600">
       <div class="flex items-center h-14 px-4 sm:px-6">
-        <Logo base_url={nav.base_url} class="mr-auto" />
-        <LangSwitch class="ml-3" languages={nav.languages} lang={nav.lang} />
-        <ThemeSwitch class="ml-3" text={false} />
+        <Logo :base_url="nav.base_url" class="mr-auto" />
+        <LangSwitch class="ml-3" :languages="nav.languages" :lang="nav.lang" />
+        <ThemeSwitch class="ml-3" :text="false" />
         <CloseBtn class="ml-3" aria_label="Close" data_toggle="#menu|[open]" />
       </div>
     </div>
@@ -49,7 +49,7 @@
       pr-[max(1rem,env(safe-area-inset-right))]
       sm:px-6 lg:px-8 overscroll-contain
     ">
-      <Toc toc={nav.toc} page={nav.page} />
+      <Toc :toc="nav.toc" :page="nav.page" />
     </nav>
   </div>
 </div>

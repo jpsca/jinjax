@@ -28,7 +28,7 @@
   ">
     {% if show_icon -%}
     <div class="pr-4 hidden sm:block">
-      <Icon type={type} class="w-7 h-7 pointer-events-none opacity-70"/>
+      <Icon :type="type" class="w-7 h-7 pointer-events-none opacity-70"/>
     </div>
     {%- endif %}
     {{ title }}
@@ -48,7 +48,7 @@
   ") }}>
   {% if show_icon -%}
   <div class="pr-4 hidden sm:block">
-    <Icon type={type} class="w-7 h-7 pointer-events-none opacity-70" />
+    <Icon :type="type" class="w-7 h-7 pointer-events-none opacity-70" />
   </div>
   {%- endif %}
   <div class="w-full">{{content}}</div>
