@@ -9,22 +9,22 @@ logging.getLogger("jinjax").setLevel(logging.INFO)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
 
 pages = [
-    "index.mdx",
+    "index.md",
     [
         "Guide",
         [
-            "guide/index.mdx",
-            "guide/components.mdx",
-            "guide/extra.mdx",
-            "guide/css_and_js.mdx",
+            "guide/index.md",
+            "guide/components.md",
+            "guide/extra.md",
+            "guide/css_and_js.md",
         ],
     ],
 ]
 
 
 # pages = {
-#     "en": ["index.mdx", ...],
-#     "es": ["index.mdx", ...],
+#     "en": ["index.md", ...],
+#     "es": ["index.md", ...],
 # }
 # languages = {
 #     "en": "English",

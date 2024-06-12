@@ -113,7 +113,7 @@ def test_composition(catalog, folder, autoescape):
         """
 {#def message #}
 <Card>
-<Greeting message={message} />
+<Greeting :message="message" />
 <button type="button">Close</button>
 </Card>
 """
@@ -214,7 +214,7 @@ def test_render_assets(catalog, folder, autoescape):
 {#js https://somewhere.com/blabla.js, shared.js #}
 <Layout>
 <Card>
-<Greeting message={message} />
+<Greeting :message="message" />
 <button type="button">Close</button>
 </Card>
 </Layout>
@@ -299,8 +299,8 @@ def test_default_attr(catalog, folder, autoescape):
         """
 <Greeting />
 <Greeting message="Hi" />
-<Greeting world={False} />
-<Greeting world={True} />
+<Greeting :world="False" />
+<Greeting :world="True" />
 <Greeting world />
 """
     )
@@ -434,10 +434,10 @@ def test_dict_as_attr(catalog, folder, autoescape):
 
     (folder / "Page.jinja").write_text(
         """
-<CitiesList cities={{
-    "Lima": "Peru",
-    "New York": "USA",
-}}/>
+<CitiesList :cities="{
+    'Lima': 'Peru',
+    'New York': 'USA',
+}" />
 """
     )
 
@@ -736,7 +736,7 @@ def test_template_globals(catalog, folder, autoescape):
     (folder / "Page.jinja").write_text(
         """
 {# def value #}
-<Form><Input name="foo" value={value}/></Form>
+<Form><Input name="foo" :value="value"/></Form>
 """
     )
 

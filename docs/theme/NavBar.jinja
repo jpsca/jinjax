@@ -7,12 +7,12 @@
   focus:outline-accent dark:focus:outline-accent-darker
 ">
   <div class="flex items-center h-14 px-4 sm:px-6 mx-auto max-w-[100rem]">
-    <Logo class="mr-auto" base_url={nav.base_url} />
+    <Logo class="mr-auto" :base_url="nav.base_url" />
     <nav class="hidden md:flex items-center space-x-8">
       <NavLinks></NavLinks>
     </nav>
-    <LangSwitch class="ml-3" languages={nav.languages} lang={nav.lang} />
-    <ThemeSwitch class="ml-3" text={false} />
+    <LangSwitch class="ml-3" :languages="nav.languages" :lang="nav.lang" />
+    <ThemeSwitch class="ml-3" :text="false" />
     <Hamburger class="ml-3 lg:hidden" />
   </div>
 </section>

@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     './.cache/**/*.html',
-    './content/**/*.mdx',
+    './content/**/*.md',
     './components/**/*.{jinja,js}',
     './theme/**/*.{jinja,js}',
     './static/**/*.js',

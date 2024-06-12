@@ -1,5 +1,5 @@
 {#def title="" #}
-<Layout title={title} description={meta.get('description', '')}>
+<Layout :title="title" :description="meta.get('description', '')">
   <NavBar />
   <div class="px-4 sm:px-6 pb-16 z-10 flex mx-auto max-w-[100rem]">
     <SidebarGlobal class="hidden lg:block" />
@@ -9,9 +9,9 @@
       </div>
       <PrevNext
         class="mt-16 w-full"
-        curr={nav.page}
-        prev={nav.prev_page}
-        next={nav.next_page}
+        :curr="nav.page"
+        :prev="nav.prev_page"
+        :next="nav.next_page"
       />
     </main>
     <SidebarLocal class="hidden 2xl:block pl-8" />
