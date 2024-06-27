@@ -22,7 +22,6 @@ if t.TYPE_CHECKING:
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
-RX_META_END = re.compile(r"\s*-?#}")
 RX_COMMA = re.compile(r"\s*,\s*")
 RX_META_HEADER = re.compile(r"^(\s*{#.*?#})+", re.DOTALL)
 
@@ -162,7 +161,7 @@ class Component:
         def_found = False
 
         while line := header.pop():
-            line = line.strip() + "#}"
+            line = line.strip(" -")
 
             expr = self.read_metadata_line(line, RX_PROPS_START)
             if expr:
@@ -186,10 +185,7 @@ class Component:
         start = rx_start.match(source)
         if not start:
             return ""
-        end = RX_META_END.search(source, pos=start.end())
-        if not end:
-            raise InvalidArgument(self.name)
-        return source[start.end() : end.start()].strip()
+        return source[start.end():].strip()
 
     def parse_args_expr(self, expr: str) -> tuple[list[str], dict[str, t.Any]]:
         expr = expr.strip(" *,/")
