@@ -7,7 +7,11 @@ from pathlib import Path
 from jinja2 import Template
 from markupsafe import Markup
 
-from .exceptions import InvalidArgument, MissingRequiredArgument
+from .exceptions import (
+    DuplicateDefDeclaration,
+    InvalidArgument,
+    MissingRequiredArgument,
+)
 from .utils import DELIMITER, get_url_prefix
 
 
@@ -20,6 +24,7 @@ RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
 RX_META_END = re.compile(r"\s*-?#}")
 RX_COMMA = re.compile(r"\s*,\s*")
+RX_META_HEADER = re.compile(r"^(\s*{#.*?#})+", re.DOTALL)
 
 ALLOWED_NAMES_IN_EXPRESSION_VALUES = {
     "len": len,
@@ -148,32 +153,34 @@ class Component:
         }
 
     def load_metadata(self, source: str) -> None:
-        header = source.lstrip().split("#}", maxsplit=3)[:3][::-1]
+        match = RX_META_HEADER.match(source)
+        if not match:
+            return
 
-        while header:
-            line = header.pop()
+        # Reversed because I will use `header.pop()`
+        header = match.group(0).replace("\n", " ").split("#}")[::-1]
+        def_found = False
+
+        while line := header.pop():
             line = line.strip() + "#}"
 
-            if not (self.required or self.optional):
-                expr = self.read_metadata_line(line, RX_PROPS_START)
-                if expr:
-                    self.required, self.optional = self.parse_args_expr(expr)
-                    continue
+            expr = self.read_metadata_line(line, RX_PROPS_START)
+            if expr:
+                if def_found:
+                    raise DuplicateDefDeclaration(self.name)
+                self.required, self.optional = self.parse_args_expr(expr)
+                def_found = True
+                continue
 
-            if not self.css:
-                expr = self.read_metadata_line(line, RX_CSS_START)
-                if expr:
-                    self.css = self.parse_files_expr(expr)
-                    continue
+            expr = self.read_metadata_line(line, RX_CSS_START)
+            if expr:
+                self.css = [*self.css, *self.parse_files_expr(expr)]
+                continue
 
-            if not self.js:
-                expr = self.read_metadata_line(line, RX_JS_START)
-                if expr:
-                    self.js = self.parse_files_expr(expr)
-                    continue
-
-            # Stop searching if the line didn't contain any parseable metadata
-            break
+            expr = self.read_metadata_line(line, RX_JS_START)
+            if expr:
+                self.js = [*self.js, *self.parse_files_expr(expr)]
+                continue
 
     def read_metadata_line(self, source: str, rx_start: re.Pattern) -> str:
         start = rx_start.match(source)

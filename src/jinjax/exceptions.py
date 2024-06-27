@@ -10,5 +10,11 @@ class MissingRequiredArgument(Exception):
         super().__init__(msg)
 
 
+class DuplicateDefDeclaration(Exception):
+    def __init__(self, component: str) -> None:
+        msg = "`" + str(component) + "` has two `{#def ... #}` declarations"
+        super().__init__(msg)
+
+
 class InvalidArgument(Exception):
     pass
