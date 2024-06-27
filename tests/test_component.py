@@ -1,6 +1,6 @@
 import pytest
 
-from jinjax import Component, InvalidArgument
+from jinjax import Component, DuplicateDefDeclaration, InvalidArgument
 
 
 def test_load_args():
@@ -162,23 +162,18 @@ def test_ignore_metadata_if_not_first():
     assert com.js == []
 
 
-def test_ignore_repeated_args_declaration_and_everything_after():
-    com = Component(
-        name="Test.jinja",
-        source="""
-        {#def lorem, ipsum=4 #}
-        {#def a, b, c, ipsum="nope" #}
-        {#css a.css #}
-        {#js a.js #}
-        """,
-    )
-    assert com.required == ["lorem"]
-    assert com.optional == {"ipsum": 4}
-    assert com.css == []
-    assert com.js == []
+def test_fail_with_more_than_one_args_declaration():
+    with pytest.raises(DuplicateDefDeclaration):
+        Component(
+            name="Test.jinja",
+            source="""
+            {#def lorem, ipsum=4 #}
+            {#def a, b, c, ipsum="nope" #}
+            """,
+        )
 
 
-def test_ignore_repeated_css_declaration_and_everything_after():
+def test_merge_repeated_css_or_js_declarations():
     com = Component(
         name="Test.jinja",
         source="""
@@ -186,28 +181,13 @@ def test_ignore_repeated_css_declaration_and_everything_after():
         {#def lorem, ipsum=4 #}
         {#css b.css #}
         {#js a.js #}
+        {#js b.js #}
         """,
     )
     assert com.required == ["lorem"]
     assert com.optional == {"ipsum": 4}
-    assert com.css == ["a.css"]
-    assert com.js == []
-
-
-def test_ignore_repeated_js_declaration_and_everything_after():
-    com = Component(
-        name="Test.jinja",
-        source="""
-        {#css a.css #}
-        {#js a.js #}
-        {#js b.js #}
-        {#def lorem, ipsum=4 #}
-        """,
-    )
-    assert com.required == []
-    assert com.optional == {}
-    assert com.css == ["a.css"]
-    assert com.js == ["a.js"]
+    assert com.css == ["a.css", "b.css"]
+    assert com.js == ["a.js", "b.js"]
 
 
 def test_linejump_in_args_decl():
