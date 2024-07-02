@@ -19,6 +19,11 @@ install:
 	poetry install --with dev,test
 	poetry run pre-commit install
 
+.PHONY: install.docs
+install.docs:
+	pip install -e ../jinjax-ui/
+	pip install -e ../claydocs/
+
 .PHONY: docs
 docs:
 	cd docs && python docs.py
