@@ -929,7 +929,7 @@ h6:hover a.headerlink {
   width: 100%;
   top: 10px;
 
-  @media (min-width: 1024px and min-height: 768px) {
+  @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
       position: -webkit-sticky;
       position: sticky;
@@ -1045,7 +1045,7 @@ h6:hover a.headerlink {
   scroll-behavior: smooth;
   overflow: hidden;
 
-  @media (min-width: 1024px and min-height: 768px) {
+  @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
       top: 3rem;
       height: calc(100vh - 3rem);
