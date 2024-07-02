@@ -3,7 +3,7 @@
 <nav {{ attrs.render(class="tPrevNext") }}>
   {% if prev.url -%}
   <a href="{{ prev.url }}" class="prev">
-    <i>🠘</i>
+    <i>&larr;</i>
     <div>
       <div class="section">
         {{ prev.section or "Previous" if prev.section != curr.section else "Previous" }}
@@ -20,7 +20,7 @@
       </div>
       <div class="title">{{ next.title }}</div>
     </div>
-    <i>🠚</i>
+    <i>&rarr;</i>
   </a>
   {%- endif %}
 </nav>
