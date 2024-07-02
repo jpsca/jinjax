@@ -1,0 +1,18 @@
+{% do attrs.set(id="navMobile", class="tNavMobile") %}
+
+<Popover :__attrs="attrs">
+  <header>
+    <Logo :base_url="nav.base_url" class="logo" />
+    <NavBar class="nav-links">
+      <ThemeSwitch class="themeswitch" :text="false" />
+    </NavBar>
+    <PopButton
+      target="navMobile"
+      action="close"
+      title="Close menu"
+      class="text-button toggleSidebar"
+    >Close</PopButton>
+  </header>
+
+  <Toc class="toc" :toc="nav.toc" :page="nav.page" />
+</Popover>

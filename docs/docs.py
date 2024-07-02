@@ -1,48 +1,54 @@
 #!/usr/bin/env python
 import logging
+from pathlib import Path
 
 import jinjax_ui
 from claydocs import Docs
 
 
-logging.getLogger("jinjax").setLevel(logging.INFO)
+logging.getLogger("jinjax").setLevel(logging.ERROR)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
+
+here = Path(__file__).parent
 
 pages = [
     "index.md",
-    [
-        "Guide",
         [
-            "guide/index.md",
-            "guide/components.md",
-            "guide/extra.md",
-            "guide/css_and_js.md",
+            "Guide",
+            [
+                "guide/index.md",
+                "guide/components.md",
+                "guide/extra.md",
+                "guide/css_and_js.md",
+            ],
         ],
-    ],
+        [
+            "UI components", [
+                "ui/index.md",
+                "ui/tabs.md",
+                "ui/popover.md",
+                "ui/menu.md",
+                "ui/accordion.md",
+                "ui/linkedlist.md",
+                "ui/reldate.md",
+            ],
+        ],
 ]
 
-
-# pages = {
-#     "en": ["index.md", ...],
-#     "es": ["index.md", ...],
-# }
-# languages = {
-#     "en": "English",
-#     "es": "Español",
-# }
-
-docs = Docs(
-    pages,
-    # languages=languages,
-    # default="en",
-    DEFAULT_COMPONENT="Page",
-    add_ons=[jinjax_ui],
-)
-docs.add_folder("components")
-docs.add_folder("theme")
-
-docs.catalog.use_cache = False
+def get_docs() -> Docs:
+    root_path = here / "content"
+    docs = Docs(
+        pages,
+        content_folder=root_path,
+        add_ons=[jinjax_ui],
+        search=False,
+        cache=True,
+        DEFAULT_COMPONENT="Page",
+    )
+    docs.add_folder(here / "components")
+    docs.add_folder(here / "theme")
+    return docs
 
 
 if __name__ == "__main__":
-    docs.run()
+    get_docs().run()

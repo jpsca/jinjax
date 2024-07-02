@@ -1,52 +1,26 @@
 {#def curr, prev, next #}
 
-<nav {{ attrs.render(class="flex items-center font-semibold") }}>
+<nav {{ attrs.render(class="tPrevNext") }}>
   {% if prev.url -%}
-  <a
-    href="{{ prev.url }}"
-    class="group no-underline flex flex-col py-3 w-1/2 mr-5"
-  >
-    <div class="
-      text-xs font-medium ml-4
-      text-zinc-500 group-hover:text-zinc-600
-      dark:text-zinc-500 dark:group-hover:text-zinc-400
-    ">
-      {{ prev.section or "Previous" if prev.section != curr.section else "Previous" }}
-    </div>
-    <div class="
-      flex items-center
-      text-zinc-600 group-hover:text-zinc-900
-      dark:text-zinc-300 dark:group-hover:text-white
-    ">
-      <div class="w-4">
-        <ArrowRight class="rotate-180" />
+  <a href="{{ prev.url }}" class="prev">
+    <i class="icon">keyboard_arrow_left</i>
+    <div>
+      <div class="section">
+        {{ prev.section or "Previous" if prev.section != curr.section else "Previous" }}
       </div>
-      {{ prev.title }}
+      <div class="title">{{ prev.title }}</div>
     </div>
   </a>
   {%- endif %}
   {% if next.url -%}
-  <a
-    href="{{ next.url }}"
-    class="group ml-auto no-underline flex flex-col items-end py-3 w-1/2"
-  >
-    <div class="
-      text-xs font-medium mr-4
-      text-zinc-500 group-hover:text-zinc-600
-      dark:text-zinc-500 dark:group-hover:text-zinc-400
-    ">
-      {{ next.section or "Next" if next.section != curr.section else "Next" }}
-    </div>
-    <div class="
-      flex items-center
-      text-zinc-600 group-hover:text-zinc-900
-      dark:text-zinc-300 dark:group-hover:text-white
-    ">
-      {{ next.title }}
-      <div class="w-4">
-        <ArrowRight class="float-right" />
+  <a href="{{ next.url }}" class="next">
+    <div>
+      <div class="section">
+        {{ next.section or "Next" if next.section != curr.section else "Next" }}
       </div>
+      <div class="title">{{ next.title }}</div>
     </div>
+    <i class="icon">keyboard_arrow_right</i>
   </a>
   {%- endif %}
 </nav>

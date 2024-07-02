@@ -1,62 +1,19 @@
 {#def text=true #}
-{#js ThemeSwitch.js #}
 
-{% do attrs.set(
-  class="ThemeSwitch p-[0.4rem] font-normal flex items-center space-x-1",
+<button {{ attrs.render(
+  class="tThemeSwitch text-button",
   title="Toggle light & dark mode",
   aria_label="auto",
   aria_live="polite",
-  style="-webkit-tap-highlight-color:transparent;",
-) %}
-
-<TextButton :__attrs="attrs">
+) }}>
   <svg
-    class="sun-and-moon w-5 h-5 pointer-events-none block"
+    class="sun-and-moon"
     aria-hidden="true"
     stroke-linecap="round"
     viewBox="0 0 24 24"
   >
-    <circle
-      class="sun
-        origin-center
-        transform-gpu
-        stroke-transparent
-        fill-zinc-700
-        group-hover:fill-zinc-800
-        group-focus-visible:fill-zinc-800
-        dark:fill-zinc-200
-        dark:group-hover:fill-zinc-100
-        dark:group-focus-visible:fill-zinc-100
-        scale-100
-        dark:scale-[1.75]
-        motion-safe:transition-transform
-        motion-safe:duration-500
-        motion-safe:ease-elastic-3
-        dark:motion-safe:duration-[250ms]
-        dark:motion-safe:ease-3
-      "
-      cx="12" cy="12" r="6"
-      mask="url(#moon-mask)"
-    ></circle>
-    <g
-      class="sun-beams
-        origin-center
-        transform-gpu
-        stroke-2
-        stroke-zinc-700
-        group-hover:stroke-zinc-800
-        group-focus-visible:stroke-zinc-800
-        dark:stroke-zinc-200
-        dark:group-hover:stroke-zinc-100
-        dark:group-focus-visible:stroke-zinc-100
-        dark:opacity-0
-        dark:rotate-[-25deg]
-        motion-safe:transition-[transform,opacity]
-        motion-safe:duration-400
-        motion-safe:ease-elastic-4
-        dark:motion-safe:duration-150
-        "
-    >
+    <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)"></circle>
+    <g class="sun-beams">
       <line x1="12" y1="1" x2="12" y2="3" />
       <line x1="12" y1="21" x2="12" y2="23" />
       <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
@@ -66,30 +23,13 @@
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </g>
-    <mask
-      class="moon
-        origin-center
-        fill-zinc-600
-        group-hover:fill-zinc-500
-      "
-      id="moon-mask"
-    >
+    <mask class="moon" id="moon-mask">
       <rect x="0" y="0" width="100%" height="100%" fill="white" />
-      <circle
-        class="
-          transform-gpu
-          dark:translate-x-[-7px]
-          motion-safe:transition-transform
-          motion-safe:duration-300
-          motion-safe:ease-out-5
-          dark:motion-safe:delay-300
-        "
-        cx="24" cy="10" r="6"
-      ></circle>
+      <circle cx="24" cy="10" r="6"></circle>
     </mask>
   </svg>
   {% if text -%}
-  <span class="hidden lg:block lg:dark:hidden ml-2 whitespace-nowrap">Light</span>
-  <span class="hidden lg:dark:block ml-2 whitespace-nowrap">Dark</span>
+  <span class="light-text">Light</span>
+  <span class="dark-text">Dark</span>
   {%- endif %}
-</TextButton>
+</button>

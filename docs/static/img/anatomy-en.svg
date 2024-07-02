@@ -24,10 +24,10 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="2.3136364"
-     inkscape:cx="0.43222003"
-     inkscape:cy="189.31237"
-     inkscape:window-width="2560"
-     inkscape:window-height="1358"
+     inkscape:cx="172.45579"
+     inkscape:cy="357.66208"
+     inkscape:window-width="1280"
+     inkscape:window-height="740"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -184,11 +184,9 @@
          x="24"
          y="370"
          fill="#214478"
-         id="tspan72">&lt;Button <tspan
-   fill="#5f8dd3"
-   id="tspan68">label=</tspan><tspan
-   fill="#ff7f2a"
-   id="tspan70">{label}</tspan> /&gt;</tspan><tspan
+         id="tspan72">&lt;Button :label=<tspan
+   fill="#008800"
+   id="tspan53">&quot;label&quot;</tspan> /&gt;</tspan><tspan
          x="17"
          y="386"
          fill="#3771c8"
@@ -234,12 +232,13 @@
        id="path100"
        sodipodi:nodetypes="cc" />
     <path
-       d="m 169,404 c -11,-17 -56,-3.7 -64,-22"
+       d="m 169,404 c -11,-17 -39.53849,-5.19589 -47.53849,-23.49589"
        fill="none"
        marker-end="url(#TriangleStart)"
        stroke="#000000"
        stroke-width="1.7"
-       id="path102" />
+       id="path102"
+       sodipodi:nodetypes="cc" />
   </g>
   <text
      style="font-size:12px;font-family:'Comic Neue'"
@@ -290,10 +289,10 @@
      xml:space="preserve"><tspan
        x="0"
        y="11"
-       id="tspan188">Optional lists of </tspan><tspan
+       id="tspan1018">Optional lists of </tspan><tspan
        x="0"
        y="26"
-       id="tspan190">CSS and JS files</tspan></text>
+       id="tspan1020">CSS and JS files</tspan></text>
   <text
      style="font-size:12px;font-family:'Comic Neue';white-space:pre;inline-size:138.046"
      transform="translate(277.91845,188.39939)"
@@ -304,14 +303,14 @@
      xml:space="preserve"><tspan
        x="0"
        y="11"
-       id="tspan192">Paths are absolute or </tspan><tspan
+       id="tspan1022">Paths are absolute or </tspan><tspan
        x="0"
        y="26"
-       id="tspan194">relative to the root of
+       id="tspan1024">relative to the root of
 </tspan><tspan
        x="0"
-       y="40.999999"
-       id="tspan196">the components folder</tspan></text>
+       y="41"
+       id="tspan1026">the components folder</tspan></text>
   <text
      style="font-size:12px;font-family:'Comic Neue'"
      transform="matrix(0.99764329,0,0,0.98692271,247.4097,314.31427)"
@@ -329,16 +328,20 @@
        y="48"
        id="tspan141">element, unlike React</tspan></text>
   <text
-     style="font-size:12px;font-family:'Comic Neue'"
+     style="font-size:12px;font-family:'Comic Neue';white-space:pre;inline-size:165.6"
      transform="matrix(0.9980174,0,0,0.98858774,171.78044,387.36773)"
      id="text149"
      inkscape:export-filename="/home/jpsca/Code/jinjax/docs/static/img/anatomy-en.png"
      inkscape:export-xdpi="223.418"
-     inkscape:export-ydpi="223.418"><tspan
+     inkscape:export-ydpi="223.418"
+     xml:space="preserve"><tspan
        x="0"
        y="11"
-       id="tspan145">You can call any other </tspan><tspan
+       id="tspan1028">You can call any other </tspan><tspan
        x="0"
-       y="30"
-       id="tspan147">component</tspan></text>
+       y="26"
+       id="tspan1030">component and pass attributes </tspan><tspan
+       x="0"
+       y="41"
+       id="tspan1032">to them</tspan></text>
 </svg>

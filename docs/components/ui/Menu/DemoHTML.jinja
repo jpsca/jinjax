@@ -1,0 +1,89 @@
+{% filter markdown %}{% raw %}
+```html+jinja
+<MenuButton id="menu-demo-btn" target="menu-demo-menu">
+  Menu <i class="icon">keyboard_arrow_down</i>
+</MenuButton>
+
+<Menu id="menu-demo-menu" anchor="menu-demo-btn" anchor-to="bottom end">
+  <div class="group">
+    <MenuItem>
+      <i class="icon">tab</i>
+      <a>New tab</a>
+      <kbd>Ctrl+T</kbd>
+    </MenuItem>
+    <MenuItem>
+      <i class="icon">new_window</i>
+      <a>New window</a>
+      <kbd>Ctrl+N</kbd>
+    </MenuItem>
+    <MenuItem disabled>
+      <i class="icon">fingerprint_off</i>
+      <a>Disabled item</a>
+      <kbd>Ctrl+Shift+N</kbd>
+    </MenuItem>
+  </div>
+  <div class="group">
+    <MenuItem>
+      <i class="icon">download</i>
+      <a>Downloads</a>
+      <kbd>Ctrl+J</kbd>
+    </MenuItem>
+    <MenuItemSub id="bookmarks-item">
+      <i class="icon">bookmarks</i>
+      <a>Bookmarks and lists</a>
+      <span class="icon arrow">keyboard_arrow_right</span>
+
+      <Menu anchor="bookmarks-item" anchor_to="right start">
+        <div class="group">
+          <MenuItem>
+            <i class="icon">bookmark_add</i>
+            <a>Bookmark this tab...</a>
+            <kbd>Ctrl+D</kbd>
+          </MenuItem>
+          <MenuItem>
+            <i class="icon">bookmarks</i>
+            <a>Bookmark all tabs...</a>
+            <kbd>Ctrl+Shift+D</kbd>
+          </MenuItem>
+        </div>
+        <div class="group">
+          <MenuItem>
+            <i class="icon">toolbar</i>
+            <a>Hide bookmarks bar</a>
+            <kbd>Ctrl+Shift+B</kbd>
+          </MenuItem>
+          <MenuItem>
+            <i class="icon">bookmarks</i>
+            <a>Show all bookmarks</a>
+          </MenuItem>
+          <MenuItem>
+            <i class="icon">bookmark_manager</i>
+            <a>Bookmark manager</a>
+            <kbd>Ctrl+Shift+O</kbd>
+          </MenuItem>
+        </div>
+      </Menu>
+    </MenuItemSub>
+  </div>
+  <div class="group">
+    <MenuItem>
+      <i class="icon">print</i>
+      <a>Print...</a>
+      <kbd>Ctrl+P</kbd>
+    </MenuItem>
+    <MenuItem>
+      <i class="icon">help</i>
+      <a>Help</a>
+    </MenuItem>
+    <MenuItem>
+      <i class="icon">settings</i>
+      <a>Settings</a>
+    </MenuItem>
+    <MenuItem>
+      <i class="icon">exit_to_app</i>
+      <a>Exit</a>
+    </MenuItem>
+  </div>
+</Menu>
+```
+{% endraw %}{% endfilter %}

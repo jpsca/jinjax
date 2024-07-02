@@ -1,0 +1,35 @@
+{% filter markdown %}{% raw %}
+```html+jinja
+<div>
+  <label>Known Mutants</label>
+  <LinkedList id="linkedlist-demo-list1" linked_to="linkedlist-demo-list2">
+    <li><input type="checkbox" name="users" value="1" />
+      Alexander Summers</li>
+    <!-- ... etc ... -->
+    <li><input type="checkbox" name="users" value="27" />
+      Warren Worthington III</li>
+  </LinkedList>
+
+  <button
+    type="button"
+    class="select-all"
+    onclick="document.getElementById('linkedlist-demo-list1').dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
+  >
+    Select all &raquo;
+  </button>
+</div>
+<div>
+  <label>X-Men</label>
+  <LinkedList id="linkedlist-demo-list2" linked_to="linkedlist-demo-list1" active>
+  </LinkedList>
+
+  <button
+    type="button"
+    class="remove-all"
+    onclick="document.getElementById('linkedlist-demo-list2').dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
+  >
+    &laquo; Remove all
+  </button>
+</div>
+```
+{% endraw %}{% endfilter %}

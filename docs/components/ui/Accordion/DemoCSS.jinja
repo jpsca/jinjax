@@ -1,0 +1,51 @@
+{% filter markdown %}{% raw %}
+```css
+@scope (#accordion-demo) {
+  details {
+    margin: 0;
+    border-width: 1px;
+    border-color: rgb(212 212 212);
+    background-color: rgb(245 245 245);
+    padding: 0;
+    overflow: hidden;
+    height: 3.5rem;
+    width: 36rem;
+    transition: all 0.15s ease-in-out;
+  }
+  details[open] {
+    height: 10rem;
+  }
+  details:focus-within {
+    box-shadow: 0 1px 2px 0 #2563eb;
+  }
+  details:first-of-type {
+    margin-top: 0px;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+  }
+  details:last-of-type {
+    margin-bottom: 0px;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+  }
+  summary {
+    position: relative;
+    height: 3.5rem;
+    border-bottom-width: 1px;
+    border-color: transparent;
+    background-color: rgb(255, 255, 255);
+    padding: 1rem 1.25rem;
+    color: rgb(0, 0, 0);
+    cursor: default;
+  }
+  details[open] > summary {
+    border-color: rgb(229 229 229);
+  }
+  .panel {
+    color: rgb(82 82 82);
+    padding: 0 1.25rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+```
+{% endraw %}{% endfilter %}

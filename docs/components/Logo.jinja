@@ -1,16 +1,8 @@
 {#def base_url="/" #}
 
 <a
-  {{ attrs.render(
-    class="
-      group flex h-10 items-center text-zinc-900 dark:text-zinc-100
-      opacity-90 hover:opacity-100
-    ",
-    href=base_url,
-    title="Back home",
-) }}>
+  {{ attrs.render(class="Logo", href=base_url, title="Back home") }}>
   <svg
-    class="block w-8 h-8"
     viewBox="0 0 135 135"
     fill="#90d73b"
     stroke-width="4"
@@ -25,8 +17,5 @@
     <path d="M25.854 53.803h35.304v35.304H25.854z" fill="#55b2ff"/>
     <path d="M92.311 83.873h26.316v26.316H92.311z" fill="#e6e6e6"/>
   </svg>
-
-  <span class="ml-2 whitespace-nowrap leading-none text-2xl font-bold">
-    JinjaX
-  </span>
+  <span class="text">JinjaX</span>
 </a>

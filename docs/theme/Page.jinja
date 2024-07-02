@@ -1,21 +1,19 @@
-{#def title="" #}
-<Layout :title="title" :description="meta.get('description', '')">
-  <NavBar />
-  <div class="px-4 sm:px-6 pb-16 z-10 flex mx-auto max-w-[100rem]">
-    <SidebarGlobal class="hidden lg:block" />
-    <main class="lg:pl-8 pt-10 2xl:mx-10 w-full">
-      <div class="Page prose">
-        {{ content }}
-      </div>
-      <PrevNext
-        class="mt-16 w-full"
-        :curr="nav.page"
-        :prev="nav.prev_page"
-        :next="nav.next_page"
-      />
-    </main>
-    <SidebarLocal class="hidden 2xl:block pl-8" />
+<Layout
+  :title="meta.get('title', '')"
+  :description="meta.get('description', '')"
+  :class="meta.get('class', 'tPage')"
+>
+  <NavTop></NavTop>
+  <div class="page-wrapper">
+    <NavGlobal></NavGlobal>
+    <main class="page prose">{{ content }}</main>
+    <NavLocal></NavLocal>
   </div>
-  <MyMenu></MyMenu>
-  <Footer />
+  <PrevNext
+    :curr="nav.page"
+    :prev="nav.prev_page"
+    :next="nav.next_page"
+  />
+  <NavMobile></NavMobile>
+  <Footer></Footer>
 </Layout>

@@ -1,0 +1,10 @@
+{% filter markdown %}{% raw %}
+```html+jinja
+{#def posts #}
+<Layout title="Archive">
+  {% for post in posts %}
+    <Post post={post} />
+  {% endfor %}
+</Layout>
+```
+{% endraw %}{% endfilter %}

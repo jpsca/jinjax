@@ -1,60 +1,25 @@
 {# def toc, page #}
 
-{% macro render_item(url, title) %}
+{% macro render_page(url, title) %}
 {% if url != "/" -%}
-<div
-  class="
-    group {{ 'active' if page.url == url else '' }}
-    border-l-2 border-zinc-100 dark:border-zinc-700/50
-    hover:border-zinc-300 dark:hover:border-zinc-400
-
-    [&.active]:border-accent [&.active]:hover:border-accent
-    [&.active]:dark:border-accent-darker [&.active]:dark:hover:border-accent-darker
-
-    pl-2
-  "
->
-  <a
-    href="{{ url }}"
-    class="
-      text-zinc-700 hover:text-black
-      dark:text-zinc-400 dark:hover:text-zinc-100
-      flex items-center py-1 px-2 rounded
-      border border-transparent
-
-      group-[.active]:font-medium
-      group-[.active]:text-zinc-800
-      group-[.active]:dark:text-zinc-300
-      group-[.active]:border-zinc-200
-      group-[.active]:bg-zinc-100
-    "
-  >
-      {{ title }}
-  </a>
+<div class="page {{ 'active' if page.url == url else '' }}">
+  <a href="{{ url }}#">{{ title }}</a>
 </div>
 {%- endif %}
 {% endmacro %}
 
 
 {% macro render_collapsable(title, children) %}
-<details class="my-6" open>
-  {% if title -%}
-  <summary class="font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
-    {{ title }}
-  </summary>
-  {%- endif %}
+<details open>
+  {% if title %}<summary>{{ title }}</summary>{% endif %}
   {{ render_children(children) }}
 </details>
 {% endmacro %}
 
 
 {% macro render_section(title, children) %}
-<section class="my-6" open>
-  {% if title -%}
-  <h2 class="font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
-    {{ title }}
-  </h2>
-  {%- endif %}
+<section open>
+  {% if title %}<h2>{{ title }}</h2>{% endif %}
   {{ render_children(children) }}
 </section>
 {% endmacro %}
@@ -69,10 +34,12 @@
         {{ render_section(title, sub_children) }}
       {%- endif %}
     {%- else -%}
-      {{ render_item(url, title) }}
+      {{ render_page(url, title) }}
     {%- endif %}
   {%- endfor %}
 {% endmacro %}
 
 
-{{ render_children(toc, collapsable=False) }}
+<div {{ attrs.render(class="tToc") }}>
+  {{ render_children(toc, collapsable=False) }}
+</div>

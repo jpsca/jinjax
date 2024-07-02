@@ -1,0 +1,127 @@
+@scope (#menu-demo) {
+  :scope {
+    position: relative;
+    display: block;
+    padding: 2rem 0.5rem 0;
+    height: 200px;
+    margin: 0 auto;
+  }
+
+  .ui-menubutton {
+    border-radius: 0.25rem;
+    border-width: 1px;
+    background-color: rgb(0 0 0 / 0.1);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+    width: fit-content;
+    margin: 0 auto;
+  }
+  .ui-menubutton:hover {
+    background-color: rgb(0 0 0 / 0.2);
+  }
+  .ui-menubutton .icon {
+    margin-left: 0.25rem;
+  }
+
+  .group:not([hidden]) ~ .group:not([hidden]) {
+    border-top: 1px solid #d1d5db;
+  }
+  .ui-menu {
+    margin-top: 4px;
+    padding: 8px 0;
+    border-radius: 8px;
+    width: 400px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px 4px rgba(0, 0, 0, 0.2);
+    overflow: visible;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.2s allow-discrete;
+    /* Final state of the exit animation */
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  .ui-menu:popover-open {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Needs to be after the previous .ui-menu:popover-open rule
+  to take effect, as the specificity is the same */
+  @starting-style {
+    .ui-menu:popover-open {
+      opacity: 0;
+      transform: translateY(-1rem);
+    }
+  }
+  .ui-menu:focus {
+    outline: none;
+  }
+  .ui-menu .ui-menu {
+    position: absolute;
+    margin: 0 0 0 -4px;
+    width: 300px;
+    z-index: 1;
+    transition: opacity 0.2s allow-discrete;
+  }
+  .ui-menu * {
+    user-select: none;
+  }
+
+  .ui-menuitem {
+    display: flex;
+    height: 40px;
+    padding-left: 24px;
+    padding-right: 24px;
+    align-items: center;
+    justify-items: flex-start;
+    line-height: 40px;
+    color: #000000;
+    background-color: #ffffff;
+    cursor: default;
+    user-select: none;
+    position: relative;
+    text-align: left;
+  }
+  .ui-menuitem.ui-selected {
+    background-color: #f2e7e4;
+  }
+  .ui-menuitem.ui-disabled {
+    color: #5f6368;
+  }
+  .ui-menuitem > .icon {
+    font-size: 1rem;
+    width: 24px;
+    text-align: left;
+  }
+  .ui-menuitem.ui-disabled > .icon {
+    color: #aca6a7;
+  }
+  .ui-menuitem > a {
+    flex-grow: 1;
+  }
+  .ui-menuitem > kbd {
+    visibility: hidden;
+    margin-left: auto;
+    font-size: 0.9rem;
+    font-family: inherit;
+    text-align: right;
+    color: #524f50;
+  }
+  .ui-menuitem:not(.ui-disabled):hover > kbd {
+    visibility: visible;
+  }
+  .ui-menuitem > .arrow {
+    margin-left: auto;
+    font-size: 0.7rem;
+    text-align: right;
+  }
+}

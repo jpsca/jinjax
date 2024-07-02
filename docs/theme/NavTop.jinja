@@ -1,0 +1,17 @@
+<section class="tNavTop">
+  <div class="wrapper">
+    <Logo class="logo" :base_url="nav.base_url" />
+    <NavBar class="nav-links">
+      <NavLinks />
+      <ThemeSwitch class="themeswitch" :text="false" />
+    </NavBar>
+    <NavBar class="nav-extra">
+      <NavExtra />
+    </NavBar>
+    <PopButton
+      target="navMobile"
+      title="Show menu"
+      class="text-button toggleSidebar"
+    >Menu</PopButton>
+  </div>
+</section>

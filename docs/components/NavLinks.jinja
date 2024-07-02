@@ -1,23 +1,2 @@
-{% if nav.page.url == "/" -%}
-<a
-  class="
-    text-sm p-1
-    text-zinc-600 dark:text-zinc-300
-    hover:text-zinc-900 dark:hover:text-white
-  "
-  href="{{ nav.next_page.url }}"
->
-  Documentation
-</a>
-{%- endif %}
-<LinkButton
-  title="Source code"
-  href="https://github.com/jpsca/jinjax"
-  class="
-    text-sm p-1
-    text-zinc-600 dark:text-zinc-300
-    hover:text-zinc-900 dark:hover:text-white
-  "
->
-  {% include "svg/github.svg" %}
-</LinkButton>
+<a href="/guide/">Documentation</a>
+<a href="/ui/">UI components</a>

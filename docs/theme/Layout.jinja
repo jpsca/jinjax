@@ -1,20 +1,13 @@
 {#def title="", description="" #}
-{#css "Layout.css" #}
 
 <!DOCTYPE html>
-<html lang="{{ nav.page.lang }}" class="light font-sans">
+<html lang="{{ nav.page.lang }}" class="light">
 	<head>
 		<meta charset="utf-8">
 		<MetaTags :title="title" :description="description" />
 		<meta property="generator" content="claydocs" />
 	</head>
-	<body class="
-		antialiased
-		overflow-y-auto
-		min-h-screen
-		text-neutral-900 dark:text-white
-		bg-white dark:bg-neutral-900
-	">
+	<body {{ attrs.render() }}>
 		{{ content }}
 	</body>
 </html>

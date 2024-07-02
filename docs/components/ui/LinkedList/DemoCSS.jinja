@@ -1,0 +1,83 @@
+{% filter markdown %}{% raw %}
+```css
+.ui-linkedlist {
+  padding: 0px;
+  background-color: rgb(255 255 255);
+  overscroll-behavior: contain;
+  overflow-y: scroll;
+  list-style-type: none;
+  height: 16rem;
+  margin: 0px;
+  border: 1px solid rgb(128 128 128);
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+}
+.ui-linkedlist li {
+  cursor: pointer;
+  display: flex;
+  padding: 0.25rem 1rem;
+  align-items: center;
+}
+.ui-linkedlist li[disabled] {
+  color: rgb(156 156 156);
+  cursor: default;
+}
+.ui-linkedlist li:hover {
+  background-color: rgb(243 244 246);
+}
+.ui-linkedlist input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+label {
+  display: inline-block;
+  font-weight: bold;
+  background-color: white;
+  padding: 0.25rem 2rem;
+  border: 1px solid rgb(128 128 128);
+  border-radius: 0.25rem 0.25rem 0 0;
+  font-size: 0.7rem;
+  margin-bottom: -1px;
+}
+
+button {
+  margin-top: 0.5rem;
+  display: inline-flex;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
+}
+button > :not([hidden]) ~ :not([hidden]) {
+  margin-left: 0.25rem;
+}
+button {
+  white-space: nowrap;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+  background-color: rgb(229 231 235);
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+button:hover {
+  border-color: rgb(219 234 254);
+  background-color: rgb(243 244 246);
+}
+button:focus {
+  background-color: rgb(229 231 235);
+  outline-offset: 1px;
+  outline-color: #3b82f6;
+}
+@media (min-width: 640px) {
+  button {
+    padding: 0.25rem 0.5rem;
+  }
+}
+button.select-all {
+  float: right;
+}
+```
+{% endraw %}{% endfilter %}

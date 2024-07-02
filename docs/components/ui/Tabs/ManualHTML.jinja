@@ -1,0 +1,28 @@
+{% filter markdown %}{% raw %}
+```html+jinja
+<TabGroup>
+  <TabList manual>
+    <Tab target="manual-recent" selected>Recent</Tab>
+    <Tab target="manual-popular">Popular</Tab>
+    <Tab target="manual-disabled" disabled>Disabled</Tab>
+    <Tab target="manual-trending">Trending</Tab>
+  </TabList>
+
+  <TabPanel id="manual-recent">
+    <p>This is the tab panel for <b>"Recent"</b>.</p>
+  </TabPanel>
+
+  <TabPanel id="manual-popular" hidden>
+    <p>This is the tab panel for <b>"Popular"</b>.</p>
+  </TabPanel>
+
+  <TabPanel id="manual-disabled" hidden>
+    <p>This is the tab panel for "Disabled".</p>
+  </TabPanel>
+
+  <TabPanel id="manual-trending" hidden>
+    <p>This is the tab panel for <b>"Trending"</b>.</p>
+  </TabPanel>
+</TabGroup>
+```
+{% endraw %}{% endfilter %}
