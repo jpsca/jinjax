@@ -1045,7 +1045,7 @@ h6:hover a.headerlink {
   scroll-behavior: smooth;
   overflow: hidden;
 
-  @media (min-height: 640px) {
+  @media (min-width: 1024px and min-height: 768px) {
     & {
       top: 3rem;
       height: calc(100vh - 3rem);
@@ -1208,8 +1208,7 @@ h6:hover a.headerlink {
   & a.next {
     display: flex;
     align-items: center;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    padding: 0.75rem 0.25rem;
     text-decoration: none;
     width: 50%;
     border: 1px solid var(--cd-border-color);
@@ -1218,13 +1217,11 @@ h6:hover a.headerlink {
     transition: all 0.2s ease-in;
   }
   & a.prev {
-    padding-right: 0.5rem;
     margin-right: 1.25rem;
     justify-content: flex-start;
     text-align: left;
   }
   & a.next {
-    padding-left: 0.5rem;
     margin-left: auto;
     justify-content: flex-end;
     text-align: right;
@@ -1247,10 +1244,11 @@ h6:hover a.headerlink {
     font-size: 0.9rem;
     line-height: 1.1;
   }
-  & .icon {
-    width: 2rem;
-    font-size: 1.6rem;
-    line-height: 1;
+  & i {
+    opacity: 0.8;
+    font-style: normal;
+    font-size: 1.4rem;
+    padding: 0 0.5rem;
   }
 }
 
@@ -1382,13 +1380,9 @@ h6:hover a.headerlink {
       transition-delay: 0.3s;
     }
   }
-  & .light-text {
-    margin-left: 0.5rem;
-    display: none;
-    white-space: nowrap;
-  }
-  & .dark-text {
-    padding: 0 0.5rem 0 0.25rem;
+  & .light-text,
+  & .dark-text  {
+    padding: 0.5rem;
     display: none;
     white-space: nowrap;
   }

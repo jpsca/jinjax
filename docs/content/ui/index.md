@@ -1,5 +1,5 @@
 ---
-title: JinjaX UI
+title: UI components
 ---
 
 <Header title="UI components" :section="false">

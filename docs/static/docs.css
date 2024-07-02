@@ -376,6 +376,9 @@
   }
 
   & a {
+    display: flex-inline;
+    align-items: center;
+    justify-content: center;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 1.25rem;
@@ -399,6 +402,10 @@
   & a:hover {
     background-image: linear-gradient(to top right, #a3e635, #a3e635);
     color: rgb(0 0 0);
+  }
+  & a i {
+    font-style: normal;
+    font-size: 1.2rem;
   }
 
   & .hint  {
