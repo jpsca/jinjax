@@ -1,5 +1,6 @@
 ---
 title: Extra Arguments
+description: If you pass arguments not declared in a component, those are not discarded, but rather collected in a `attrs` object that can render these extra arguments calling `attrs.render()`
 ---
 
 <Header title="Extra Arguments">

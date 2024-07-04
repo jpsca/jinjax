@@ -1,5 +1,6 @@
 ---
 title: Tabs
+description: Easily create accessible, fully customizable tab interfaces, with robust focus management and keyboard navigation support.
 ---
 
 <Header title="Tabs" section="UI components">

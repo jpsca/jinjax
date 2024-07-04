@@ -2,12 +2,18 @@
 
 <!DOCTYPE html>
 <html lang="{{ nav.page.lang }}" class="light">
-	<head>
-		<meta charset="utf-8">
-		<MetaTags :title="title" :description="description" />
-		<meta property="generator" content="claydocs" />
-	</head>
-	<body {{ attrs.render() }}>
-		{{ content }}
-	</body>
+<head>
+<meta charset="utf-8">
+<MetaTags :page="nav.page" />
+{% if nav.prev_page and nav.prev_page.url -%}
+  <link href="{{ nav.prev_page.url }}" rel="prev">
+{% endif -%}
+{% if nav.next_page and nav.next_page.url -%}
+  <link href="{{ nav.next_page.url }}" rel="next">
+{% endif -%}
+<meta property="generator" content="claydocs" />
+</head>
+<body {{ attrs.render() }}>
+{{ content }}
+</body>
 </html>

@@ -1,5 +1,6 @@
 ---
 title: Accordion
+description: Component for grouping <details> HTML elements where only one of them can be open at the same time.
 ---
 
 <Header title="Accordion" section="UI components">

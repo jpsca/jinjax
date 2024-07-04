@@ -43,7 +43,9 @@ def get_docs() -> Docs:
         add_ons=[jinjax_ui],
         search=False,
         cache=True,
-        DEFAULT_COMPONENT="Page",
+        domain="https://jinjax.scaletti.dev",
+        default_component="Page",
+        default_social="SocialCard",
     )
     docs.add_folder(here / "components")
     docs.add_folder(here / "theme")

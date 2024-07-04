@@ -1,5 +1,6 @@
 ---
 title: Adding CSS and JS
+description: Your components might need custom styles or custom JavaScript for many reasons.
 ---
 
 <Header title="Adding CSS and JS">

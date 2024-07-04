@@ -1,5 +1,6 @@
 ---
 title: UI components
+description: Unstyled, fully accessible UI components, to integrate with your projects.
 ---
 
 <Header title="UI components" :section="false">

@@ -1,5 +1,6 @@
 ---
 title: Components
+description: The components are `.jinja` files with snippets of template code. They look like a fragment of a regular Jinja template – and they could be – except for the optional special comments at the beginning of the file.
 ---
 
 <Header title="Components">

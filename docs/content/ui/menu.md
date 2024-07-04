@@ -1,5 +1,6 @@
 ---
 title: Menu (Dropdown)
+description: Displays a list of options that a user can choose with robust support for keyboard navigation. Built using the Popover API.
 ---
 
 <Header title="Menu" section="UI components">

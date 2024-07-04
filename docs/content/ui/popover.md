@@ -1,9 +1,10 @@
 ---
 title: Pop-over
+description: A wrapper over the Popover API with anchor positioning.
 ---
 
 <Header title="Pop-over" section="UI components">
-  A wrapper over the Popover API with anchor positioning
+  A wrapper over the Popover API with anchor positioning.
 </Header>
 
 Pop-overs are powerful components with many use cases like edit menus,

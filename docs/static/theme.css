@@ -45,8 +45,8 @@ html {
   --cd-font-sans: Karla, sans-serif;
   --cd-font-icons: "Material Symbols Rounded";
 
-  --cd-padding-left: max(0.5rem, env(safe-area-inset-right));
-  --cd-padding-right: max(0.5rem, env(safe-area-inset-left));
+  --cd-padding-left: max(1rem, env(safe-area-inset-right));
+  --cd-padding-right: max(1rem, env(safe-area-inset-left));
 
   --cd-brand-color: #fbbf24;
   --cd-bg-color-light: rgb(255 255 255);
@@ -924,15 +924,14 @@ h6:hover a.headerlink {
 
 
 .tNavTop {
-  position: relative;
   z-index: 1000;
   width: 100%;
-  top: 10px;
+  margin-top: 1rem;
 
   @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
-      position: -webkit-sticky;
       position: sticky;
+      top: 1rem;
     }
   }
   & .wrapper {
@@ -1105,9 +1104,8 @@ h6:hover a.headerlink {
     }
   }
   & header {
-    margin-top: 5px;
+    margin: 1rem 0;
     display: flex;
-    height: 3.5rem;
     align-items: center;
     padding-left: var(--cd-padding-left);
     padding-right: var(--cd-padding-right);
@@ -1174,6 +1172,7 @@ h6:hover a.headerlink {
     margin-right: auto;
     display: flex;
     max-width: 100rem;
+    padding-top: 1rem;
     padding-left: var(--cd-padding-left);
     padding-right: var(--cd-padding-right);
     padding-bottom: 1.5rem;
@@ -1181,12 +1180,11 @@ h6:hover a.headerlink {
   }
   & .page-wrapper > main {
     width: 100%;
-    padding-top: 3rem;
+    padding-top: 1rem;
   }
   @media (min-width: 640px) {
     & {
-      padding-top: 1.5rem;
-      padding-bottom: 4rem;
+      padding-bottom: 3rem;
     }
   }
 }

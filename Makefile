@@ -29,5 +29,9 @@ docs:
 	cd docs && python docs.py
 
 .PHONY: docs.build
+docs.build:
+	cd docs && python docs.py build
+
+.PHONY: docs.deploy
 docs.deploy:
 	cd docs && ./deploy.sh
