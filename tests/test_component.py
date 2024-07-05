@@ -212,3 +212,74 @@ def test_global_assets():
     )
     assert com.css == ["a.css", "/static/shared/b.css", "http://example.com/cdn.css"]
     assert com.js == ["http://example.com/cdn.js", "a.js", "/static/shared/b.js"]
+
+
+def test_types_in_args_decl():
+    com = Component(
+        name="Test.jinja",
+        source="""{# def
+  ring_class: str = "ring-1 ring-black",
+  rounded_class: str = "rounded-2xl md:rounded-3xl",
+
+  image: str | None = None,
+
+  title: str = "",
+  p_class: str = "px-5 md:px-6 py-5 md:py-6",
+  gap_class: str = "gap-4",
+  content_class: str = "",
+
+  layer_class: str | None = None,
+  layer_height: int = 4,
+#}"""
+    )
+    assert com.required == []
+    print(com.optional)
+    assert com.optional == {
+        "ring_class": "ring-1 ring-black",
+        "rounded_class": "rounded-2xl md:rounded-3xl",
+        "image": None,
+        "title": "",
+        "p_class": "px-5 md:px-6 py-5 md:py-6",
+        "gap_class": "gap-4",
+        "content_class": "",
+        "layer_class": None,
+        "layer_height": 4,
+    }
+
+
+def test_comments_in_args_decl():
+    com = Component(
+        name="Test.jinja",
+        source="""{# def
+  #
+  # Card style
+  ring_class: str = "ring-1 ring-black",
+  rounded_class: str = "rounded-2xl md:rounded-3xl",
+  #
+  # Image
+  image: str | None = None,
+  #
+  # Content
+  title: str = "",
+  p_class: str = "px-5 md:px-6 py-5 md:py-6",
+  gap_class: str = "gap-4",
+  content_class: str = "",
+  #
+  # Decorative layer
+  layer_class: str | None = None,
+  layer_height: int = 4,
+#}"""
+    )
+    assert com.required == []
+    print(com.optional)
+    assert com.optional == {
+        "ring_class": "ring-1 ring-black",
+        "rounded_class": "rounded-2xl md:rounded-3xl",
+        "image": None,
+        "title": "",
+        "p_class": "px-5 md:px-6 py-5 md:py-6",
+        "gap_class": "gap-4",
+        "content_class": "",
+        "layer_class": None,
+        "layer_height": 4,
+    }

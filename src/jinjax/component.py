@@ -20,6 +20,7 @@ if t.TYPE_CHECKING:
 
 
 RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
+RX_COMMENTS = re.compile(r"\n\s*#[^\n]*")
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
 RX_COMMA = re.compile(r"\s*,\s*")
@@ -156,13 +157,13 @@ class Component:
         if not match:
             return
 
+        header = RX_COMMENTS.sub("", match.group(0)).replace("\n", " ")
         # Reversed because I will use `header.pop()`
-        header = match.group(0).replace("\n", " ").split("#}")[::-1]
+        header = header.split("#}")[::-1]
         def_found = False
 
-        while line := header.pop():
-            line = line.strip(" -")
-
+        while header:
+            line = header.pop().strip(" -")
             expr = self.read_metadata_line(line, RX_PROPS_START)
             if expr:
                 if def_found:
