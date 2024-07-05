@@ -1,5 +1,5 @@
 <h1>
-  <img src="https://github.com/jpsca/jinjax/raw/main/logo.png"width="48" height="48" align="top">
+  <img src="https://github.com/jpsca/jinjax/raw/main/jinjax-logo.png" height="50" align="top">
   JinjaX
 </h1>
 
