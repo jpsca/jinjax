@@ -5,6 +5,12 @@
 <head>
 <meta charset="utf-8">
 <MetaTags :page="nav.page" />
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<link rel="apple-touch-icon" sizes="120x120" href="/static/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/theme.css?v={{ utils.timestamp }}">
+<link rel="stylesheet" href="/static/prose.css?v={{ utils.timestamp }}">
+<link rel="stylesheet" href="/static/docs.css?v={{ utils.timestamp }}">
+{{ catalog.render_assets() }}
 {% if nav.prev_page and nav.prev_page.url -%}
   <link href="{{ nav.prev_page.url }}" rel="prev">
 {% endif -%}
