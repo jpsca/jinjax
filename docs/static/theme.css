@@ -429,6 +429,30 @@ html.dark body {
   pointer-events: none;
 }
 
+
+.keys,
+kbd:not(.keys > kbd) {
+  font-family: var(--cd-font-mono);
+  display: inline-block;
+  padding: 0.2rem 0.25rem;
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  border-color: #ffffff;
+  box-shadow: 0 0 2px 0 #000;
+
+  &:is(.dark *) {
+    border-color: rgb(0 0 0);
+    background-color: rgb(24 24 27);
+  }
+}
+
 .bg-cover {
   position: absolute;
   z-index: -1;
@@ -469,7 +493,7 @@ h6:hover a.headerlink {
   opacity: 0.5;
 }
 
-.cards {
+.cd-cards {
   & {
     display: grid;
     grid-gap: 1rem;
@@ -555,7 +579,7 @@ h6:hover a.headerlink {
 
 /* ---------------------------------------------------------------------- */
 
-.tCallout {
+.cd-callout {
   --bg-color: rgb(244 244 245);
   --border-color: rgb(212 212 216);
   --text-color: rgb(39 39 42);
@@ -678,12 +702,12 @@ h6:hover a.headerlink {
   }
 }
 /* Cannot be nested */
-.tCallout::selection {
+.cd-callout::selection {
   background-color: oklch(from var(--bg-color) calc(l * 0.9) calc(c * 3) h);
 }
 
 
-.tExampleTabs {
+.cd-example-tabs {
   position: relative;
   margin-top: 2rem;
   margin-bottom: 3rem;
@@ -779,7 +803,7 @@ h6:hover a.headerlink {
 }
 
 
-.tFooter {
+.cd-footer {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
   padding-left: var(--cd-padding-left);
@@ -823,7 +847,7 @@ h6:hover a.headerlink {
 }
 
 
-.tHeader {
+.cd-header {
   margin-bottom: 2rem;
 
   & div p {
@@ -857,30 +881,7 @@ h6:hover a.headerlink {
 }
 
 
-.tKey {
-  font-family: var(--cd-font-mono);
-  display: inline-block;
-  padding: 0.2rem 0.25rem;
-  margin-left: 0.1rem;
-  margin-right: 0.1rem;
-  font-size: 0.875rem;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  line-height: 1;
-  border-radius: 0.25rem;
-  border-width: 1px;
-  border-color: #ffffff;
-  box-shadow: 0 0 2px 0 #000;
-
-  &:is(.dark *) {
-    border-color: rgb(0 0 0);
-    background-color: rgb(24 24 27);
-  }
-}
-
-
-.tNavBar {
+.cd-navbar {
   display: flex;
   align-items: center;
   border-radius: 20px;
@@ -923,7 +924,7 @@ h6:hover a.headerlink {
 }
 
 
-.tNavTop {
+.cd-nav-top {
   z-index: 1000;
   width: 100%;
   margin-top: 1rem;
@@ -1190,7 +1191,7 @@ h6:hover a.headerlink {
 }
 
 
-.tPrevNext {
+.cd-prevnext {
   display: flex;
   align-items: stretch;
   width: 100%;
@@ -1513,13 +1514,13 @@ h6:hover a.headerlink {
   display: none;
 }
 .tNavMobile:popover-open,
-.tNavTop .toggleSidebar {
+.cd-nav-top .toggleSidebar {
   display: block;
 }
 
 @media (min-width: 924px) {
   .tNavMobile,
-  .tNavTop .toggleSidebar {
+  .cd-nav-top .toggleSidebar {
     display: none;
   }
 }

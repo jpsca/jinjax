@@ -1,0 +1,10 @@
+{# def href: str label: str = "" #}
+
+<div attrs.render(class="cd-source", data_component="Source") }}>
+  <a href="{{ href }}">{{ label or href.lsplit("/", 3)[-1] }}</a>
+  <ul class="cd-source__facts" hidden>
+    <li class="cd-source__fact cd-source__fact--version"></li>
+    <li class="cd-source__fact cd-source__fact--stars"></li>
+    <li class="cd-source__fact cd-source__fact--forks"></li>
+  </ul>
+</div>

@@ -3,7 +3,7 @@
 {% set section = section or nav.page.section if section != false else None %}
 {% set title = title or nav.page.title %}
 
-<header {{ attrs.render(class="tHeader not-prose") }}>
+<header {{ attrs.render(class="cd-header not-prose", data_component="Header") }}>
   <div>
     {% if section -%}
     <p>{{ section }}</p>
