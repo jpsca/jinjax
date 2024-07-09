@@ -1,3 +1,9 @@
+.bg-cover {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+
 .Logo {
   display: flex;
   height: 2.5rem;

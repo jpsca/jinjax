@@ -1,6 +1,6 @@
 import { on } from "./jxui.js";
 
-const SEL_TARGET = ".tThemeSwitch";
+const SEL_TARGET = ".cd-theme-switch";
 const STORAGE_KEY = "theme";
 
 const DARK = "dark";
