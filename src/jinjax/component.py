@@ -18,13 +18,21 @@ from .utils import DELIMITER, get_url_prefix
 if t.TYPE_CHECKING:
     from typing_extensions import Self
 
+RX_COMMA = re.compile(r"\s*,\s*")
 
-RX_PROPS_START = re.compile(r"{#-?\s*def\s+")
-RX_COMMENTS = re.compile(r"\n\s*#[^\n]*")
+RX_ARGS_START = re.compile(r"{#-?\s*def\s+")
 RX_CSS_START = re.compile(r"{#-?\s*css\s+")
 RX_JS_START = re.compile(r"{#-?\s*js\s+")
-RX_COMMA = re.compile(r"\s*,\s*")
+
+# This regexp matches the meta declarations (`{#def .. #}``, `{#css .. #}``,
+# and `{#js .. #}`) and regular Jinja comments AT THE BEGINNING of the components source.
+# You can also have comments inside the declarations.
 RX_META_HEADER = re.compile(r"^(\s*{#.*?#})+", re.DOTALL)
+
+# This regexep matches comments (everything after a `#`)
+# Used to remove them from inside meta declarations
+RX_INTER_COMMENTS = re.compile(r"\s*#[^\n]*")
+
 
 ALLOWED_NAMES_IN_EXPRESSION_VALUES = {
     "len": len,
@@ -157,32 +165,36 @@ class Component:
         if not match:
             return
 
-        header = RX_COMMENTS.sub("", match.group(0)).replace("\n", " ")
+        header = match.group(0)
         # Reversed because I will use `header.pop()`
-        header = header.split("#}")[::-1]
+        header = header.split("#}")[:-1][::-1]
         def_found = False
 
         while header:
-            line = header.pop().strip(" -")
-            expr = self.read_metadata_line(line, RX_PROPS_START)
+            item = header.pop().strip(" -\n")
+
+            expr = self.read_metadata_item(item, RX_ARGS_START)
             if expr:
                 if def_found:
                     raise DuplicateDefDeclaration(self.name)
+                expr = RX_INTER_COMMENTS.sub("", expr).replace("\n", " ")
                 self.required, self.optional = self.parse_args_expr(expr)
                 def_found = True
                 continue
 
-            expr = self.read_metadata_line(line, RX_CSS_START)
+            expr = self.read_metadata_item(item, RX_CSS_START)
             if expr:
+                expr = RX_INTER_COMMENTS.sub("", expr).replace("\n", " ")
                 self.css = [*self.css, *self.parse_files_expr(expr)]
                 continue
 
-            expr = self.read_metadata_line(line, RX_JS_START)
+            expr = self.read_metadata_item(item, RX_JS_START)
             if expr:
+                expr = RX_INTER_COMMENTS.sub("", expr).replace("\n", " ")
                 self.js = [*self.js, *self.parse_files_expr(expr)]
                 continue
 
-    def read_metadata_line(self, source: str, rx_start: re.Pattern) -> str:
+    def read_metadata_item(self, source: str, rx_start: re.Pattern) -> str:
         start = rx_start.match(source)
         if not start:
             return ""
@@ -224,17 +236,17 @@ class Component:
     def filter_args(
         self, kw: dict[str, t.Any]
     ) -> tuple[dict[str, t.Any], dict[str, t.Any]]:
-        props = {}
+        args = {}
 
         for key in self.required:
             if key not in kw:
                 raise MissingRequiredArgument(self.name, key)
-            props[key] = kw.pop(key)
+            args[key] = kw.pop(key)
 
         for key in self.optional:
-            props[key] = kw.pop(key, self.optional[key])
+            args[key] = kw.pop(key, self.optional[key])
         extra = kw.copy()
-        return props, extra
+        return args, extra
 
     def render(self, **kwargs):
         assert self.tmpl, f"Component {self.name} has no template"
