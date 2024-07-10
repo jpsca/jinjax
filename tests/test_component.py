@@ -283,3 +283,33 @@ def test_comments_in_args_decl():
         "layer_class": None,
         "layer_height": 4,
     }
+
+
+def test_comment_after_args_decl():
+    com = Component(
+        name="Test.jinja",
+        source="""
+{# def
+  arg,
+#}
+
+{#
+  Some comment.
+#}
+Hi
+""".strip())
+    assert com.required == ["arg"]
+    assert com.optional == {}
+
+
+def test_fake_decl():
+    com = Component(
+        name="Test.jinja",
+        source="""
+{# definitely not an args decl! #}
+{# def arg #}
+{# jsadfghkl are letters #}
+{# csssssss #}
+""".strip())
+    assert com.required == ["arg"]
+    assert com.optional == {}

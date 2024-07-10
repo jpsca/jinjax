@@ -20,8 +20,8 @@ DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
 DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
-PROP_ATTRS = "attrs"
-PROP_CONTENT = "content"
+ARGS_ATTRS = "attrs"
+ARGS_CONTENT = "content"
 
 
 class Catalog:
@@ -217,19 +217,19 @@ class Catalog:
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
         kw = attrs
-        props, extra = component.filter_args(kw)
+        args, extra = component.filter_args(kw)
         try:
-            props[PROP_ATTRS] = HTMLAttrs(extra)
+            args[ARGS_ATTRS] = HTMLAttrs(extra)
         except Exception as exc:
             raise InvalidArgument(
                 f"The arguments of the component <{component.name}>"
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
-        props[PROP_CONTENT] = Markup(
+        args[ARGS_CONTENT] = Markup(
             content if content or not caller else caller().strip()
         )
-        return component.render(**props)
+        return component.render(**args)
 
     def get_middleware(
         self,
