@@ -857,3 +857,45 @@ def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
 """.strip()
 
     assert html == Markup(expected)
+
+
+def test_vue_like_syntax(catalog, folder):
+    (folder / "Test.jinja").write_text("""
+    {#def a, b, c, d #}
+    {{ a }} {{ b }} {{ c }} {{ d }}
+    """)
+    (folder / "Caller.jinja").write_text(
+        """<Test :a="2+2" b="2+2" :c="{'lorem': 'ipsum'}" :d="false" />"""
+    )
+    html = catalog.render("Caller")
+    print(html)
+    expected  = """4 2+2 {'lorem': 'ipsum'} False""".strip()
+    assert html == Markup(expected)
+
+
+def test_jinja_like_syntax(catalog, folder):
+    (folder / "Test.jinja").write_text("""
+    {#def a, b, c, d #}
+    {{ a }} {{ b }} {{ c }} {{ d }}
+    """)
+    (folder / "Caller.jinja").write_text(
+        """<Test a={{ 2+2 }} b="2+2" c={{ {'lorem': 'ipsum'} }} d={{ false }} />"""
+    )
+    html = catalog.render("Caller")
+    print(html)
+    expected  = """4 2+2 {'lorem': 'ipsum'} False""".strip()
+    assert html == Markup(expected)
+
+
+def test_mixed_syntax(catalog, folder):
+    (folder / "Test.jinja").write_text("""
+    {#def a, b, c, d #}
+    {{ a }} {{ b }} {{ c }} {{ d }}
+    """)
+    (folder / "Caller.jinja").write_text(
+        """<Test :a={{ 2+2 }} b="{{2+2}}" :c={{ {'lorem': 'ipsum'} }} :d={{ false }} />"""
+    )
+    html = catalog.render("Caller")
+    print(html)
+    expected  = """4 {{2+2}} {'lorem': 'ipsum'} False""".strip()
+    assert html == Markup(expected)
