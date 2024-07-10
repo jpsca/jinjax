@@ -1,6 +1,6 @@
 <Layout
-  :title="nav.page.title"
-  :description="nav.page.description"
+  :title="page.title"
+  :description="page.description"
   :class="meta.get('class', 'cd-page')"
 >
   <NavTop></NavTop>
@@ -10,9 +10,9 @@
     <NavLocal></NavLocal>
   </div>
   <PrevNext
-    :curr="nav.page"
-    :prev="nav.prev_page"
-    :next="nav.next_page"
+    :curr="page"
+    :prev="page.prev_page"
+    :next="page.next_page"
   />
   <NavMobile></NavMobile>
   <Footer></Footer>

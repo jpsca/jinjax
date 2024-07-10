@@ -3,7 +3,7 @@ import { on } from "./jxui.js";
 const ACTIVE = "active";
 const SEL_TARGET = ".cd-toc-page a";
 const SEL_ACTIVE = `${SEL_TARGET}.${ACTIVE}`;
-const SEL_SECTIONS = "main.page > header[id], main.page section[id]";
+const SEL_SECTIONS = "main.page section[id]";
 
 on("click", SEL_TARGET, handleClick);
 

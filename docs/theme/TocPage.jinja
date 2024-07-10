@@ -9,7 +9,7 @@
 {%- endfor %}
 {% endmacro %}
 
-<ul {{ attrs.render(class="cd-toc-page") }}>
+<ul {{ attrs.render(class="cd-toc-page", data_component="TocPage") }}>
 {%- for section in page_toc %}
   <li><a href="#{{ section.id }}">{{ section.name | e }}</a></li>
   {{ render_sub_items(section.children) }}

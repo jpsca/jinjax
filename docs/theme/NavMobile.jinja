@@ -1,8 +1,8 @@
-{% do attrs.set(id="navMobile", class="cd-nav-mobile") %}
+{% do attrs.set(id="navMobile", class="cd-nav-mobile", data_component="NavMobile") %}
 
 <Popover :__attrs="attrs">
   <header>
-    <Logo :base_url="nav.base_url" class="logo" />
+    <Logo :base_url="page.base_url" class="logo" />
     <nav class="cd-navbar nav-links">
       <ThemeSwitch class="themeswitch" :text="false" />
     </nav>
@@ -14,5 +14,5 @@
     >Close</PopButton>
   </header>
 
-  <Toc class="toc" :toc="nav.toc" :page="nav.page" />
+  <Toc class="toc" :toc="nav.toc" :page="page" />
 </Popover>
