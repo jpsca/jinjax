@@ -29,7 +29,7 @@ re_attr = r"""
 (?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-]*)
 (?:
     \s*=\s*
-    (?P<value>".*?"|'.*?')
+    (?P<value>".*?"|'.*?'|\{\{.*?\}\})
 )?
 (?:\s+|/|"|$)
 """
@@ -86,6 +86,8 @@ class JinjaX(Extension):
         tag = match.group("tag")
         attrs = (match.group("attrs") or "").strip()
         inline = match.group(0).endswith("/>")
+        lineno = source[:start].count("\n") + 1
+
         logger.debug(f"{tag} {attrs} {'inline' if not inline else ''}")
         if inline:
             content = ""
@@ -95,7 +97,7 @@ class JinjaX(Extension):
             if index == -1:
                 raise TemplateSyntaxError(
                     message=f"Unclosed component {match.group(0)}",
-                    lineno=source[:start].count("\n") + 1,
+                    lineno=lineno,
                     name=self._name,
                     filename=self._filename
                 )
@@ -104,6 +106,7 @@ class JinjaX(Extension):
 
         attrs_list = self._parse_attrs(attrs)
         repl = self._build_call(tag, attrs_list, content)
+
         return f"{source[:start]}{repl}{source[end:]}"
 
     def _parse_attrs(self, attrs: str) -> list[tuple[str, str]]:
@@ -128,9 +131,19 @@ class JinjaX(Extension):
                 name = name.lstrip(":")
                 attrs.append(f'"{name}"=True')
             else:
-                if name.startswith(":"):
-                    name = name.lstrip(":")
+                # vue-like syntax
+                if (
+                    name[0] == ":"
+                    and value[0] in ("\"'")
+                    and value[-1] in ("\"'")
+                ):
                     value = value[1:-1].strip()
+
+                # double curly braces syntax
+                if value[:2] == "{{" and value[-2:] == "}}":
+                    value = value[2:-2].strip()
+
+                name = name.lstrip(":")
                 attrs.append(f'"{name}"={value}')
 
         str_attrs = "**{" + ", ".join([a.replace("=", ":", 1) for a in attrs]) + "}"
