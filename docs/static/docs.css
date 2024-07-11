@@ -235,6 +235,7 @@
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
+    flex-direction: row-reverse;
   }
   & .card > .header img {
     float: left;
