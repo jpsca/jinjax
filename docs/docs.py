@@ -6,7 +6,7 @@ import jinjax_ui
 from claydocs import Docs
 
 
-logging.getLogger("jinjax").setLevel(logging.ERROR)
+logging.getLogger("jinjax").setLevel(logging.INFO)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
 
 here = Path(__file__).parent
@@ -46,6 +46,13 @@ def get_docs() -> Docs:
         domain="https://jinjax.scaletti.dev",
         default_component="Page",
         default_social="SocialCard",
+        metadata={
+            "name": "JinjaX",
+            "language": "en",
+            "license": "MIT",
+            "version": "0.43",
+            "web": "https://jinjax.scaletti.dev",
+        }
     )
     docs.add_folder(here / "components")
     docs.add_folder(here / "theme")

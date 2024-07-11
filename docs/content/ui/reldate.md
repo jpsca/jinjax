@@ -11,14 +11,14 @@ etc. using JavaScript's <a class="link" href="https://developer.mozilla.org/en-U
 
 *Some examples (as if the datetime was `June 20th, 2024 6:30pm`)*:
 
-| Source      | Relative date
-| ------------| --------------
-| `<RelDate datetime="2024-01-01"/>` | <RelDate datetime="2024-01-01" now="2024-06-20T18:30"/>
-| `<RelDate datetime="2024-06-19T18:30"/>` | <RelDate datetime="2024-06-19T18:30" now="2024-06-20T18:30"/>
-| `<RelDate datetime="2024-06-20T14:00"/>` | <RelDate datetime="2024-06-20T14:00" now="2024-06-20T18:30"/>
-| `<RelDate datetime="2024-06-21T14:00"/>` | <RelDate datetime="2024-06-21T14:00" now="2024-06-20T18:30"/>
-| `<RelDate datetime="2024-06-30T10:00"/>` | <RelDate datetime="2024-06-30T10:00" now="2024-06-20T18:30"/>
-| `<RelDate datetime="1992-10-01"/>` | <RelDate datetime="1992-10-01" now="2024-06-20T18:30"/>
+| Source                                   | Relative date
+| -----------------------------------------| --------------
+| `<RelDate datetime="2024-01-01"/>`       | 6 months ago
+| `<RelDate datetime="2024-06-19T18:30"/>` | yesterday
+| `<RelDate datetime="2024-06-20T14:00"/>` | 5 hours ago
+| `<RelDate datetime="2024-06-21T14:00"/>` | in 19 hours
+| `<RelDate datetime="2024-06-30T10:00"/>` | 	next week
+| `<RelDate datetime="1992-10-01"/>`       | 32 years ago
 
 
 ## How it works
@@ -39,12 +39,12 @@ Both can be a comma-separated lists of locales (e.g.: `"en-US,en-UK,en`). If non
 
 *Some examples (as if the datetime was `June 20th, 2024 6:30pm`)*:
 
-| Source      | Relative date
-| ------------| --------------
-| `<RelDate datetime="2024-01-01" lang="it"/>` | <RelDate datetime="2024-01-01" now="2024-06-20T18:30" lang="it"/>
-| `<RelDate datetime="2024-06-19T18:30" lang="fr"/>` | <RelDate datetime="2024-06-19T18:30" now="2024-06-20T18:30" lang="fr"/>
-| `<RelDate datetime="2024-06-21T14:00" lang="es"/>` | <RelDate datetime="2024-06-21T14:00" now="2024-06-20T18:30" lang="es"/>
-| `<RelDate datetime="2024-06-21T14:00" lang="es-PE,es-ES,es"/>` | <RelDate datetime="2024-06-21T14:00" now="2024-06-20T18:30" lang="es"/>
+| Source                                                         | Relative date
+| ---------------------------------------------------------------| --------------
+| `<RelDate datetime="2024-01-01" lang="it"/> `                  | 6 mesi fa
+| `<RelDate datetime="2024-06-19T18:30" lang="fr"/>`             | hier
+| `<RelDate datetime="2024-06-21T14:00" lang="es"/>`             | dentro de 19 horas
+| `<RelDate datetime="2024-06-21T14:00" lang="es-PE,es-ES,es"/>` | dentro de 19 horas
 
 
 ## Component arguments

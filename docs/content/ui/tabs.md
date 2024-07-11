@@ -1,10 +1,10 @@
 ---
 title: Tabs
-description: Easily create accessible, fully customizable tab interfaces, with robust focus management and kbdboard navigation support.
+description: Easily create accessible, fully customizable tab interfaces, with robust focus management and keyboard navigation support.
 ---
 
 <Header title="Tabs" section="UI components">
-  Easily create accessible, fully customizable tab interfaces, with robust focus management and kbdboard navigation support.
+  Easily create accessible, fully customizable tab interfaces, with robust focus management and keyboard navigation support.
 </Header>
 
 <ExampleTabs
@@ -16,7 +16,7 @@ description: Easily create accessible, fully customizable tab interfaces, with r
   }"
 />
 
-Tabs are built using the `TabGroup`, `TabList`, `Tab`, and `TabPanel` components. Clicking on any tab or selecting it with the kbdboard will activate the corresponding panel.
+Tabs are built using the `TabGroup`, `TabList`, `Tab`, and `TabPanel` components. Clicking on any tab or selecting it with the keyboard will activate the corresponding panel.
 
 
 ## Styling states
@@ -30,7 +30,7 @@ Tabs are built using the `TabGroup`, `TabList`, `Tab`, and `TabPanel` components
 
 ## Disabling a tab
 
-To disable a tab, use the disabled attribute on the `Tab` component. Disabled tabs cannot be selected with the mouse, and are also skipped when navigating the tab list using the kbdboard.
+To disable a tab, use the disabled attribute on the `Tab` component. Disabled tabs cannot be selected with the mouse, and are also skipped when navigating the tab list using the keyboard.
 
 <Callout type="warning">
 Disabling tabs might be confusing for users. Instead, I reccomend you either remove it or explain why there is no content for that tab when is selected.
@@ -98,7 +98,7 @@ Note that a `TabSelect` **is not a replacement for a `TabList`**. For accessibil
 | Argument    | Type     | Default    | Description
 | ----------- | -------- | ---------- | --------------
 | vertical    | `bool`   | `false`    | Use the <kbd title="arrow up">↑</kbd> and <kbd title="arrow down">↓</kbd> arrow kbds to move between tabs instead of the defaults <kbd title="arrow left">←</kbd> and <kbd title="arrow right">→</kbd> arrow kbds.
-| manual      | `bool`   | `false`    | If `true`, selecting a tab with the kbdboard won't activate it, you must press <kbd>Enter</kbd> os <kbd>Space</kbd> kbds to do it.
+| manual      | `bool`   | `false`    | If `true`, selecting a tab with the keyboard won't activate it, you must press <kbd>Enter</kbd> os <kbd>Space</kbd> kbds to do it.
 | tag         | `str`    | `"nav"`    | HTML tag used for rendering the wrapper.
 
 
@@ -149,7 +149,7 @@ document.addEventListener("jxui:tab:selected", (event) => {
 
 Clicking a `Tab` will select that tab and display the corresponding `TabPanel`.
 
-### kbdboard interaction
+### Keyboard interaction
 
 All interactions apply when a `Tab` component is focused.
 

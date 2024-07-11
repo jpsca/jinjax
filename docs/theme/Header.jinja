@@ -9,11 +9,9 @@
 ) }}>
   <div>
     {% if section -%}
-    <p>{{ section }}</p>
+    <p data-md-skip>{{ section }}</p>
     {%- endif %}
-    <h1>
-      <a tabindex="0" href="#">{{ title | utils.widont }}</a>
-    </h1>
+    <h1>{{ title | utils.widont }}</h1>
   </div>
   <p class="description">{{ content | utils.widont }}</p>
 </header>
