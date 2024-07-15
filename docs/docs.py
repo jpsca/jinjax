@@ -18,10 +18,13 @@ pages = [
             [
                 "guide/index.md",
                 "guide/components.md",
-                "guide/extra.md",
                 "guide/css_and_js.md",
+                # "guide/integrations.md",
+                # "guide/performance.md",
+                "guide/motivation.md",
             ],
         ],
+        "api.md",
         [
             "UI components", [
                 "ui/index.md",
@@ -42,7 +45,7 @@ def get_docs() -> Docs:
         content_folder=root_path,
         add_ons=[jinjax_ui],
         search=False,
-        cache=True,
+        cache=False,
         domain="https://jinjax.scaletti.dev",
         default_component="Page",
         default_social="SocialCard",

@@ -41,6 +41,8 @@ class LazyString(UserString):
 
 
 class HTMLAttrs:
+    """This class
+    """
     def __init__(self, attrs) -> None:
         attributes: "dict[str, str | LazyString]" = {}
         properties: set[str] = set()
@@ -148,16 +150,6 @@ class HTMLAttrs:
             return True
         return default
 
-    def _remove(self, name: str) -> None:
-        """
-        Removes an attribute or property."""
-        if name in CLASS_KEYS:
-            self.__classes = set()
-        if name in self.__attributes:
-            del self.__attributes[name]
-        if name in self.__properties:
-            self.__properties.remove(name)
-
     def render(self, **kw) -> str:
         """
         Renders the attributes and properties as a string.
@@ -184,3 +176,15 @@ class HTMLAttrs:
         html_attrs.extend(properties)
 
         return Markup(" ".join(html_attrs))
+
+    # Private
+
+    def _remove(self, name: str) -> None:
+        """
+        Removes an attribute or property."""
+        if name in CLASS_KEYS:
+            self.__classes = set()
+        if name in self.__attributes:
+            del self.__attributes[name]
+        if name in self.__properties:
+            self.__properties.remove(name)

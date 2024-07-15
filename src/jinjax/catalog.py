@@ -14,8 +14,6 @@ from .middleware import ComponentsMiddleware
 from .utils import DELIMITER, SLASH, get_url_prefix, logger
 
 
-TFileExt = t.Union[tuple[str, ...], str]
-
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
 DEFAULT_PREFIX = ""
@@ -26,8 +24,9 @@ ARGS_CONTENT = "content"
 
 class Catalog:
     """
-    Attributes:
+    The object that manages the components and their global settings.
 
+    Arguments:
         globals:
 
         filters:
@@ -77,7 +76,7 @@ class Catalog:
         extensions: "list | None" = None,
         jinja_env: "jinja2.Environment | None" = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: TFileExt = DEFAULT_EXTENSION,
+        file_ext: "tuple[str, ...] | str" = DEFAULT_EXTENSION,
         use_cache: bool = True,
         auto_reload: bool = True,
         fingerprint: bool = False,
@@ -150,7 +149,9 @@ class Catalog:
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
-        mprefix = prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
+        mprefix = (
+            prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
+        )
         self.add_folder(module.components_path, prefix=mprefix)
 
     def render(
@@ -249,7 +250,7 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str, file_ext: TFileExt = "") -> str:
+    def get_source(self, cname: str, file_ext: "tuple[str, ...] | str" = "") -> str:
         prefix, name = self._split_name(cname)
         path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
         return path.read_text()
@@ -334,7 +335,7 @@ class Catalog:
         return DEFAULT_PREFIX, cname
 
     def _get_component_path(
-        self, prefix: str, name: str, file_ext: TFileExt = ""
+        self, prefix: str, name: str, file_ext: "tuple[str, ...] | str" = ""
     ) -> tuple[Path, str]:
         name = name.replace(DELIMITER, SLASH)
         root_paths = self.prefixes[prefix].searchpath

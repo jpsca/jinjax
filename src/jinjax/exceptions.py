@@ -1,4 +1,5 @@
 class ComponentNotFound(Exception):
+    """ """
     def __init__(self, name: str) -> None:
         msg = f"File with pattern `{name}` not found"
         super().__init__(msg)
@@ -11,10 +12,11 @@ class MissingRequiredArgument(Exception):
 
 
 class DuplicateDefDeclaration(Exception):
+    """ """
     def __init__(self, component: str) -> None:
         msg = "`" + str(component) + "` has two `{#def ... #}` declarations"
         super().__init__(msg)
 
 
 class InvalidArgument(Exception):
-    pass
+    """ """

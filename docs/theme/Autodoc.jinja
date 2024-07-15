@@ -1,0 +1,4 @@
+{#def name: str, level: int = 2 #}
+
+{% set obj = autodoc(name) %}
+<AutodocObject obj={{ obj }} name={{ name }} level={{ level }} />
