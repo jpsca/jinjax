@@ -9,6 +9,7 @@ title: "API reference"
 
 <Autodoc name="jinjax.HTMLAttrs" />
 
+
 ## Exceptions
 
 <Autodoc name="jinjax.ComponentNotFound" level={{ 3 }} />

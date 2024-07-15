@@ -1,4 +1,56 @@
-{#def name: str, level: int = 2 #}
+{#def
+  obj: dict | None = None,
+  name: str = "",
+  level: int = 2,
+#}
 
-{% set obj = autodoc(name) %}
-<AutodocObject obj={{ obj }} name={{ name }} level={{ level }} />
+{% set obj = obj or autodoc(name) %}
+
+<h{{ level }}>
+  <code class="label-{{ obj.type }}">{{ obj.type }}</code>
+  {{ name or obj.name }}
+</h{{ level }}>
+
+{% filter markdown %}
+{% if obj.doc.short_description -%}
+  {{ obj.doc.short_description }}
+{%- endif %}
+{% if obj.doc.long_description -%}
+  {{ obj.doc.long_description }}
+{%- endif %}
+
+{% if obj.signature -%}
+```python
+{{ obj.signature }}
+```
+{%- endif %}
+{%- endfilter %}
+
+{% if obj.bases -%}
+<p>Bases:
+{%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
+{%- endfor %}
+</p>
+{%- endif %}
+
+{% if obj.doc.params -%}
+<table>
+  <thead>
+    <tr><th>Parameter</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+{%- for param in obj.doc.params %}
+  <tr>
+    <td><code>{{ param.arg_name }}</code></td>
+    <td>{{ param.description | markdown }}</td>
+  </tr>
+{%- endfor %}
+  </tbody>
+</table>
+{%- endif %}
+
+{% if obj.methods -%}
+{% for method in obj.methods %}
+<Autodoc obj={{ method }} level={{ level + 1 }} />
+{%- endfor %}
+{%- endif %}
