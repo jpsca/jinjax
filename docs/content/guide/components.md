@@ -24,7 +24,7 @@ catalog.add_folder("myapp/components")
 
 If you end up having more than one component with the same name, the one in the first folder will take priority.
 
-**Second**, they must have a ".jinja" extension. This is just the default configuration, chosen because it helps code editors automatically select the correct language syntax to highlight. However, you can configure it in the catalog.
+**Second**, they must have a ".jinja" extension. This also helps code editors automatically select the correct language syntax to highlight. However, you can configure it in the catalog.
 
 **Third**, the component name must start with an uppercase letter. Why? This is how JinjaX differentiates a component from a regular HTML tag when using it. I recommend using PascalCase names, like Python classes.
 

@@ -1,7 +1,7 @@
 import re
+import typing as t
 from collections import UserString
 from functools import cached_property
-from typing import Any
 
 from markupsafe import Markup
 
@@ -41,9 +41,16 @@ class LazyString(UserString):
 
 
 class HTMLAttrs:
-    """This class
+    """Contains all the HTML attributes/properties (a property is an
+    attribute without a value) passed to a component but that weren't
+    in the declared attributes list.
+
+    For HTML classes you can use the name "classes" (instead of "class")
+    if you need to.
+
     """
-    def __init__(self, attrs) -> None:
+
+    def __init__(self, attrs: dict[str, t.Any]) -> None:
         attributes: "dict[str, str | LazyString]" = {}
         properties: set[str] = set()
 
@@ -65,21 +72,58 @@ class HTMLAttrs:
 
     @property
     def classes(self) -> str:
+        """All the HTML classes alphabetically sorted and
+        separated by a space.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"class": "italic bold bg-blue wide abcde"})
+        attrs.set(class="bold text-white")
+        print(attrs.classes)
+        abcde bg-blue bold italic text-white wide
+        ```
+
+        """
         return " ".join(sorted((self.__classes)))
 
     @property
-    def as_dict(self) -> dict[str, Any]:
+    def as_dict(self) -> dict[str, t.Any]:
+        """An ordered dict of all the attributes and properties, both
+        sorted by name before join.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({
+           "class": "lorem ipsum",
+           "data_test": True,
+           "hidden": True,
+           "aria_label": "hello",
+           "id": "world",
+        })
+        attrs.as_dict
+        {
+            "aria_label": "hello",
+            "class": "ipsum lorem",
+            "id": "world",
+            "data_test": True,
+            "hidden": True
+        }
+        ```
+
+        """
         attributes = self.__attributes.copy()
         classes = self.classes
         if classes:
             attributes[CLASS_KEY] = classes
 
-        out: dict[str, Any] = dict(sorted(attributes.items()))
+        out: dict[str, t.Any] = dict(sorted(attributes.items()))
         for name in sorted((self.__properties)):
             out[name] = True
         return out
 
-    def __getitem__(self, name: str) -> Any:
+    def __getitem__(self, name: str) -> t.Any:
         return self.get(name)
 
     def __delitem__(self, name: str) -> None:
@@ -96,7 +140,26 @@ class HTMLAttrs:
         - Use `False` to remove an attribute or property
 
         If the attribute is "class", the new classes are appended to
-        the old ones instead of replacing them.
+        the old ones (if not repeated) instead of replacing them.
+
+        Example:
+
+            ```python
+            attrs = HTMLAttrs({"secret": "qwertyuiop"})
+            attrs.set(secret=False)
+            attrs.as_dict
+            {}
+
+            attrs.set(unknown=False, lorem="ipsum", count=42, data_good=True)
+            attrs.as_dict
+            {"count":42, "lorem":"ipsum", "data_good": True}
+
+            attrs = HTMLAttrs({"class": "b c a"})
+            attrs.set(class="c b f d e")
+            attrs.as_dict
+            {"class": "a b c d e f"}
+            ```
+
         """
         for name, value in kw.items():
             name = name.replace("_", "-")
@@ -115,6 +178,17 @@ class HTMLAttrs:
         """
         Adds an attribute or sets a property, but only if it's not
         already present. Doesn't work with properties.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"lorem": "ipsum"})
+        attrs.setdefault(tabindex=0, lorem="meh")
+        attrs.as_dict
+        # "tabindex" changed but "lorem" didn't
+        {"lorem": "ipsum", tabindex: 0}
+        ```
+
         """
         for name, value in kw.items():
             if value in (True, False, None):
@@ -129,18 +203,62 @@ class HTMLAttrs:
                 self.set(**{name: value})
 
     def add_class(self, *values: str) -> None:
+        """Add a class if not already present.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"class": "a b c"})
+        attrs.add_class("c", "d")
+        attrs.as_dict
+        {"class": "a b c d"}
+        ```
+
+        """
         for names in values:
             for name in split(names):
                 self.__classes.add(name)
 
     def remove_class(self, *names: str) -> None:
+        """Removes a class if present.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"class": "a b c"})
+        attrs.remove_class("c", "d")
+        attrs.as_dict
+        {"class": "a b"}
+        ```
+
+        """
         for name in names:
             self.__classes.remove(name)
 
-    def get(self, name: str, default: Any = None) -> Any:
+    def get(self, name: str, default: t.Any = None) -> t.Any:
         """
         Returns the value of the attribute or property,
-        or the default value if it doesn't exists."""
+        or the default value if it doesn't exists.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"lorem": "ipsum", "hidden": True})
+
+        attrs.get("lorem", defaut="bar")
+        'ipsum'
+
+        attrs.get("foo")
+        None
+
+        attrs.get("foo", defaut="bar")
+        'bar'
+
+        attrs.get("hidden")
+        True
+        ```
+
+        """
         name = name.replace("_", "-")
         if name in CLASS_KEYS:
             return self.classes
@@ -156,6 +274,22 @@ class HTMLAttrs:
         To provide consistent output, the attributes and properties
         are sorted by name and rendered like this:
         `<sorted attributes> + <sorted properties>`.
+
+        Any arguments you use with this function are merged with the existing
+        attibutes/properties by the same rules as the `HTMLAttrs.set()` function.
+
+        ##### Example:
+
+        ```python
+        attrs = HTMLAttrs({"class": "ipsum", "data_good": True, "width": 42})
+
+        attrs.render()
+        'class="ipsum" width="42" data-good'
+
+        attrs.render(class="abc", data_good=False, tabindex=0)
+        'class="abc ipsum" width="42" tabindex="0"'
+        ```
+
         """
         if kw:
             self.set(**kw)
@@ -180,8 +314,8 @@ class HTMLAttrs:
     # Private
 
     def _remove(self, name: str) -> None:
+        """Removes an attribute or property.
         """
-        Removes an attribute or property."""
         if name in CLASS_KEYS:
             self.__classes = set()
         if name in self.__attributes:

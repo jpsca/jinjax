@@ -60,6 +60,20 @@ html {
 
   --cd-nav-bg-color: rgba(255, 255, 255, 0.8);
   --cd-nav-bg-color-hover: rgb(244, 244, 244);
+
+  --doc-symbol-parameter-fg-color: #df50af;
+  --doc-symbol-attribute-fg-color: #953800;
+  --doc-symbol-function-fg-color: #8250df;
+  --doc-symbol-method-fg-color: #8250df;
+  --doc-symbol-class-fg-color: #0550ae;
+  --doc-symbol-module-fg-color: #5cad0f;
+
+  --doc-symbol-parameter-bg-color: #df50af1a;
+  --doc-symbol-attribute-bg-color: #9538001a;
+  --doc-symbol-function-bg-color: #8250df1a;
+  --doc-symbol-method-bg-color: #8250df1a;
+  --doc-symbol-class-bg-color: #0550ae1a;
+  --doc-symbol-module-bg-color: #5cad0f1a;
 }
 
 html.dark {
@@ -73,6 +87,20 @@ html.dark {
 
   --cd-nav-bg-color: rgba(60, 60, 60, 0.8);
   --cd-nav-bg-color-hover: rgb(70, 70, 70);
+
+  --doc-symbol-parameter-fg-color: #ffa8cc;
+  --doc-symbol-attribute-fg-color: #ffa657;
+  --doc-symbol-function-fg-color: #d2a8ff;
+  --doc-symbol-method-fg-color: #d2a8ff;
+  --doc-symbol-class-fg-color: #79c0ff;
+  --doc-symbol-module-fg-color: #baff79;
+
+  --doc-symbol-parameter-bg-color: #ffa8cc1a;
+  --doc-symbol-attribute-bg-color: #ffa6571a;
+  --doc-symbol-function-bg-color: #d2a8ff1a;
+  --doc-symbol-method-bg-color: #d2a8ff1a;
+  --doc-symbol-class-bg-color: #79c0ff1a;
+  --doc-symbol-module-bg-color: #baff791a;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -473,6 +501,49 @@ h4:hover a.headerlink,
 h5:hover a.headerlink,
 h6:hover a.headerlink {
   opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------------- */
+
+.doc-symbol {
+  border-radius: 0.1rem;
+  padding: 0 0.3em;
+  font-weight: bold;
+}
+.doc-symbol-attr {
+  color: var(--doc-symbol-attribute-fg-color) !important;
+  background-color: var(--doc-symbol-attribute-bg-color) !important;
+}
+.doc-symbol-function {
+  color: var(--doc-symbol-function-fg-color) !important;
+  background-color: var(--doc-symbol-function-bg-color) !important;
+}
+.doc-symbol-method {
+  color: var(--doc-symbol-method-fg-color) !important;
+  background-color: var(--doc-symbol-method-bg-color) !important;
+}
+.doc-symbol-class {
+  color: var(--doc-symbol-class-fg-color) !important;
+  background-color: var(--doc-symbol-class-bg-color) !important;
+}
+.doc-symbol-module {
+  color: var(--doc-symbol-module-fg-color) !important;
+  background-color: var(--doc-symbol-module-bg-color) !important;
+}
+
+.doc-oname {
+  font-weight: normal;
+}
+.doc-olabel {
+  font-size: 0.6em !important;
+  color: #36464e !important;
+  font-weight: 400;
+  padding: 0.1rem 0.4rem !important;
+}
+
+.doc-attrs ~ .doc-methods,
+.doc-properties ~ .doc-methods {
+  margin-top; 1rem;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -902,7 +973,7 @@ h6:hover a.headerlink {
   }
   & .example-tab.ui-selected:is(.dark *) {
     color: white;
-    background-color: black;
+    background-color: #111;
   }
 
   & .example-tabpanel {
@@ -1173,28 +1244,28 @@ h6:hover a.headerlink {
   position: sticky;
   top: 0;
   z-index: 0;
-  height: 100vh;
-  width: 14rem;
-  padding-bottom: 2rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -ms-scroll-chaining: none;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
+  height: calc(100vh - 5.5rem);
+  width: 20rem;
+  margin-right: -1rem;
   overflow: hidden;
 
   @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
-      top: 3rem;
-      height: calc(100vh - 3rem);
+      top: 5rem;
     }
   }
 
   & .wrapper {
-    margin-top: 1.5rem;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -ms-scroll-chaining: none;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
     border-left-width: 1px;
     border-color: rgb(228 228 231);
-    padding: 0 0 3.5rem;
+    padding: 1rem 0.5rem 1.5rem 0.5rem;
     font-size: 0.8rem;
     line-height: 1.2;
   }
@@ -1324,7 +1395,7 @@ h6:hover a.headerlink {
   }
   @media (min-width: 640px) {
     & {
-      padding-bottom: 3rem;
+      padding-bottom: 1rem;
     }
   }
 }
@@ -1335,7 +1406,7 @@ h6:hover a.headerlink {
   display: flex;
   align-items: stretch;
   width: 100%;
-  margin-top: 4rem;
+  margin-top: 2rem;
   padding-top: 2rem;
   padding-bottom: 2rem;
   padding-left: var(--cd-padding-left);
@@ -1649,10 +1720,11 @@ h6:hover a.headerlink {
     border-color: var(--cd-brand-color);
   }
 
-  & a.indent-1 { margin-left: 0.5rem; }
-  & a.indent-2 { margin-left: 1rem; }
-  & a.indent-3 { margin-left: 1.5rem; }
-  & a.indent-4 { margin-left: 2rem; }
+  & a.indent-1 { margin-left: 0; }
+  & a.indent-2 { margin-left: 0.5rem; }
+  & a.indent-3 { margin-left: 1rem; }
+  & a.indent-4 { margin-left: 1.5rem; }
+  & a.indent-5 { margin-left: 2rem; }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1675,9 +1747,6 @@ h6:hover a.headerlink {
 }
 
 @media (min-width: 924px) {
-  .cd-page .page-wrapper > main {
-    padding-left: 2rem;
-  }
   .cd-nav-global {
     display: block;
   }
