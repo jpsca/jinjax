@@ -1,3 +1,9 @@
+.bg-cover {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+
 .Logo {
   display: flex;
   height: 2.5rem;
@@ -229,6 +235,7 @@
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
+    flex-direction: row-reverse;
   }
   & .card > .header img {
     float: left;

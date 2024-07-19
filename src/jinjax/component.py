@@ -62,6 +62,8 @@ def is_valid_variable_name(name):
 
 
 class Component:
+    """Internal class
+    """
     __slots__ = (
         "name",
         "prefix",

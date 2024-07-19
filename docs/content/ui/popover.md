@@ -198,7 +198,7 @@ by [Mozilla Contributors](https://developer.mozilla.org/en-US/docs/MDN/Community
 
 ### Keyboard interaction
 
-- Pressing the <Key>Enter</Key> or <Key>Space</Key> keys on a `PopButton` will trigger
+- Pressing the <kbd>Enter</kbd> or <kbd>Space</kbd> keys on a `PopButton` will trigger
 the button action (open, close, or toggle state), and close *all* the `Popover` with `mode="auto"`.
 
-- Pressing the <Key>Escape</Key> key will close *all* the `Popover` with `mode="auto"`.
+- Pressing the <kbd>Escape</kbd> key will close *all* the `Popover` with `mode="auto"`.

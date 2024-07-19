@@ -6,14 +6,8 @@
 
 <title>{{ title }}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-<link rel="apple-touch-icon" sizes="120x120" href="/static/img/apple-touch-icon.png">
-<link rel="stylesheet" href="/static/theme.css?v={{ utils.timestamp }}">
-<link rel="stylesheet" href="/static/prose.css?v={{ utils.timestamp }}">
-<link rel="stylesheet" href="/static/docs.css?v={{ utils.timestamp }}">
-{{ catalog.render_assets() }}
 <meta property="og:type" content="website">
-<meta property="og:url" content="{{ nav.domain }}{{ nav.page.url }}">
+<meta property="og:url" content="{{ nav.domain }}{{ page.url }}">
 <meta property="og:title" content="{{ title }}">
 <meta property="twitter:title" content="{{ title }}">
 {% if description -%}

@@ -1,18 +1,18 @@
 <Layout
-  :title="nav.page.title"
-  :description="nav.page.description"
-  :class="meta.get('class', 'tPage')"
+  :title="page.title"
+  :description="page.description"
+  :class="meta.get('class', 'cd-page')"
 >
   <NavTop></NavTop>
   <div class="page-wrapper">
     <NavGlobal></NavGlobal>
-    <main class="page prose">{{ content }}</main>
+    <main id="main" class="page prose">{{ content }}</main>
     <NavLocal></NavLocal>
   </div>
   <PrevNext
-    :curr="nav.page"
-    :prev="nav.prev_page"
-    :next="nav.next_page"
+    :curr="page"
+    :prev="page.prev_page"
+    :next="page.next_page"
   />
   <NavMobile></NavMobile>
   <Footer></Footer>

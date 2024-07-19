@@ -1,0 +1,127 @@
+{#def
+  obj: dict | None = None,
+  name: str = "",
+  level: int = 2,
+  members: bool = True,
+#}
+
+{% set obj = obj or autodoc(name) %}
+
+<h{{ level }}>
+  <code class="doc-symbol doc-symbol-{{ obj.symbol }}">{{ obj.symbol }}</code>
+  <span class="doc-oname doc-oname-{{ obj.symbol }}">{{ name or obj.name }}</span>
+  {% if obj.label -%}
+  <small class="doc-olabel doc-olabel-{{ obj.label }}">
+    <code>{{ obj.label }}</code>
+  </small>
+  {%- endif %}
+</h{{ level }}>
+
+{%- if obj.short_description -%}
+<div class="doc-short-description">
+  {{ obj.short_description | markdown | utils.widont }}
+</div>
+{% endif -%}
+
+{%- if obj.signature -%}
+<div class="doc-signature">
+{% filter markdown -%}
+```python
+{{ obj.signature }}
+```
+{%- endfilter %}
+</div>
+{%- endif %}
+
+{% if obj.bases -%}
+<div class="doc-bases">
+  <p>Bases:
+  {%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
+  {%- endfor %}
+  </p>
+</div>
+{%- endif %}
+
+{% if obj.params -%}
+<table class="doc-arguments">
+  <thead><tr><th>Argument</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+{%- for param in obj.params %}
+  <tr>
+    <td><code>{{ param.name }}</code></td>
+    <td>{{ param.description | markdown | utils.widont }}</td>
+  </tr>
+{%- endfor %}
+  </tbody>
+</table>
+{%- endif %}
+
+{%- if obj.description -%}
+<div class="doc-long-description">
+  {{ obj.description | markdown | utils.widont }}
+</div>
+{% endif -%}
+
+{% if obj.examples -%}
+<div class="doc-examples">
+<p><strong>Example:</strong></p>
+
+{% for ex in obj.examples -%}
+<div>
+{% if ex.description %}{{ ex.description | markdown | utils.widont }}{% endif %}
+{% if ex.snippet %}{{ ex.snippet }}{% endif %}
+<div>
+{% endfor -%}
+</div>
+{%- endif %}
+
+{% if obj.returns -%}
+<li class="doc-returns">
+  <p><strong>Returns:</strong></p>
+
+  {% if ex.returns -%}
+    <p>{{ obj.returns }}</p>
+  {%- endif %}
+  {% if ex.many_returns -%}
+  <ul>
+  {% for return in ex.many_returns %}
+    <li>{{ return }}</li>
+  {%- endfor %}
+  </ul>
+  {%- endif %}
+</div>
+{%- endif %}
+
+{% if obj.raises -%}
+  <div class="doc-raises"></div>
+    <p><strong>Raises:</strong></p>
+
+    <ul>
+    {% for raises in obj.raises -%}
+    <li>{{ raises.description | markdown | utils.widont }}<ul>
+    {% endfor -%}
+    </ul>
+  </li>
+{%- endif %}
+
+{% if members -%}
+  {% if obj.attrs or obj.properties-%}
+    <div class="doc-attrs">
+    {% for attr in obj.attrs -%}
+      <Autodoc obj={{ attr }} level={{ level + 1 }} />
+    {% endfor %}
+    {% for attr in obj.properties %}
+      <Autodoc obj={{ attr }} level={{ level + 1 }} />
+    {%- endfor %}
+    </div>
+  {%- endif %}
+
+  {% if obj.methods -%}
+    <div class="doc-methods">
+    {% for method in obj.methods %}
+      <Autodoc obj={{ method }} level={{ level + 1 }} />
+    {%- endfor %}
+    </div>
+  {%- endif %}
+{%- endif %}

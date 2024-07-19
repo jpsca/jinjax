@@ -1,6 +1,6 @@
 {#def curr, prev, next #}
 
-<nav {{ attrs.render(class="tPrevNext") }}>
+<nav {{ attrs.render(class="cd-prevnext", data_component="PrevNext") }}>
   {% if prev.url -%}
   <a href="{{ prev.url }}" class="prev">
     <i>&larr;</i>

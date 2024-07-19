@@ -1,5 +1,5 @@
-<div {{ attrs.render(class="tNavLocal scrollbar-thin") }}>
-  <div class="wrapper">
-    <TocPage :page_toc="nav.page_toc" />
+<div {{ attrs.render(class="cd-nav-local", data_component="NavLocal") }}>
+  <div class="wrapper scrollbar-thin">
+    <TocPage :page_toc="page.toc" />
   </div>
 </div>

@@ -7,7 +7,7 @@ description: Unstyled, fully accessible UI components, to integrate with your pr
   Unstyled, fully accessible UI components, to integrate with your projects.
 </Header>
 
-<div class="cards not-prose">
+<div class="cd-cards not-prose">
   <a class="card" href="/ui/tabs">
     <h2>Tabs</h2>
     <img src="/static/img/ui-tabs.png" />

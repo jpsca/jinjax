@@ -1,15 +1,21 @@
 {#def title="", description="" #}
 
 <!DOCTYPE html>
-<html lang="{{ nav.page.lang }}" class="light">
+<html lang="{{ page.lang }}" class="light">
 <head>
 <meta charset="utf-8">
-<MetaTags :page="nav.page" />
-{% if nav.prev_page and nav.prev_page.url -%}
-  <link href="{{ nav.prev_page.url }}" rel="prev">
+<MetaTags :page="page" />
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<link rel="apple-touch-icon" sizes="120x120" href="/static/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/theme.css?v={{ utils.timestamp }}">
+<link rel="stylesheet" href="/static/prose.css?v={{ utils.timestamp }}">
+<link rel="stylesheet" href="/static/docs.css?v={{ utils.timestamp }}">
+{{ catalog.render_assets() }}
+{% if page.prev_page and page.prev_page.url -%}
+  <link href="{{ page.prev_page.url }}" rel="prev">
 {% endif -%}
-{% if nav.next_page and nav.next_page.url -%}
-  <link href="{{ nav.next_page.url }}" rel="next">
+{% if page.next_page and page.next_page.url -%}
+  <link href="{{ page.next_page.url }}" rel="next">
 {% endif -%}
 <meta property="generator" content="claydocs" />
 </head>

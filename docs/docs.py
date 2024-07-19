@@ -6,7 +6,7 @@ import jinjax_ui
 from claydocs import Docs
 
 
-logging.getLogger("jinjax").setLevel(logging.ERROR)
+logging.getLogger("jinjax").setLevel(logging.INFO)
 logging.getLogger("jinjax").addHandler(logging.StreamHandler())
 
 here = Path(__file__).parent
@@ -18,10 +18,13 @@ pages = [
             [
                 "guide/index.md",
                 "guide/components.md",
-                "guide/extra.md",
                 "guide/css_and_js.md",
+                # "guide/integrations.md",
+                # "guide/performance.md",
+                "guide/motivation.md",
             ],
         ],
+        "api.md",
         [
             "UI components", [
                 "ui/index.md",
@@ -42,10 +45,17 @@ def get_docs() -> Docs:
         content_folder=root_path,
         add_ons=[jinjax_ui],
         search=False,
-        cache=True,
+        cache=False,
         domain="https://jinjax.scaletti.dev",
         default_component="Page",
         default_social="SocialCard",
+        metadata={
+            "name": "JinjaX",
+            "language": "en",
+            "license": "MIT",
+            "version": "0.43",
+            "web": "https://jinjax.scaletti.dev",
+        }
     )
     docs.add_folder(here / "components")
     docs.add_folder(here / "theme")

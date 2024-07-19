@@ -71,7 +71,7 @@ To animate a menu, follow the [Animating popovers section](/headless/popover#ani
 | --------------- | --------- | ---------- | --------------
 | `target`        | `str`     |            | Required. The ID of the linked `Popover` component.
 | `action`        | `str`     | `"toggle"` | `"open"`, `"close"`, or `"toggle"`.
-| `tag`           | `str`     | `"button"`    | HTML tag of the component.
+| `tag`           | `str`     | `"button"` | HTML tag of the component.
 
 ### Menu
 
@@ -106,7 +106,7 @@ To animate a menu, follow the [Animating popovers section](/headless/popover#ani
 
 ### Keyboard interaction
 
-- Pressing the <Key>Enter</Key> or <Key>Space</Key> keys on a `PopButton` will trigger
+- Pressing the <kbd>Enter</kbd> or <kbd>Space</kbd> keys on a `PopButton` will trigger
 the button action (open, close, or toggle state), and close *all* the `Popover` with `mode="auto"`.
 
-- Pressing the <Key>Escape</Key> key will close *all* the `Popover` with `mode="auto"`.
+- Pressing the <kbd>Escape</kbd> key will close *all* the `Popover` with `mode="auto"`.

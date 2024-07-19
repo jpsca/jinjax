@@ -1,17 +1,17 @@
-<section class="tNavTop">
+<section class="cd-nav-top", data_component="NavTop">
   <div class="wrapper">
-    <Logo class="logo" :base_url="nav.base_url" />
-    <NavBar class="nav-links">
+    <Logo class="logo" :base_url="page.base_url" />
+    <nav class="cd-navbar nav-links">
       <NavLinks />
       <ThemeSwitch class="themeswitch" :text="false" />
-    </NavBar>
-    <NavBar class="nav-extra">
+    </nav>
+    <nav class="nav-extra">
       <NavExtra />
-    </NavBar>
+    </nav>
     <PopButton
       target="navMobile"
       title="Show menu"
-      class="text-button toggleSidebar"
+      class="cd-toggle-sidebar"
     >Menu</PopButton>
   </div>
 </section>

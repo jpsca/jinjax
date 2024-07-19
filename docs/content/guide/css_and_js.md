@@ -6,23 +6,19 @@ description: Your components might need custom styles or custom JavaScript for m
 <Header title="Adding CSS and JS">
 Your components might need custom styles or custom JavaScript for many reasons.
 </Header>
-
-Instead of using global stylesheet or script files, writing assets for each individual
-component has several advantages:
+Instead of using global stylesheet or script files, writing assets for each individual component has several advantages:
 
 - **Portability**: You can copy a component from one project to another, knowing it will keep working as expected.
-- **Performance**: Only load the CSS and JS that you need on each page. Also, the browser will already have cached the assets of the components for other pages that use them.
+- **Performance**: Only load the CSS and JS that you need on each page. Additionally, the browser will have already cached the assets of the components for other pages that use them.
 - **Simple testing**: You can test the JS of a component independently from others.
-
 
 ## Auto-loading assets
 
-JinjaX searches for `.css` and `.js` files with the same name as your component in the same folder and automatically adds them to the list of assets that will be included in the page. For example, if your component is `components/common/Form.jinja`, both `components/common/Form.css` and `components/common/Form.js` will be added to the list, but only if those files exist.
-
+JinjaX searches for `.css` and `.js` files with the same name as your component in the same folder and automatically adds them to the list of assets included on the page. For example, if your component is `components/common/Form.jinja`, both `components/common/Form.css` and `components/common/Form.js` will be added to the list, but only if those files exist.
 
 ## Manually declaring assets
 
-In addition to auto-loading assets, the CSS and/or the JS of a component can be declared in the metadata header with `{#css ... #}` and `{#js ... #}`.
+In addition to auto-loading assets, the CSS and/or JS of a component can be declared in the metadata header with `{#css ... #}` and `{#js ... #}`.
 
 ```html
 {#css lorem.css, ipsum.css #}
@@ -31,23 +27,15 @@ In addition to auto-loading assets, the CSS and/or the JS of a component can be 
 
 - The file paths must be relative to the root of your components catalog (e.g., `components/form.js`) or absolute (e.g., `http://example.com/styles.css`).
 - Multiple assets must be separated by commas.
-- Only **one** `{#css ... #}` and **one** `{#js ... #}` tag is allowed per component at most,
-  but both are optional.
-
+- Only **one** `{#css ... #}` and **one** `{#js ... #}` tag is allowed per component at most, but both are optional.
 
 ### Global assets
 
-The best practice is to store both CSS and JS files of the component within the same folder.
-Doing this has several advantages, including easier component reuse in other
-projects, improved code readability, and simplified debugging.
+The best practice is to store both CSS and JS files of the component within the same folder. Doing this has several advantages, including easier component reuse in other projects, improved code readability, and simplified debugging.
 
-However, there are instances when you may need to rely on global CSS or JS files,
-such as third-party libraries. In such cases, you can specify these dependencies
-in the component's metadata using URLs that start with either
-"/", "http://," or "https://."
+However, there are instances when you may need to rely on global CSS or JS files, such as third-party libraries. In such cases, you can specify these dependencies in the component's metadata using URLs that start with either "/", "http://," or "https://."
 
-When you do this, JinjaX will render them as is; instead of prepending them
-with the component's prefix like it normally does.
+When you do this, JinjaX will render them as is, instead of prepending them with the component's prefix like it normally does.
 
 For example, this code:
 
@@ -67,7 +55,6 @@ will be rendered as this HTML output:
 <script type="module" src="http://example.com/cdn/moment.js"></script>
 <script type="module" src="/static/components/bar.js"></script>
 ```
-
 
 ## Including assets in your pages
 
@@ -92,7 +79,7 @@ For example, after rendering this component:
 </Layout>
 ```
 
-Assuming the `Card`, and `Button` components declare CSS assets, this will be the state of the `collected_css` list:
+Assuming the `Card` and `Button` components declare CSS assets, this will be the state of the `collected_css` list:
 
 ```py
 catalog.collected_css
@@ -130,9 +117,9 @@ The variable will be rendered as:
 
 ## Middleware
 
-The tags above will not work at all if your application can't return the content of those files, and right now it can't.
+The tags above will not work if your application can't return the content of those files. Currently, it can't.
 
-For that reason, JinjaX includes a WSGI middleware that will process those URLs if you add it to your application.
+For that reason, JinjaX includes WSGI middleware that will process those URLs if you add it to your application.
 
 ```py
 from flask import Flask
@@ -154,17 +141,16 @@ app.wsgi_app = catalog.get_middleware(
 The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css* and *.js* files inside the component(s) folder(s). You can configure it to also return files with other extensions. For example:
 
 ```python
-catalog.get_middleware(app, allowed_ext=[".css", ".js", ".svg", ".png"])
+catalog.get_middleware(app, allowed_ext=[".css", .js", .svg", ".png"])
 ```
 
-Be aware that, if you use this option, `get_middleware()` must be called **after** all folders are added.
-
+Be aware that if you use this option, `get_middleware()` must be called **after** all folders are added.
 
 ## Good practices
 
 ### CSS Scoping
 
-The styles of your components will not be auto-scoped. This means the styles of a component can affect other components, and, likewise, it will be affected by global styles or the styles of other components.
+The styles of your components will not be auto-scoped. This means the styles of a component can affect other components and likewise, it will be affected by global styles or the styles of other components.
 
 To protect yourself against that, *always* add a custom class to the root element(s) of your component and use it to scope the rest of the component styles.
 
@@ -218,7 +204,6 @@ a { color: blue; }
 Always use a class **instead of** an `id`, or the component will not be usable more than once per page.
 </Callout>
 
-
 ### JS events
 
 Your components might be inserted in the page on-the-fly, after the JavaScript files have been loaded and executed. So, attaching events to the elements on the page on load will not be enough:
@@ -226,7 +211,7 @@ Your components might be inserted in the page on-the-fly, after the JavaScript f
 ```js title="components/card.js"
 // This will fail for any Card component inserted after page load
 document.querySelectorAll('.Card button.share')
-  .forEach( (node) => {
+  .forEach((node) => {
     node.addEventListener("click", handleClick)
   })
 
