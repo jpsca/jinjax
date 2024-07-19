@@ -249,29 +249,40 @@ Or directly in the `attrs.render()` call:
 </div>
 ```
 
+<Callout type="info">
+The string values passed into components as attrs are not cast to `str` until the string representation is **actually** needed, for example when `attrs.render()` is invoked.
+</Callout>
+
 ### `attrs` Methods
 
 #### `.render(name=value, ...)`
 
-Renders the current attributes and properties as a string.
-Any attributes/properties you pass to this method will be used to call `attrs.set(**kwargs)` before rendering.
+Renders the attributes and properties as a string.
+
+Any arguments you use with this function are merged with the existing
+attibutes/properties by the same rules as the `HTMLAttrs.set()` function:
 
 - Pass a name and a value to set an attribute (e.g. `type="text"`)
 - Use `True` as a value to set a property (e.g. `disabled`)
 - Use `False` to remove an attribute or property
+- The existing attribute/property is overwritten **except** if it is `class`.
+  The new classes are appended to the old ones instead of replacing them.
+- The underscores in the names will be translated automatically to dashes,
+  so `aria_selected` becomes the attribute `aria-selected`.
 
-The underscores in the names will be translated automatically to dashes, so `aria_selected`
-becomes the attribute `aria-selected`.
-
-The current attribute/property is overwritten **except** if it is "class" or "classes".
-In those cases, the new classes are appended to the old ones instead of replacing them.
-
-To provide consistent output, the attributes and properties are sorted by name and rendered like this: `<sorted attributes> + <sorted properties>`.
+To provide consistent output, the attributes and properties
+are sorted by name and rendered like this:
+`<sorted attributes> + <sorted properties>`.
 
 ```html+jinja
-<button {{ attrs.render() }}>
-  {{ content }}
-</button>
+<Example class="ipsum" width="42" data-good />
+```
+```html+jinja
+<div {{ attrs.render() }}>
+<!-- <div class="ipsum" width="42" data-good> -->
+
+<div {{ attrs.render(class="abc", data_good=False, tabindex=0) }}>
+<!-- <div class="abc ipsum" width="42" tabindex="0"> -->
 ```
 
 <Callout type="warning">
@@ -291,19 +302,15 @@ You must pass them as the special argument `__attrs`.
 
 #### `.set(name=value, ...)`
 
-Sets an attribute or property:
+Sets an attribute or property
 
 - Pass a name and a value to set an attribute (e.g. `type="text"`)
 - Use `True` as a value to set a property (e.g. `disabled`)
-- Use `False` to
-
- remove an attribute or property
-
-The underscores in the names will be translated automatically to dashes, so `aria_selected`
-becomes the attribute `aria-selected`.
-
-The current attribute/property is overwritten **except** if it is "class" or "classes".
-In those cases, the new classes are appended to the old ones instead of replacing them.
+- Use `False` to remove an attribute or property
+- If the attribute is "class", the new classes are appended to
+  the old ones (if not repeated) instead of replacing them.
+- The underscores in the names will be translated automatically to dashes,
+  so `aria_selected` becomes the attribute `aria-selected`.
 
 ```html+jinja title="Adding attributes/properties"
 {% do attrs.set(
@@ -325,8 +332,7 @@ In those cases, the new classes are appended to the old ones instead of replacin
 
 #### `.setdefault(name=value, ...)`
 
-Adds an attribute or sets a property, *but only if it's not already present*.
-Doesn't work with properties.
+Adds an attribute, but only if it's not already present.
 
 The underscores in the names will be translated automatically to dashes, so `aria_selected`
 becomes the attribute `aria-selected`.
@@ -335,6 +341,15 @@ becomes the attribute `aria-selected`.
 {% do attrs.setdefault(
     aria_label="Products"
 ) %}
+```
+
+#### `.add_class(name1, name2, ...)`
+
+Adds one or more classes to the list of classes, if not already present.
+
+```html+jinja
+{% do attrs.add_class("hidden") %}
+{% do attrs.add_class("active", "animated") %}
 ```
 
 #### `.remove_class(name1, name2, ...)`
@@ -348,7 +363,8 @@ Removes one or more classes from the list of classes.
 
 #### `.get(name, default=None)`
 
-Returns the value of the attribute or property, or the default value if it doesn't exist.
+Returns the value of the attribute or property,
+or the default value if it doesn't exist.
 
 ```html+jinja
 {%- set role = attrs.get("role", "tab") %}

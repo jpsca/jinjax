@@ -70,6 +70,7 @@ class Catalog:
         auto_reload:
             Used with `use_cache`. If `True`, the last-modified date of the component
             file is checked every time to see if the cache is up-to-date.
+
             Set to `False` in production.
 
         fingerprint:
@@ -168,6 +169,7 @@ class Catalog:
     @property
     def paths(self) -> list[Path]:
         """
+        A helper property that returns a list of all the components folder paths.
         """
         _paths = []
         for loader in self.prefixes.values():
@@ -181,6 +183,29 @@ class Catalog:
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
         """
+        Add a folder path from where to search for components, optionally under a prefix.
+
+        The prefix acts like a namespace. For example, the name of a
+        `components/Card.jinja` component is, by default, "Card",
+        but under the prefix "common", it becomes "common.Card".
+
+        The rule for subfolders remains the same: a `components/wrappers/Card.jinja`
+        name is, by default, "wrappers.Card", but under the prefix "common",
+        it becomes "common.wrappers.Card".
+
+        If there is more than one component with the same name in multiple
+        added folders under the same prefix, the one in the folder added
+        first takes precedence.
+
+        Arguments:
+
+            root_path:
+                Absolute path of the folder with component files.
+
+            prefix:
+                Optional prefix that all the components in the folder will
+                have. The default is empty.
+
         """
         prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
 
@@ -197,6 +222,24 @@ class Catalog:
 
     def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
         """
+        Reads an absolute path from `module.components_path` and an optional prefix
+        from `module.prefix`, then calls `Catalog.add_folder(path, prefix)`.
+
+        The prefix can also be passed as an argument instead of being read from
+        the module.
+
+        This method exists to make it easy and consistent to have
+        components installable as Python libraries.
+
+        Arguments:
+
+            module:
+                A Python module.
+
+            prefix:
+                An optional prefix that replaces the one the module
+                might include.
+
         """
         mprefix = (
             prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
@@ -205,12 +248,19 @@ class Catalog:
 
     def render(
         self,
+        /,
         __name: str,
         *,
         caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
         """
+        Resets the `collected_css` and `collected_js` lists and renders the
+        component and subcomponents inside of it.
+
+        This is the method you should call to render a parent component from a
+        view/controller in your app.
+
         """
         self.collected_css = []
         self.collected_js = []
@@ -219,12 +269,19 @@ class Catalog:
 
     def irender(
         self,
+        /,
         __name: str,
         *,
         caller: "t.Callable | None" = None,
         **kw,
     ) -> str:
         """
+        Renders the component and subcomponents inside of it **without**
+        resetting the `collected_css` and `collected_js` lists.
+
+        This is the method you should call to render individual components that
+        are later inserted into a parent template.
+
         """
         content = (kw.pop("__content", "") or "").strip()
         attrs = kw.pop("__attrs", None) or {}
@@ -292,6 +349,11 @@ class Catalog:
         **kwargs,
     ) -> ComponentsMiddleware:
         """
+        Wraps you application with [Withenoise](https://whitenoise.readthedocs.io/),
+        a static file serving middleware.
+
+        Tecnically not neccesary if your components doesn't use static assets
+        or if you serve them by other means.
 
         Arguments:
 
@@ -317,13 +379,20 @@ class Catalog:
 
     def get_source(self, cname: str, file_ext: "tuple[str, ...] | str" = "") -> str:
         """
+        A helper method that returns the source file of a component.
         """
         prefix, name = self._split_name(cname)
         path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
         return path.read_text()
 
-    def render_assets(self, fingerprint: bool = False) -> str:
+    def render_assets(self) -> str:
         """
+        Uses the `collected_css` and `collected_js` lists to generate
+        an HTML fragment with `<link rel="stylesheet" href="{url}">`
+        and `<script type="module" src="{url}"></script>` tags.
+
+        The URLs are prepended by `root_url` unless they begin with
+        "http://" or "https://".
         """
         html_css = []
         for url in self.collected_css:

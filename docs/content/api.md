@@ -9,6 +9,8 @@ title: "API reference"
 
 ----
 
+<Autodoc name="jinjax.LazyString" members={{ False }} />
+
 <Autodoc name="jinjax.HTMLAttrs" />
 
 ----

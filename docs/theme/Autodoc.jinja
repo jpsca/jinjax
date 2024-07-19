@@ -17,6 +17,12 @@
   {%- endif %}
 </h{{ level }}>
 
+{%- if obj.short_description -%}
+<div class="doc-short-description">
+  {{ obj.short_description | markdown | utils.widont }}
+</div>
+{% endif -%}
+
 {%- if obj.signature -%}
 <div class="doc-signature">
 {% filter markdown -%}
@@ -27,8 +33,32 @@
 </div>
 {%- endif %}
 
+{% if obj.bases -%}
+<div class="doc-bases">
+  <p>Bases:
+  {%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
+  {%- endfor %}
+  </p>
+</div>
+{%- endif %}
+
+{% if obj.params -%}
+<table class="doc-arguments">
+  <thead><tr><th>Argument</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+{%- for param in obj.params %}
+  <tr>
+    <td><code>{{ param.name }}</code></td>
+    <td>{{ param.description | markdown | utils.widont }}</td>
+  </tr>
+{%- endfor %}
+  </tbody>
+</table>
+{%- endif %}
+
 {%- if obj.description -%}
-<div class="doc-description">
+<div class="doc-long-description">
   {{ obj.description | markdown | utils.widont }}
 </div>
 {% endif -%}
@@ -73,30 +103,6 @@
     {% endfor -%}
     </ul>
   </li>
-{%- endif %}
-
-{% if obj.bases -%}
-<div class="doc-bases">
-  <p>Bases:
-  {%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
-  {%- endfor %}
-  </p>
-</div>
-{%- endif %}
-
-{% if obj.params -%}
-<table class="doc-arguments">
-  <thead><tr><th>Argument</th><th>Description</th></tr>
-  </thead>
-  <tbody>
-{%- for param in obj.params %}
-  <tr>
-    <td><code>{{ param.name }}</code></td>
-    <td>{{ param.description | markdown | utils.widont }}</td>
-  </tr>
-{%- endfor %}
-  </tbody>
-</table>
 {%- endif %}
 
 {% if members -%}
