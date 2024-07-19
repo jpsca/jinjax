@@ -1244,17 +1244,21 @@ h6:hover a.headerlink {
   position: sticky;
   top: 0;
   z-index: 0;
-  height: calc(100vh - 5.5rem);
   width: 20rem;
+  height: calc(100vh - 5.5rem);
   margin-right: -1rem;
   overflow: hidden;
+  border-left-width: 1px;
+  border-color: rgb(228 228 231);
 
   @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
       top: 5rem;
     }
   }
-
+  &:is(.dark *) {
+    border-color: rgb(82 82 91);
+  }
   & .wrapper {
     position: absolute;
     inset: 0;
@@ -1264,13 +1268,9 @@ h6:hover a.headerlink {
     overscroll-behavior: contain;
     scroll-behavior: smooth;
     border-left-width: 1px;
-    border-color: rgb(228 228 231);
     padding: 1rem 0.5rem 1.5rem 0.5rem;
     font-size: 0.8rem;
     line-height: 1.2;
-  }
-  & .wrapper:is(.dark *) {
-    border-color: rgb(82 82 91);
   }
 }
 
