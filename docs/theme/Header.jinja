@@ -4,12 +4,12 @@
 {% set title = title or page.title %}
 
 <header {{ attrs.render(
-  class="cd-header not-prose",
+  class="cd-header",
   data_component="Header",
 ) }}>
   <div>
     {% if section -%}
-    <p data-md-skip>{{ section }}</p>
+    <div>{{ section }}</div>
     {%- endif %}
     <h1>{{ title | utils.widont }}</h1>
   </div>

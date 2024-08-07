@@ -1019,6 +1019,8 @@ h6:hover a.headerlink {
   }
   & .copy {
     margin-right: auto;
+    text-align: left;
+    padding: 0 16px;
   }
   & .built-with {
     height: 100%;
@@ -1138,12 +1140,12 @@ h6:hover a.headerlink {
   width: 100%;
   margin-top: 1rem;
 
-  @media ((min-width: 1024px) and (min-height: 640px)) {
+  /* @media ((min-width: 1024px) and (min-height: 640px)) {
     & {
       position: sticky;
       top: 1rem;
     }
-  }
+  } */
   & .wrapper {
     margin-left: auto;
     margin-right: auto;
@@ -1240,22 +1242,16 @@ h6:hover a.headerlink {
 /* ---------------------------------------------------------------------- */
 
 .cd-nav-local {
-  position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: 5rem;
   z-index: 0;
-  width: 20rem;
-  height: calc(100vh - 5.5rem);
+  width: 25rem;
+  height: calc(100vh - 6.5rem);
   margin-right: -1rem;
   overflow: hidden;
   border-left-width: 1px;
   border-color: rgb(228 228 231);
 
-  @media ((min-width: 1024px) and (min-height: 640px)) {
-    & {
-      top: 5rem;
-    }
-  }
   &:is(.dark *) {
     border-color: rgb(82 82 91);
   }
@@ -1267,9 +1263,8 @@ h6:hover a.headerlink {
     -ms-scroll-chaining: none;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
-    border-left-width: 1px;
-    padding: 1rem 0.5rem 1.5rem 0.5rem;
-    font-size: 0.8rem;
+    padding: 1.5rem 0.25rem;
+    font-size: 0.9rem;
     line-height: 1.2;
   }
 }
@@ -1659,6 +1654,7 @@ h6:hover a.headerlink {
   }
 
   & a {
+    position: relative;
     display: flex;
     align-items: center;
     border-radius: 0.25rem;
@@ -1695,36 +1691,85 @@ h6:hover a.headerlink {
 /* ---------------------------------------------------------------------- */
 
 .cd-toc-page {
+  margin-top: -0.25rem;
+
+  & li {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  & li::after {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-color: var(--cd-brand-color);
+    border-radius: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: -1;
+  }
+
+  & li:has(a.active)::after {
+    opacity: 0.15;
+  }
+
   & a {
     display: flex;
     align-items: center;
-    border-left-width: 1px;
-    border-color: transparent;
-    padding: 0.5rem 0 0.25rem 0.5rem;
     color: rgb(82 82 91);
+    padding: 0.3rem 0 0.3rem 0.5rem;
   }
   & a:is(.dark *) {
     color: rgb(161 161 170);
   }
-  & a:hover {
-    border-color: rgb(63 63 70);
-    color: rgb(0 0 0);
-  }
-  & a:is(.dark *):hover {
-    border-color: rgb(161 161 170);
-    color: rgb(244 244 245);
-  }
-  & a.active,
-  & a.active:hover {
-    color: var(--cd-brand-color);
-    border-color: var(--cd-brand-color);
+  & a:hover:not(.active) {
+    & span {
+      text-decoration: underline;
+    }
   }
 
-  & a.indent-1 { margin-left: 0; }
-  & a.indent-2 { margin-left: 0.5rem; }
-  & a.indent-3 { margin-left: 1rem; }
-  & a.indent-4 { margin-left: 1.5rem; }
-  & a.indent-5 { margin-left: 2rem; }
+  & li.indent-0 a {
+    padding-left: 0rem;
+    font-size: smaller;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom-width: 1px;
+  }
+  & li.indent-1 a {
+    padding-left: 0rem;
+    font-weight: bold;
+  }
+  & li.indent-2 a { padding-left: 1rem; }
+  & li.indent-3 a { padding-left: 1.5rem; }
+  & li.indent-4 a { padding-left: 2rem; }
+  & li.indent-5 a { padding-left: 2.5rem; }
+  & li.indent-6 a { padding-left: 3rem; }
+
+  & li a::before {
+    content: "";
+    display: inline-flex;
+    align-items: center;
+    justify-content: right;
+    line-height: 1;
+    height: 8px;
+    width: 8px;
+    margin: 0 0.5rem 0 0.5rem;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+  li.indent-2 a::before { content: "○" }
+  li.indent-3 a::before { content: "•" }
+  li.indent-4 a::before { content: "·" }
+  li.indent-5 a::before { content: "⁃" }
+  li.indent-6 a::before { content: "·" }
+
+  & li a.active::before {
+    content: "";
+    border-radius: 3px;
+    background-color: var(--cd-brand-color);
+  }
 }
 
 /* ---------------------------------------------------------------------- */

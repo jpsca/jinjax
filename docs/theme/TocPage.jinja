@@ -2,7 +2,9 @@
 
 {% macro render_sub_items(pages) %}
 {%- for section in pages %}
-  <li><a href="#{{ section.id }}" class="indent-{{ section.level }}">{{ section.name }}</a></li>
+  <li class="indent-{{ section.level }}">
+    <a href="#{{ section.id }}"><span>{{ section.name }}</span></a>
+  </li>
   {% if section.level <= max_depth -%}
     {{ render_sub_items(section.children) }}
   {%- endif %}
@@ -11,7 +13,9 @@
 
 <ul {{ attrs.render(class="cd-toc-page", data_component="TocPage") }}>
 {%- for section in page_toc %}
-  <li><a href="#{{ section.id }}">{{ section.name }}</a></li>
+  <li class="indent-{{ section.level }}">
+    <a href="#{{ section.id }}"><span>{{ section.name }}</span></a>
+  </li>
   {{ render_sub_items(section.children) }}
 {%- endfor %}
 </ul>
