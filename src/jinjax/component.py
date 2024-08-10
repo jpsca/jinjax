@@ -179,7 +179,6 @@ class Component:
             if expr:
                 if def_found:
                     raise DuplicateDefDeclaration(self.name)
-                expr = RX_INTER_COMMENTS.sub("", expr).replace("\n", " ")
                 self.required, self.optional = self.parse_args_expr(expr)
                 def_found = True
                 continue
@@ -208,7 +207,7 @@ class Component:
         optional = {}
 
         try:
-            p = ast.parse(f"def component(*, {expr}): pass")
+            p = ast.parse(f"def component(*,\n{expr}\n): pass")
         except SyntaxError as err:
             raise InvalidArgument(err) from err
 
