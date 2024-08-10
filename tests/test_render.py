@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from textwrap import dedent
 
 import jinja2
 import pytest
@@ -812,6 +813,100 @@ def test_autoescaped_attrs(catalog, folder, autoescape):
     html = catalog.render("Page")
     print(html)
     expected = """<div class="border border-red-500 relative"></div>"""
+    assert html == Markup(expected)
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        pytest.param(
+            dedent(
+                """
+                {# def
+                href,
+                hx_target="#maincontent",
+                hx_swap="innerHTML show:body:top",
+                hx_push_url=true,
+                #}
+                <a href="{{href}}" hx-get="{{href}}" hx-target="{{hx_target}}"
+                hx-swap="{{hx_swap}}"
+                {% if hx_push_url %}hx-push-url="true"{% endif %}>
+                {{- content -}}
+                </a>
+                """
+            ),
+            id="no comment",
+        ),
+        pytest.param(
+            dedent(
+                """
+                {# def
+                href,
+                hx_target="#maincontent",  # css selector
+                hx_swap="innerHTML show:body:top",
+                hx_push_url=true,
+                #}
+                <a href="{{href}}" hx-get="{{href}}" hx-target="{{hx_target}}"
+                hx-swap="{{hx_swap}}"
+                {% if hx_push_url %}hx-push-url="true"{% endif %}>
+                {{- content -}}
+                </a>
+                """
+            ),
+            id="comment with # on line",
+        ),
+        pytest.param(
+            dedent(
+                """
+                {# def
+                href,                               # url of the target page
+                hx_target="#maincontent",           # css selector
+                hx_swap="innerHTML show:body:top",  # browse on top of the page
+                hx_push_url=true,                   # replace the url of the browser
+                #}
+                <a href="{{href}}" hx-get="{{href}}" hx-target="{{hx_target}}"
+                hx-swap="{{hx_swap}}"
+                {% if hx_push_url %}hx-push-url="true"{% endif %}>
+                {{- content -}}
+                </a>
+                """
+            ),
+            id="many comments",
+        ),
+        pytest.param(
+            dedent(
+                """
+                {# def
+                href: str,                                 # url of the target page
+                hx_target: str = "#maincontent",           # css selector
+                hx_swap: str = "innerHTML show:body:top",  # browse on top of the page
+                hx_push_url: bool = true,                  # replace the url
+                #}
+                <a href="{{href}}" hx-get="{{href}}" hx-target="{{hx_target}}"
+                hx-swap="{{hx_swap}}"
+                {% if hx_push_url %}hx-push-url="true"{% endif %}>
+                {{- content -}}
+                </a>
+                """
+            ),
+            id="many comments and typing",
+        ),
+    ],
+)
+@pytest.mark.parametrize("autoescape", [True, False])
+def test_strip_comment(catalog, folder, autoescape, template):
+    catalog.jinja_env.autoescape = autoescape
+
+    (folder / "A.jinja").write_text(template)
+
+    (folder / "Page.jinja").write_text("""<A href="/yolo">Yolo</A>""")
+
+    html = catalog.render("Page")
+    print(html)
+    expected = """
+<a href="/yolo" hx-get="/yolo" hx-target="#maincontent"
+hx-swap="innerHTML show:body:top"
+hx-push-url="true">Yolo</a>""".strip()
     assert html == Markup(expected)
 
 
