@@ -9,11 +9,11 @@ description: Easily create accessible, fully customizable tab interfaces, with r
 
 <ExampleTabs
   prefix="demo"
-  :panels="{
+  panels={{ {
     'Result': 'ui.Tabs.DemoResult',
     'HTML': 'ui.Tabs.DemoHTML',
     'CSS': 'ui.Tabs.DemoCSS',
-  }"
+  } }}
 />
 
 Tabs are built using the `TabGroup`, `TabList`, `Tab`, and `TabPanel` components. Clicking on any tab or selecting it with the keyboard will activate the corresponding panel.
@@ -47,10 +47,10 @@ Remember to add styles to the `:focus` state of the tab so is clear to the user 
 
 <ExampleTabs
   prefix="manual"
-  :panels="{
+  panels={{{
     'HTML': 'ui.Tabs.ManualHTML',
     'Result': 'ui.Tabs.ManualResult',
-  }"
+  } }}
 />
 
 The manual prop has no impact on mouse interactions — tabs will still be selected as soon as they are clicked.
@@ -62,10 +62,10 @@ If you've styled your `TabList` to appear vertically, use the `vertical` attribu
 
 <ExampleTabs
   prefix="vertical"
-  :panels="{
+  panels={{ {
     'HTML': 'ui.Tabs.VerticalHTML',
     'Result': 'ui.Tabs.VerticalResult',
-  }"
+  } }}
 />
 
 

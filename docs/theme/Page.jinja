@@ -1,7 +1,7 @@
 <Layout
-  :title="page.title"
-  :description="page.description"
-  :class="meta.get('class', 'cd-page')"
+  title={{ page.title }}
+  description={{ page.description }}
+  class={{ meta.get('class', 'cd-page') }}
 >
   <NavTop></NavTop>
   <div class="page-wrapper">
@@ -10,9 +10,9 @@
     <NavLocal></NavLocal>
   </div>
   <PrevNext
-    :curr="page"
-    :prev="page.prev_page"
-    :next="page.next_page"
+    curr={{ page }}
+    prev={{ page.prev_page }}
+    next={{ page.next_page }}
   />
   <NavMobile></NavMobile>
   <Footer></Footer>
