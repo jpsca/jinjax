@@ -1,5 +1,6 @@
 import os
 import typing as t
+from collections import UserString
 from hashlib import sha256
 from pathlib import Path
 
@@ -20,6 +21,26 @@ DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
 ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
+
+
+class CallerWrapper(UserString):
+    def __init__(self, caller: t.Callable | None, content: str = "") -> None:
+        self._caller = caller
+        # Pre-calculate the non-slotted content so the assets are loaded
+        self._content = caller("") if caller else Markup(content)
+
+    def __call__(self, slot: str = "") -> str:
+        if slot and self._caller:
+            return self._caller(slot)
+        return self._content
+
+    def __html__(self) -> str:
+        return self()
+
+    @property
+    def data(self) -> str:  # type: ignore
+        return self()
+
 
 
 class Catalog:
@@ -337,9 +358,7 @@ class Catalog:
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
-        args[ARGS_CONTENT] = Markup(
-            content if content or not caller else caller().strip()
-        )
+        args[ARGS_CONTENT] = CallerWrapper(caller=caller, content=content)
         return component.render(**args)
 
     def get_middleware(
