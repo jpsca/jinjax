@@ -1,7 +1,7 @@
 <Layout
-  :title="page.title"
-  :description="page.description"
-  :class="meta.get('class', 'cd-page-single')"
+  title={{ page.title }}
+  description={{ page.description }}
+  class={{ meta.get('class', 'cd-page-single') }}
 >
   <NavTop />
   <main>{{ content }}</main>

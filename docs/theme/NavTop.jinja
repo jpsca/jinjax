@@ -1,9 +1,9 @@
 <section class="cd-nav-top", data_component="NavTop">
   <div class="wrapper">
-    <Logo class="logo" :base_url="page.base_url" />
+    <Logo class="logo" base_url={{ page.base_url }} />
     <nav class="cd-navbar nav-links">
       <NavLinks />
-      <ThemeSwitch class="themeswitch" :text="false" />
+      <ThemeSwitch class="themeswitch" text={{ false }} />
     </nav>
     <nav class="nav-extra">
       <NavExtra />

@@ -52,12 +52,12 @@
     <div>
       <Card div="So clean">
         {% for product in products %}
-          <Product :product="product" />
+          <Product product={{ product }} />
         {% endfor %}
       </Card>
     </div>
   </div>
-  <Paginator :items="products" />
+  <Paginator items={{ products }} />
 </Layout>
 ```
 {% endraw %}{% endfilter %}
