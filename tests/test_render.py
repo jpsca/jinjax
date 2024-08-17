@@ -51,12 +51,11 @@ def test_render_content(catalog, folder, autoescape):
     content = '<button type="button">Close</button>'
     html = catalog.render("Card", __content=content)
     print(html)
-    assert (
-        html
-        == Markup(f"""
+    assert html == Markup(
+        f"""
 <section class="card">
 {content}
-</section>""".strip())
+</section>""".strip()
     )
 
 
@@ -71,7 +70,11 @@ def test_render_content(catalog, folder, autoescape):
     ],
 )
 def test_render_mix_of_contentful_and_contentless_components(
-    catalog, folder, source, expected, autoescape,
+    catalog,
+    folder,
+    source,
+    expected,
+    autoescape,
 ):
     catalog.jinja_env.autoescape = autoescape
 
@@ -324,25 +327,21 @@ def test_default_attr(catalog, folder, autoescape):
 def test_raw_content(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Code.jinja").write_text(
-        """
+    (folder / "Code.jinja").write_text("""
 <pre class="code">
 {{ content|e }}
 </pre>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 <Code>
-{% raw %}
+{% raw -%}
 {#def message="Hello", world=False #}
 <Header />
 <div>{{ message }}{% if world %} World{% endif %}</div>
-{% endraw %}
+{%- endraw %}
 </Code>
-"""
-    )
+""")
 
     html = catalog.render("Page")
     print(html)
@@ -362,14 +361,11 @@ def test_raw_content(catalog, folder, autoescape):
 def test_multiple_raw(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "C.jinja").write_text(
-        """
+    (folder / "C.jinja").write_text("""
 <div {{ attrs.render() }}></div>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 <C id="1" />
 {% raw -%}
 <C id="2" />
@@ -377,8 +373,7 @@ def test_multiple_raw(catalog, folder, autoescape):
 <C id="3" />
 {% raw %}<C id="4" />{% endraw %}
 <C id="5" />
-"""
-    )
+""")
 
     html = catalog.render("Page", message="Hello")
     print(html)
@@ -398,20 +393,17 @@ def test_multiple_raw(catalog, folder, autoescape):
 def test_check_for_unclosed(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Lorem.jinja").write_text(
-        """
+    (folder / "Lorem.jinja").write_text("""
 {#def ipsum=False #}
 <p>lorem {{ "ipsum" if ipsum else "lorem" }}</p>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 <main>
 <Lorem ipsum>
 </main>
-"""
-    )
+""")
+
     with pytest.raises(TemplateSyntaxError):
         try:
             catalog.render("Page")
@@ -424,23 +416,19 @@ def test_check_for_unclosed(catalog, folder, autoescape):
 def test_dict_as_attr(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "CitiesList.jinja").write_text(
-        """
+    (folder / "CitiesList.jinja").write_text("""
 {#def cities #}
 {% for city, country in cities.items() -%}
 <p>{{ city }}, {{ country }}</p>
 {%- endfor %}
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 <CitiesList :cities="{
     'Lima': 'Peru',
     'New York': 'USA',
 }" />
-"""
-    )
+""")
 
     html = catalog.render("Page")
     assert html == Markup("<p>Lima, Peru</p><p>New York, USA</p>")
@@ -450,32 +438,26 @@ def test_dict_as_attr(catalog, folder, autoescape):
 def test_cleanup_assets(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Layout.jinja").write_text(
-        """
+    (folder / "Layout.jinja").write_text("""
 <html>
 {{ catalog.render_assets() }}
 {{ content }}
 </html>
-"""
-    )
+""")
 
-    (folder / "Foo.jinja").write_text(
-        """
+    (folder / "Foo.jinja").write_text("""
 {#js foo.js #}
 <Layout>
 <p>Foo</p>
 </Layout>
-"""
-    )
+""")
 
-    (folder / "Bar.jinja").write_text(
-        """
+    (folder / "Bar.jinja").write_text("""
 {#js bar.js #}
 <Layout>
 <p>Bar</p>
 </Layout>
-"""
-    )
+""")
 
     html = catalog.render("Foo")
     print(html, "\n")
@@ -504,7 +486,6 @@ def test_cleanup_assets(catalog, folder, autoescape):
 
 @pytest.mark.parametrize("autoescape", [True, False])
 def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape):
-
     """https://github.com/jpsca/jinjax/issues/19"""
     (folder_t / "greeting.html").write_text("Jinja still works")
     (folder / "Greeting.jinja").write_text("JinjaX works")
@@ -559,22 +540,18 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape):
 def test_auto_reload(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Layout.jinja").write_text(
-        """
+    (folder / "Layout.jinja").write_text("""
 <html>
 {{ content }}
 </html>
-"""
-    )
+""")
 
-    (folder / "Foo.jinja").write_text(
-        """
+    (folder / "Foo.jinja").write_text("""
 <Layout>
 <p>Foo</p>
 <Bar></Bar>
 </Layout>
-"""
-    )
+""")
 
     bar_file = folder / "Bar.jinja"
     bar_file.write_text("<p>Bar</p>")
@@ -624,22 +601,18 @@ def test_subcomponents(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
     """Issue https://github.com/jpsca/jinjax/issues/32"""
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 {#def message #}
 <html>
 <p>lorem ipsum</p>
 <Subcomponent />
 {{ message }}
 </html>
-"""
-    )
+""")
 
-    (folder / "Subcomponent.jinja").write_text(
-        """
+    (folder / "Subcomponent.jinja").write_text("""
 <p>foo bar</p>
-"""
-    )
+""")
 
     html = catalog.render("Page", message="<3")
 
@@ -665,22 +638,18 @@ def test_subcomponents(catalog, folder, autoescape):
 def test_fingerprint_assets(catalog, folder: Path, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Layout.jinja").write_text(
-        """
+    (folder / "Layout.jinja").write_text("""
 <html>
 {{ catalog.render_assets() }}
 {{ content }}
 </html>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 {#css app.css, http://example.com/super.css #}
 {#js app.js #}
 <Layout>Hi</Layout>
-"""
-    )
+""")
 
     (folder / "app.css").write_text("...")
 
@@ -697,17 +666,13 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape):
 def test_colon_in_attrs(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "C.jinja").write_text(
-        """
+    (folder / "C.jinja").write_text("""
 <div {{ attrs.render() }}></div>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "Page.jinja").write_text("""
 <C hx-on:click="show = !show" />
-"""
-    )
+""")
 
     html = catalog.render("Page", message="Hello")
     print(html)
@@ -718,28 +683,22 @@ def test_colon_in_attrs(catalog, folder, autoescape):
 def test_template_globals(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Input.jinja").write_text(
-        """
+    (folder / "Input.jinja").write_text("""
 {# def name, value #}<input type="text" name="{{name}}" value="{{value}}">
-"""
-    )
-    (folder / "CsrfToken.jinja").write_text(
-        """
-<input type="hidden" name="csrft" value="{{csrf_token}}">
-"""
-    )
-    (folder / "Form.jinja").write_text(
-        """
-<form><CsrfToken/>{{content}}</form>
-"""
-    )
+""")
 
-    (folder / "Page.jinja").write_text(
-        """
+    (folder / "CsrfToken.jinja").write_text("""
+<input type="hidden" name="csrft" value="{{csrf_token}}">
+""")
+
+    (folder / "Form.jinja").write_text("""
+<form><CsrfToken/>{{content}}</form>
+""")
+
+    (folder / "Page.jinja").write_text("""
 {# def value #}
 <Form><Input name="foo" :value="value"/></Form>
-"""
-    )
+""")
 
     html = catalog.render("Page", value="bar", __globals={"csrf_token": "abc"})
     print(html)
@@ -751,9 +710,7 @@ def test_template_globals_update_cache(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
     (folder / "CsrfToken.jinja").write_text(
-        """
-<input type="hidden" name="csrft" value="{{csrf_token}}">
-"""
+        """<input type="hidden" name="csrft" value="{{csrf_token}}">"""
     )
     (folder / "Page.jinja").write_text("""<CsrfToken/>""")
 
@@ -942,7 +899,7 @@ def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
     html = catalog.render("Page")
     print(html)
 
-    expected  = """
+    expected = """
 <link rel="stylesheet" href="/static/components/Page.css">
 <link rel="stylesheet" href="/static/components/common/Form.css">
 <script type="module" src="/static/components/Page.js"></script>
@@ -993,4 +950,38 @@ def test_mixed_syntax(catalog, folder):
     html = catalog.render("Caller")
     print(html)
     expected  = """4 {{2+2}} {'lorem': 'ipsum'} False""".strip()
+    assert html == Markup(expected)
+
+
+@pytest.mark.parametrize("autoescape", [True, False])
+def test_slots(catalog, folder, autoescape):
+    catalog.jinja_env.autoescape = autoescape
+
+    (folder / "Component.jinja").write_text(
+        """
+<p>{{ content }}</p>
+<p>{{ content("first") }}</p>
+<p>{{ content("second") }}</p>
+<p>{{ content() }}</p>
+""".strip()
+    )
+
+    (folder / "Messages.jinja").write_text(
+        """
+<Component>
+{% if slot == "first" %}Hello World
+{%- elif slot == "second" %}Lorem Ipsum
+{%- else %}Default{% endif %}
+</Component>
+""".strip()
+    )
+
+    html = catalog.render("Messages")
+    print(html)
+    expected = """
+<p>Default</p>
+<p>Hello World</p>
+<p>Lorem Ipsum</p>
+<p>Default</p>
+""".strip()
     assert html == Markup(expected)
