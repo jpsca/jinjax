@@ -118,7 +118,7 @@ The `_slot` variable is scoped to the content of that component, so it's not ava
 ```
 
 
-## Composability: and alternative to named slots
+## Composability: better than named slots
 
 Named slots are a quick way to have multiple content slots, but are a bit messy beyond some simple cases.
 
@@ -128,19 +128,23 @@ This pattern allows allows for more reusable components. Let's explore this conc
 
 Consider a `Modal` component that requires three distinct sections: a header, a body, and a footer. Instead of using named slots, we can create separate components for each section and composing them within a `Modal` component wrapper.
 
-```html+jinja hl_lines="3-4 7 10-11"
+```html+jinja
 <Modal>
+
   <ModalHeader>
     <i class="icon-rocket"></i>
     Hello World!
   </ModalHeader>
+
   <ModalBody>
     <p>The modal body.</p>
   </ModalBody>
+
   <ModalFooter>
     <button>Cancel</button>
     <button>Save</button>
   </ModalFooter>
+
 </Modal>
 ```
 
