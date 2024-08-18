@@ -122,9 +122,7 @@ The `_slot` variable is scoped to the content of that component, so it's not ava
 
 Named slots are a quick way to have multiple content slots, but are a bit messy beyond some simple cases.
 
-Composability offers a more flexible and idiomatic approach when multiple content slots are needed. The idea is to have separated components for each content slot, and then compose them together.
-
-This pattern allows allows for more reusable components. Let's explore this concept using the same example as above.
+Composability offers a more flexible and idiomatic approach when multiple content slots are needed. The idea is to have separated components for each content slot, and then compose them together. Let's explore this concept using the same example as above.
 
 Consider a `Modal` component that requires three distinct sections: a header, a body, and a footer. Instead of using named slots, we can create separate components for each section and composing them within a `Modal` component wrapper.
 
@@ -153,10 +151,10 @@ Now, the `Modal` component is responsible for rendering the outer `<dialog>` and
 <ExampleTabs
   prefix="slots-modal"
   panels={{ {
-    "Modal": "guide.slots.Modal",
-    "ModalHeader": "guide.slots.ModalHeader",
-    "ModalBody": "guide.slots.ModalBody",
-    "ModalFooter": "guide.slots.ModalFooter",
+    "Modal.jinja": "guide.slots.Modal",
+    "ModalHeader.jinja": "guide.slots.ModalHeader",
+    "ModalBody.jinja": "guide.slots.ModalBody",
+    "ModalFooter.jinja": "guide.slots.ModalFooter",
   } }}
 />
 

@@ -25,7 +25,12 @@ pages = [
                 "guide/motivation.md",
             ],
         ],
-        "api.md",
+        [
+            "API",
+            [
+                "api.md",
+            ],
+        ],
         [
             "UI components", [
                 "ui/index.md",
