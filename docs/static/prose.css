@@ -567,8 +567,11 @@ pre a {
   color: rgb(82 82 91);
   font-size: 0.75rem;
 }
+.highlight .hll {
+  background-color: #333;
+  display: block;
+}
 
-.highlight .hll { background-color: rgba(0, 0, 0, 0.9) }
 .highlight .c { color: hsl(31, 76%, 64%) } /* Comment */
 .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
 .highlight .k { color: #66d9ef } /* Keyword */
