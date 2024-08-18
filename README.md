@@ -13,9 +13,9 @@ Use them as HTML tags without doing any importing.
 ## Roadmap
 
 #### Planned
-- [ ] Slots
 - [ ] Type checking at runtime
 - [ ] ...
 
 #### Done
+- [x] Slots
 - [x] Autoloading assets (optional?) (`Card.jinja` autoloads `Card.css` and/or `Card.js` if exists)
