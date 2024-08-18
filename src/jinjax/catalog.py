@@ -26,7 +26,7 @@ ARGS_CONTENT = "content"
 class CallerWrapper(UserString):
     def __init__(self, caller: t.Callable | None, content: str = "") -> None:
         self._caller = caller
-        # Pre-calculate the non-slotted content so the assets are loaded
+        # Pre-calculate the defaut content so the assets are loaded
         self._content = caller("") if caller else Markup(content)
 
     def __call__(self, slot: str = "") -> str:
@@ -304,10 +304,10 @@ class Catalog:
         are later inserted into a parent template.
 
         """
-        content = (kw.pop("__content", "") or "").strip()
-        attrs = kw.pop("__attrs", None) or {}
-        file_ext = kw.pop("__file_ext", "")
-        source = kw.pop("__source", "")
+        content = (kw.pop("_content", kw.pop("__content", "")) or "").strip()
+        attrs = kw.pop("_attrs", kw.pop("__attrs", None)) or {}
+        file_ext = kw.pop("_file_ext", kw.pop("__file_ext", ""))
+        source = kw.pop("_source", kw.pop("__source", ""))
 
         prefix, name = self._split_name(__name)
         self.jinja_env.loader = self.prefixes[prefix]

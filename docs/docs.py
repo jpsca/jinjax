@@ -18,6 +18,7 @@ pages = [
             [
                 "guide/index.md",
                 "guide/components.md",
+                "guide/slots.md",
                 "guide/css_and_js.md",
                 # "guide/integrations.md",
                 # "guide/performance.md",

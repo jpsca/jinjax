@@ -28,35 +28,37 @@ def test_render_simple(catalog, folder, autoescape):
 def test_render_source(catalog, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    source = """
-{#def message #}
-<div class="greeting [&_a]:flex">{{ message }}</div>
-    """
+    source = '{#def message #}\n<div class="greeting [&_a]:flex">{{ message }}</div>'
+    expected = Markup('<div class="greeting [&_a]:flex">Hello world!</div>')
+
+    html = catalog.render("Greeting", message="Hello world!", _source=source)
+    assert expected == html
+
+    # Legacy
     html = catalog.render("Greeting", message="Hello world!", __source=source)
-    assert html == Markup('<div class="greeting [&_a]:flex">Hello world!</div>')
+    assert expected == html
 
 
 @pytest.mark.parametrize("autoescape", [True, False])
 def test_render_content(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
 
-    (folder / "Card.jinja").write_text(
-        """
+    (folder / "Card.jinja").write_text("""
 <section class="card">
 {{ content }}
 </section>
-    """
-    )
+    """)
 
     content = '<button type="button">Close</button>'
-    html = catalog.render("Card", __content=content)
+    expected = Markup(f'<section class="card">\n{content}\n</section>')
+
+    html = catalog.render("Card", _content=content)
     print(html)
-    assert html == Markup(
-        f"""
-<section class="card">
-{content}
-</section>""".strip()
-    )
+    assert expected == html
+
+    # Legacy
+    html = catalog.render("Card", __content=content)
+    assert expected == html
 
 
 @pytest.mark.parametrize("autoescape", [True, False])
@@ -962,6 +964,7 @@ def test_slots(catalog, folder, autoescape):
 <p>{{ content }}</p>
 <p>{{ content("first") }}</p>
 <p>{{ content("second") }}</p>
+<p>{{ content("antoher") }}</p>
 <p>{{ content() }}</p>
 """.strip()
     )
@@ -969,8 +972,9 @@ def test_slots(catalog, folder, autoescape):
     (folder / "Messages.jinja").write_text(
         """
 <Component>
-{% if slot == "first" %}Hello World
-{%- elif slot == "second" %}Lorem Ipsum
+{% if _slot == "first" %}Hello World
+{%- elif _slot == "second" %}Lorem Ipsum
+{%- elif _slot == "meh" %}QWERTYUIOP
 {%- else %}Default{% endif %}
 </Component>
 """.strip()
@@ -982,6 +986,7 @@ def test_slots(catalog, folder, autoescape):
 <p>Default</p>
 <p>Hello World</p>
 <p>Lorem Ipsum</p>
+<p>Default</p>
 <p>Default</p>
 """.strip()
     assert html == Markup(expected)

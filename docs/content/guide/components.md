@@ -1,10 +1,11 @@
 ---
 title: Components
-description: All about declaring and using components.
+description: Declaring and using components.
 ---
 
 <Header title="Components">
 </Header>
+
 ## Declaring and Using Components
 
 The components are simple text files that look like regular Jinja templates, with three requirements:
@@ -181,18 +182,18 @@ A great use case of the `content` is to make layout components:
 
 <ExampleTabs
   prefix="comp-layouts"
-  :panels="{
+  panels={{ {
     'ArchivePage.jinja': 'guide.CompArchive',
     'Layout.jinja': 'guide.CompLayout',
-  }"
+  } }}
 />
 
 Everything between the open and close tags of the components will be rendered and passed to the `Layout` component as an implicit `content` variable.
 
-To test a component in isolation, you can also manually send a content argument using the special `__content` argument:
+To test a component in isolation, you can also manually send a content argument using the special `_content` argument:
 
 ```python
-catalog.render("PageLayout", title="Hello world", __content="TEST")
+catalog.render("PageLayout", title="Hello world", _content="TEST")
 ```
 
 ## Extra Arguments
@@ -288,15 +289,15 @@ are sorted by name and rendered like this:
 <Callout type="warning">
 Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to macros before the page render.
 
-You must pass them as the special argument `__attrs`.
+You must pass them as the special argument `_attrs`.
 
 ```html+jinja
 {#--- WRONG 😵 ---#}
 <MyButton {{ attrs.render() }} />
 
 {#--- GOOD 👍 ---#}
-<MyButton __attrs={{ attrs }} />
-<MyButton :__attrs="attrs" />
+<MyButton _attrs={{ attrs }} />
+<MyButton :_attrs="attrs" />
 ```
 </Callout>
 
