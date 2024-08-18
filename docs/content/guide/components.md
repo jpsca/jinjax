@@ -168,33 +168,7 @@ There are two different but equivalent ways to pass non-string arguments:
 
 ## With Content
 
-There is always an extra implicit argument: **the content** inside the component. This could be anything: text, HTML, and/or other components; but when the component receives it, it is already rendered to a string.
-
-```html+jinja
-{# Component with content #}
-<Name _arguments_ > ...content here... </Name>
-
-{# Self-closing component, `content` is an empty string #}
-<Name _arguments_ />
-```
-
-A great use case of the `content` is to make layout components:
-
-<ExampleTabs
-  prefix="comp-layouts"
-  panels={{ {
-    'ArchivePage.jinja': 'guide.CompArchive',
-    'Layout.jinja': 'guide.CompLayout',
-  } }}
-/>
-
-Everything between the open and close tags of the components will be rendered and passed to the `Layout` component as an implicit `content` variable.
-
-To test a component in isolation, you can also manually send a content argument using the special `_content` argument:
-
-```python
-catalog.render("PageLayout", title="Hello world", _content="TEST")
-```
+There is always an extra implicit argument: **the content** inside the component. Read more about it in the [next](/guide/slots) section.
 
 ## Extra Arguments
 

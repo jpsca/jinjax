@@ -7,6 +7,8 @@ description: Working with content in components.
 Besides attributes, components can also accept content to render inside them.
 </Header>
 
+Everything between the open and close tags of the components will be rendered and passed to the component as an implicit `content` variable
+
 This is a very common pattern, and it is called a **_slot_**. A slot is a placeholder for content that can be provided by the user of the component. For example, we may have a `<FancyButton>` component that supports usage like this:
 
 ```html+jinja
@@ -25,12 +27,17 @@ The template of `<FancyButton>` looks like this:
 
 ![slot diagram](/static/img/slots-diagram.png)
 
-
 The `<FancyButton>` is responsible for rendering the outer `<button>` (and its fancy styling), while the inner content is provided by the parent component.
 
-<Callout type="info">
-The `content` variable is available in the template of the component automatically, you don't need to declare it.
-</Callout>
+A great use case of the `content` is to make layout components:
+
+<ExampleTabs
+  prefix="slots-layouts"
+  panels={{ {
+    "ArchivePage.jinja": "guide.slots.CompArchive",
+    "Layout.jinja": "guide.slots.CompLayout",
+  } }}
+/>
 
 
 ## Fallback Content
@@ -61,6 +68,10 @@ Now when we use `<SubmitButton>` in a parent component, providing no content for
 <SubmitButton />
 ```
 
+<Callout type="info">
+The `content` of a self-closing component is an empty string.
+</Callout>
+
 This will render the fallback content, "Submit":
 
 ```html
@@ -78,8 +89,6 @@ Then the provided content will be rendered instead:
 ```html
 <button type="submit">Save</button>
 ```
-
-.
 
 
 ## Multiple content slots (a.k.a. "named slots")
@@ -107,8 +116,6 @@ The `_slot` variable is scoped to the content of that component, so it's not ava
 
 {{ _slot }}   {# <--- Undefined variable #}
 ```
-
-.
 
 
 ## Composability: and alternative to named slots
@@ -140,13 +147,13 @@ Consider a `Modal` component that requires three distinct sections: a header, a 
 Now, the `Modal` component is responsible for rendering the outer `<dialog>` and its styling, while the inner content is provided by the child components.
 
 <ExampleTabs
-  prefix="demo"
-  :panels="{
-    'Modal.jinja': 'guide.SlotsModal',
-    'ModalHeader.jinja': 'guide.SlotsModalHeader',
-    'ModalBody.jinja': 'guide.SlotsModalBody',
-    'ModalFooter.jinja': 'guide.SlotsModalFooter',
-  }"
+  prefix="slots-modal"
+  panels={{ {
+    "Modal": "guide.slots.Modal",
+    "ModalHeader": "guide.slots.ModalHeader",
+    "ModalBody": "guide.slots.ModalBody",
+    "ModalFooter": "guide.slots.ModalFooter",
+  } }}
 />
 
 ### Advantages of Composability
@@ -154,3 +161,13 @@ Now, the `Modal` component is responsible for rendering the outer `<dialog>` and
 - **Flexibility**: You can easily rearrange, omit, or add new sections without modifying the core `Modal` component.
 - **Reusability**: Each section (`ModalHeader`, `ModalBody`, `ModalFooter`) can be used independently or within other components.
 - **Maintainability**: It's easier to update or style individual sections without affecting the others.
+
+
+## Testing components with content
+
+To test a component in isolation, you can manually send a content argument using the special `_content` argument:
+
+```python
+catalog.render("PageLayout", title="Hello world", _content="TEST")
+```
+
