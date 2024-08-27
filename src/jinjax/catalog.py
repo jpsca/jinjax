@@ -1,6 +1,7 @@
 import os
 import typing as t
 from collections import UserString
+from contextvars import ContextVar
 from hashlib import sha256
 from pathlib import Path
 
@@ -22,6 +23,10 @@ DEFAULT_EXTENSION = ".jinja"
 ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
 
+# Create ContextVars containers at module level
+collected_css = {}
+collected_js = {}
+
 
 class CallerWrapper(UserString):
     def __init__(self, caller: t.Callable | None, content: str = "") -> None:
@@ -40,7 +45,6 @@ class CallerWrapper(UserString):
     @property
     def data(self) -> str:  # type: ignore
         return self()
-
 
 
 class Catalog:
@@ -124,12 +128,11 @@ class Catalog:
         "file_ext",
         "jinja_env",
         "fingerprint",
-        "collected_css",
-        "collected_js",
         "auto_reload",
         "use_cache",
         "_tmpl_globals",
         "_cache",
+        "_key",
     )
 
     def __init__(
@@ -147,8 +150,6 @@ class Catalog:
         fingerprint: bool = False,
     ) -> None:
         self.prefixes: dict[str, jinja2.FileSystemLoader] = {}
-        self.collected_css: list[str] = []
-        self.collected_js: list[str] = []
         self.file_ext = file_ext
         self.use_cache = use_cache
         self.auto_reload = auto_reload
@@ -186,6 +187,43 @@ class Catalog:
 
         self._tmpl_globals: "t.MutableMapping[str, t.Any] | None" = None
         self._cache: dict[str, dict] = {}
+        self._key = id(self)
+
+    def __del__(self) -> None:
+        name = f"collected_css_{self._key}"
+        if name in collected_css:
+            del collected_css[name]
+        name = f"collected_js_{self._key}"
+        if name in collected_js:
+            del collected_js[name]
+
+    @property
+    def collected_css(self) -> list[str]:
+        if self._key not in collected_css:
+            name = f"collected_css_{self._key}"
+            collected_css[self._key] = ContextVar(name, default=[])
+        return collected_css[self._key].get()
+
+    @collected_css.setter
+    def collected_css(self, value: list[str]) -> None:
+        if self._key not in collected_css:
+            name = f"collected_css_{self._key}"
+            collected_css[self._key] = ContextVar(name, default=[])
+        collected_css[self._key].set(list(value))
+
+    @property
+    def collected_js(self) -> list[str]:
+        if self._key not in collected_js:
+            name = f"collected_js_{self._key}"
+            collected_js[self._key] = ContextVar(name, default=[])
+        return collected_js[self._key].get()
+
+    @collected_js.setter
+    def collected_js(self, value: list[str]) -> None:
+        if self._key not in collected_js:
+            name = f"collected_js_{self._key}"
+            collected_js[self._key] = ContextVar(name, default=[])
+        collected_js[self._key].set(list(value))
 
     @property
     def paths(self) -> list[Path]:
@@ -324,6 +362,9 @@ class Catalog:
 
         root_path = component.path.parent if component.path else None
 
+        css = self.collected_css
+        js = self.collected_js
+
         for url in component.css:
             if (
                 root_path
@@ -332,8 +373,8 @@ class Catalog:
             ):
                 url = self._fingerprint(root_path, url)
 
-            if url not in self.collected_css:
-                self.collected_css.append(url)
+            if url not in css:
+                css.append(url)
 
         for url in component.js:
             if (
@@ -343,8 +384,8 @@ class Catalog:
             ):
                 url = self._fingerprint(root_path, url)
 
-            if url not in self.collected_js:
-                self.collected_js.append(url)
+            if url not in js:
+                js.append(url)
 
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
@@ -478,7 +519,9 @@ class Catalog:
     def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component:
         path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
         component = Component(name=name, prefix=prefix, path=path)
-        component.tmpl = self.jinja_env.get_template(tmpl_name, globals=self._tmpl_globals)
+        component.tmpl = self.jinja_env.get_template(
+            tmpl_name, globals=self._tmpl_globals
+        )
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:
