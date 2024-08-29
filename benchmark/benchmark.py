@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi.templating import Jinja2Templates
 from jinja2 import Environment, FileSystemLoader
+
 from jinjax import Catalog
 
 
@@ -72,7 +73,7 @@ def print_separator():
 
 
 if __name__ == "__main__":
-    print(f"Benchmarking...\n")
+    print("Benchmarking...\n")
     time_jinja = timeit.timeit(render_jinja, number=number)
     time_fastapi = timeit.timeit(render_fastapi, number=number)
 
