@@ -24,8 +24,8 @@ ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
 
 # Create ContextVars containers at module level
-collected_css = {}
-collected_js = {}
+collected_css: dict[int, ContextVar[list[str]]] = {}
+collected_js: dict[int, ContextVar[list[str]]] = {}
 
 
 class CallerWrapper(UserString):
@@ -54,12 +54,12 @@ class Catalog:
     Arguments:
 
         globals:
-            Dictionary of Jinja globals to add to the Catalog's Jinja environment
-            (or the one passed in `jinja_env`).
+            Dictionary of Jinja globals to add to the Catalog's Jinja
+            environment (or the one passed in `jinja_env`).
 
         filters:
-            Dictionary of Jinja filters to add to the Catalog's Jinja environment
-            (or the one passed in `jinja_env`).
+            Dictionary of Jinja filters to add to the Catalog's Jinja
+            environment (or the one passed in `jinja_env`).
 
         tests:
             Dictionary of Jinja tests to add to the Catalog's Jinja environment
@@ -67,34 +67,36 @@ class Catalog:
 
         extensions:
             List of Jinja extensions to add to the Catalog's Jinja environment
-            (or the one passed in `jinja_env`). The `jinja2.ext.do` extension is
-            always added at the end of these.
+            (or the one passed in `jinja_env`). The `jinja2.ext.do` extension
+            is always added at the end of these.
 
         jinja_env:
-            Custom Jinja environment to use. This argument is useful to reuse an
-            existing Jinja Environment from your web framework.
+            Custom Jinja environment to use. This argument is useful to reuse
+            an existing Jinja Environment from your web framework.
 
         root_url:
-            Add this prefix to every asset URL of the static middleware. By default,
-            it is `/static/components/`, so, for example, the URL of the CSS file of
-            a `Card` component is `/static/components/Card.css`.
+            Add this prefix to every asset URL of the static middleware.
+            By default, it is `/static/components/`, so, for example,
+            the URL of the CSS file of a `Card` component is
+            `/static/components/Card.css`.
 
-            You can also change this argument so the assets are requested from a
-            Content Delivery Network (CDN) in production, for example,
+            You can also change this argument so the assets are requested from
+            a Content Delivery Network (CDN) in production, for example,
             `root_url="https://example.my-cdn.com/"`.
 
         file_ext:
             The extensions the components files have. By default, ".jinja".
 
-            This argument can also be a list to allow more than one type of file to
-            be a component.
+            This argument can also be a list to allow more than one type of
+            file to be a component.
 
         use_cache:
             Cache the metadata of the component in memory.
 
         auto_reload:
-            Used with `use_cache`. If `True`, the last-modified date of the component
-            file is checked every time to see if the cache is up-to-date.
+            Used with `use_cache`. If `True`, the last-modified date of the
+            component file is checked every time to see if the cache
+            is up-to-date.
 
             Set to `False` in production.
 
@@ -102,12 +104,12 @@ class Catalog:
             If `True`, inserts a hash of the updated time into the URL of the
             asset files (after the name but before the extension).
 
-            This strategy encourages long-term caching while ensuring that new copies
-            are only requested when the content changes, as any modification alters the
-            fingerprint and thus the filename.
+            This strategy encourages long-term caching while ensuring that
+            new copies are only requested when the content changes, as any
+            modification alters the fingerprint and thus the filename.
 
-            **WARNING**: Only works if the server knows how to filter the fingerprint
-            to get the real name of the file.
+            **WARNING**: Only works if the server knows how to filter the
+            fingerprint to get the real name of the file.
 
     Attributes:
 
@@ -144,12 +146,14 @@ class Catalog:
         extensions: "list | None" = None,
         jinja_env: "jinja2.Environment | None" = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: "str | tuple[str, ...]" = DEFAULT_EXTENSION,
+        file_ext: "str | list[str] | tuple[str, ...]" = DEFAULT_EXTENSION,
         use_cache: bool = True,
         auto_reload: bool = True,
         fingerprint: bool = False,
     ) -> None:
         self.prefixes: dict[str, jinja2.FileSystemLoader] = {}
+        if isinstance(file_ext, list):
+            file_ext = tuple(file_ext)
         self.file_ext = file_ext
         self.use_cache = use_cache
         self.auto_reload = auto_reload
@@ -228,7 +232,8 @@ class Catalog:
     @property
     def paths(self) -> list[Path]:
         """
-        A helper property that returns a list of all the components folder paths.
+        A helper property that returns a list of all the components
+        folder paths.
         """
         _paths = []
         for loader in self.prefixes.values():
@@ -242,15 +247,17 @@ class Catalog:
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
         """
-        Add a folder path from where to search for components, optionally under a prefix.
+        Add a folder path from where to search for components, optionally
+        under a prefix.
 
         The prefix acts like a namespace. For example, the name of a
         `components/Card.jinja` component is, by default, "Card",
         but under the prefix "common", it becomes "common.Card".
 
-        The rule for subfolders remains the same: a `components/wrappers/Card.jinja`
-        name is, by default, "wrappers.Card", but under the prefix "common",
-        it becomes "common.wrappers.Card".
+        The rule for subfolders remains the same: a
+        `components/wrappers/Card.jinja` name is, by default,
+        "wrappers.Card", but under the prefix "common", it
+        becomes "common.wrappers.Card".
 
         If there is more than one component with the same name in multiple
         added folders under the same prefix, the one in the folder added
@@ -266,26 +273,35 @@ class Catalog:
                 have. The default is empty.
 
         """
-        prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
+        prefix = (
+            prefix.strip()
+            .strip(f"{DELIMITER}{SLASH}")
+            .replace(SLASH, DELIMITER)
+        )
 
         root_path = str(root_path)
         if prefix in self.prefixes:
             loader = self.prefixes[prefix]
             if root_path in loader.searchpath:
                 return
-            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
+            logger.debug(
+                f"Adding folder `{root_path}` with the prefix `{prefix}`"
+            )
             loader.searchpath.append(root_path)
         else:
-            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
+            logger.debug(
+                f"Adding folder `{root_path}` with the prefix `{prefix}`"
+            )
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
         """
-        Reads an absolute path from `module.components_path` and an optional prefix
-        from `module.prefix`, then calls `Catalog.add_folder(path, prefix)`.
+        Reads an absolute path from `module.components_path` and an optional
+        prefix from `module.prefix`, then calls
+        `Catalog.add_folder(path, prefix)`.
 
-        The prefix can also be passed as an argument instead of being read from
-        the module.
+        The prefix can also be passed as an argument instead of being read
+        from the module.
 
         This method exists to make it easy and consistent to have
         components installable as Python libraries.
@@ -301,7 +317,9 @@ class Catalog:
 
         """
         mprefix = (
-            prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
+            prefix
+            if prefix is not None
+            else getattr(module, "prefix", DEFAULT_PREFIX)
         )
         self.add_folder(module.components_path, prefix=mprefix)
 
@@ -352,13 +370,19 @@ class Catalog:
 
         if source:
             logger.debug("Rendering from source %s", __name)
-            component = self._get_from_source(name=name, prefix=prefix, source=source)
+            component = self._get_from_source(
+                name=name, prefix=prefix, source=source
+            )
         elif self.use_cache:
             logger.debug("Rendering from cache or file %s", __name)
-            component = self._get_from_cache(prefix=prefix, name=name, file_ext=file_ext)
+            component = self._get_from_cache(
+                prefix=prefix, name=name, file_ext=file_ext
+            )
         else:
             logger.debug("Rendering from file %s", __name)
-            component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
+            component = self._get_from_file(
+                prefix=prefix, name=name, file_ext=file_ext
+            )
 
         root_path = component.path.parent if component.path else None
 
@@ -409,7 +433,8 @@ class Catalog:
         **kwargs,
     ) -> ComponentsMiddleware:
         """
-        Wraps you application with [Withenoise](https://whitenoise.readthedocs.io/),
+        Wraps you application with
+        [Withenoise](https://whitenoise.readthedocs.io/),
         a static file serving middleware.
 
         Tecnically not neccesary if your components doesn't use static assets
@@ -421,13 +446,15 @@ class Catalog:
                 A WSGI application
 
             allowed_ext:
-                A list of file extensions the static middleware is allowed to read
-                and return. By default, is just ".css", ".js", and ".mjs".
+                A list of file extensions the static middleware is allowed to
+                read and return. By default, is just ".css", ".js", and ".mjs".
 
         """
         logger.debug("Creating middleware")
         middleware = ComponentsMiddleware(
-            application=application, allowed_ext=tuple(allowed_ext or []), **kwargs
+            application=application,
+            allowed_ext=tuple(allowed_ext or []),
+            **kwargs,
         )
         for prefix, loader in self.prefixes.items():
             url_prefix = get_url_prefix(prefix)
@@ -437,7 +464,11 @@ class Catalog:
 
         return middleware
 
-    def get_source(self, cname: str, file_ext: "tuple[str, ...] | str" = "") -> str:
+    def get_source(
+        self,
+        cname: str,
+        file_ext: "tuple[str, ...] | str" = "",
+    ) -> str:
         """
         A helper method that returns the source file of a component.
         """
@@ -486,12 +517,26 @@ class Catalog:
 
         return f"{parent}{stem}-{fingerprint}{ext}"
 
-    def _get_from_source(self, *, name: str, prefix: str, source: str) -> Component:
+    def _get_from_source(
+        self,
+        *,
+        name: str,
+        prefix: str,
+        source: str,
+    ) -> Component:
         tmpl = self.jinja_env.from_string(source, globals=self._tmpl_globals)
-        component = Component(name=name, prefix=prefix, source=source, tmpl=tmpl)
+        component = Component(
+            name=name, prefix=prefix, source=source, tmpl=tmpl
+        )
         return component
 
-    def _get_from_cache(self, *, prefix: str, name: str, file_ext: str) -> Component:
+    def _get_from_cache(
+        self,
+        *,
+        prefix: str,
+        name: str,
+        file_ext: str,
+    ) -> Component:
         key = f"{prefix}.{name}.{file_ext}"
         cache = self._from_cache(key)
         if cache:
@@ -502,7 +547,9 @@ class Catalog:
                 return component
 
         logger.debug("Loading %s", key)
-        component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
+        component = self._get_from_file(
+            prefix=prefix, name=name, file_ext=file_ext
+        )
         self._to_cache(key, component)
         return component
 
@@ -516,8 +563,12 @@ class Catalog:
     def _to_cache(self, key: str, component: Component) -> None:
         self._cache[key] = component.serialize()
 
-    def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component:
-        path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
+    def _get_from_file(
+        self, *, prefix: str, name: str, file_ext: str
+    ) -> Component:
+        path, tmpl_name = self._get_component_path(
+            prefix, name, file_ext=file_ext
+        )
         component = Component(name=name, prefix=prefix, path=path)
         component.tmpl = self.jinja_env.get_template(
             tmpl_name, globals=self._tmpl_globals
@@ -535,7 +586,10 @@ class Catalog:
         return DEFAULT_PREFIX, cname
 
     def _get_component_path(
-        self, prefix: str, name: str, file_ext: "tuple[str, ...] | str" = ""
+        self,
+        prefix: str,
+        name: str,
+        file_ext: "tuple[str, ...] | str" = "",
     ) -> tuple[Path, str]:
         name = name.replace(DELIMITER, SLASH)
         root_paths = self.prefixes[prefix].searchpath
@@ -555,7 +609,10 @@ class Catalog:
                         filepath = f"{relfolder}/{filename}"
                     else:
                         filepath = filename
-                    if filepath.startswith(name_dot) and filepath.endswith(file_ext):
+                    if (
+                        filepath.startswith(name_dot) and
+                        filepath.endswith(file_ext)
+                    ):
                         return Path(curr_folder) / filename, filepath
 
         raise ComponentNotFound(

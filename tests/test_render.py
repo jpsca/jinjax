@@ -1111,8 +1111,8 @@ def test_same_thread_assets_independence(catalog, folder):
 <link rel="stylesheet" href="/static/components/b.css">
 <script type="module" src="/static/components/b.js"></script>""".strip()
 
+    html1 = catalog.render("Comp1")
     # `irender` instead of `render` so the assets are not cleared
-    html1 = catalog.irender("Comp1")
     html2 = catalog2.irender("Comp2")
     print(html1)
     print(html2)
