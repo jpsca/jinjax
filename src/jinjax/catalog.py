@@ -424,6 +424,7 @@ class Catalog:
             ) from exc
 
         args[ARGS_CONTENT] = CallerWrapper(caller=caller, content=content)
+        print(component.name, args)
         return component.render(**args)
 
     def get_middleware(

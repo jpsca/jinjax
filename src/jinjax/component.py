@@ -1,5 +1,7 @@
 import ast
+import importlib.util
 import re
+import sys
 import typing as t
 from keyword import iskeyword
 from pathlib import Path
@@ -10,6 +12,7 @@ from markupsafe import Markup
 from .exceptions import (
     DuplicateDefDeclaration,
     InvalidArgument,
+    InvalidModule,
     MissingRequiredArgument,
 )
 from .utils import DELIMITER, get_url_prefix
@@ -45,25 +48,12 @@ ALLOWED_NAMES_IN_EXPRESSION_VALUES = {
     "true": True,
 }
 
-
-def eval_expression(input_string):
-    code = compile(input_string, "<string>", "eval")
-    for name in code.co_names:
-        if name not in ALLOWED_NAMES_IN_EXPRESSION_VALUES:
-            raise InvalidArgument(f"Use of {name} not allowed")
-    try:
-        return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
-    except NameError as err:
-        raise InvalidArgument(err) from err
-
-
-def is_valid_variable_name(name):
-    return name.isidentifier() and not iskeyword(name)
+GetContextType = t.Callable[[dict[str, t.Any], dict[str, t.Any]], dict[str, t.Any]]
 
 
 class Component:
-    """Internal class
-    """
+    """Internal class"""
+
     __slots__ = (
         "name",
         "prefix",
@@ -72,6 +62,7 @@ class Component:
         "optional",
         "css",
         "js",
+        "module",
         "path",
         "mtime",
         "tmpl",
@@ -95,10 +86,12 @@ class Component:
         self.optional: dict[str, t.Any] = {}
         self.css: list[str] = []
         self.js: list[str] = []
+        self.module: str = ""
 
         if path is not None:
             source = source or path.read_text()
             mtime = mtime or path.stat().st_mtime
+
         if source:
             self.load_metadata(source)
 
@@ -112,6 +105,10 @@ class Component:
             default_js = f"{default_name}.js"
             if (path.with_suffix(".js")).is_file():
                 self.js.extend(self.parse_files_expr(default_js))
+
+            default_module = path.with_suffix(".py")
+            if (default_module).is_file():
+                self.module = str(default_module)
 
         self.path = path
         self.mtime = mtime
@@ -157,6 +154,7 @@ class Component:
             "optional": self.optional,
             "css": self.css,
             "js": self.js,
+            "module": self.module,
             "path": self.path,
             "mtime": self.mtime,
             "tmpl": self.tmpl,
@@ -199,7 +197,7 @@ class Component:
         start = rx_start.match(source)
         if not start:
             return ""
-        return source[start.end():].strip()
+        return source[start.end() :].strip()
 
     def parse_args_expr(self, expr: str) -> tuple[list[str], dict[str, t.Any]]:
         expr = expr.strip(" *,/")
@@ -249,10 +247,55 @@ class Component:
         extra = kw.copy()
         return args, extra
 
-    def render(self, **kwargs):
+    def render(self, **args):
         assert self.tmpl, f"Component {self.name} has no template"
-        html = self.tmpl.render(**kwargs).strip()
+        context = self._get_context(args)
+        print(self.name, args, context)
+        html = self.tmpl.render(**context).strip()
         return Markup(html)
 
     def __repr__(self) -> str:
         return f'<Component "{self.name}">'
+
+    def _get_context(self, args: dict[str, t.Any]) -> dict[str, t.Any]:
+        if not self.module:
+            return args
+        print(self.module)
+        get_context_func = load_get_context_from_module(self.module)
+        tmpl_globals = {**self.tmpl.globals} if self.tmpl else {}
+        return get_context_func(args, tmpl_globals)
+
+
+def eval_expression(input_string):
+    code = compile(input_string, "<string>", "eval")
+    for name in code.co_names:
+        if name not in ALLOWED_NAMES_IN_EXPRESSION_VALUES:
+            raise InvalidArgument(f"Use of {name} not allowed")
+    try:
+        return eval(code, {"__builtins__": {}}, ALLOWED_NAMES_IN_EXPRESSION_VALUES)
+    except NameError as err:
+        raise InvalidArgument(err) from err
+
+
+def is_valid_variable_name(name):
+    return name.isidentifier() and not iskeyword(name)
+
+
+def load_get_context_from_module(file_path: str) -> GetContextType:
+    """Load the module from the file and return the get_context function."""
+    try:
+        spec = importlib.util.spec_from_file_location("dynamic_module", file_path)
+        assert spec
+        assert spec.loader
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["dynamic_module"] = module
+        spec.loader.exec_module(module)
+    except (ImportError, AssertionError) as e:
+        raise InvalidModule("Error loading module: %s", file_path) from e
+
+    if hasattr(module, "get_context") and callable(module.get_context):
+        return module.get_context
+    else:
+        raise InvalidModule(
+            "The file does not contain a `get_context` function: %s", file_path
+        )

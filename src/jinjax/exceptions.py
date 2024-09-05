@@ -35,3 +35,10 @@ class InvalidArgument(Exception):
     Raised when the arguments passed to the component cannot be parsed
     by JinjaX because of an invalid syntax.
     """
+
+
+class InvalidModule(Exception):
+    """
+    Raised when the module named like the component cannot be imported
+    or it doesn't contain a `get_context` function.
+    """
