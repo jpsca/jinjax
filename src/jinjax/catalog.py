@@ -29,6 +29,8 @@ collected_js: dict[int, ContextVar[list[str]]] = {}
 
 
 class CallerWrapper(UserString):
+    _content = ""
+
     def __init__(self, caller: t.Callable | None, content: str = "") -> None:
         self._caller = caller
         # Pre-calculate the defaut content so the assets are loaded
@@ -40,11 +42,14 @@ class CallerWrapper(UserString):
         return self._content
 
     def __html__(self) -> str:
-        return self()
+        return self.__call__()
+
+    def __repr__(self) -> str:
+        return self._content
 
     @property
     def data(self) -> str:  # type: ignore
-        return self()
+        return self.__call__()
 
 
 class Catalog:
