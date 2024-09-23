@@ -193,4 +193,20 @@ def environment(loader: FileSystemLoader, **options):
 
 #### FastAPI:
 
-TBD
+```python
+import jinjax
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+
+app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
+
+templates.env.add_extension(jinjax.JinjaX)
+catalog = jinjax.Catalog(jinja_env=templates.env)
+catalog.add_folder("templates/components")
+
+@app.get("/")
+def get_index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+```
