@@ -13,7 +13,8 @@
   <button
     type="button"
     class="select-all"
-    onclick="document.getElementById('linkedlist-demo-list1').dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
+    onclick="document.getElementById('linkedlist-demo-list1')
+      .dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
   >
     Select all &raquo;
   </button>
@@ -26,7 +27,8 @@
   <button
     type="button"
     class="remove-all"
-    onclick="document.getElementById('linkedlist-demo-list2').dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
+    onclick="document.getElementById('linkedlist-demo-list2')
+      .dispatchEvent(new CustomEvent('jxui:linked:sendall'));"
   >
     &laquo; Remove all
   </button>

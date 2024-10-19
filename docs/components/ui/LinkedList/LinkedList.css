@@ -26,6 +26,9 @@
     border-radius: 0.25rem;
     font-size: 0.85rem;
   }
+  &:is(.dark *) .ui-linkedlist {
+    background-color: rgb(30 30 30);
+  }
   .ui-linkedlist li {
     cursor: pointer;
     display: flex;
@@ -39,6 +42,9 @@
   .ui-linkedlist li:hover {
     background-color: rgb(243 244 246);
   }
+  &:is(.dark *) .ui-linkedlist li:hover  {
+    background-color: rgb(0 0 0);
+  }
   .ui-linkedlist input[type="checkbox"] {
     margin-right: 0.5rem;
   }
@@ -51,6 +57,9 @@
     border-radius: 0.25rem 0.25rem 0 0;
     font-size: 0.7rem;
     margin-bottom: -1px;
+  }
+  &:is(.dark *) label {
+    background-color: rgb(23 23 23);
   }
 
   button {
@@ -84,6 +93,15 @@
     background-color: rgb(229 231 235);
     outline-offset: 1px;
     outline-color: #3b82f6;
+  }
+  &:is(.dark *) button {
+    background-color: rgb(23 23 23);
+  }
+  &:is(.dark *) button:hover {
+    background-color: rgb(30 30 30);
+  }
+  &:is(.dark *) button:focus {
+    background-color: rgb(23 23 23);
   }
   @media (min-width: 640px) {
     button {

@@ -9,7 +9,8 @@
   height: 2.5rem;
   align-items: center;
   color: rgb(24 24 27);
-  opacity: 0.9;
+  opacity: 0.8;
+  background: transparent;
 
   &:hover {
     opacity: 1;
@@ -78,7 +79,9 @@
     text-indent: -999px;
     display: none;
   }
-
+  &:is(.dark *) h1 {
+    background-image: url("/static/img/jinjax-logo-dark.svg");
+  }
   & h2 {
     font-size: 2.2rem;
     font-weight: 600;
