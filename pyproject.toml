@@ -55,7 +55,7 @@ optional = true
 pytest = "^8.1.1"
 pytest-cov = "*"
 ruff = ">0.3"
-
+whitenoise = ">=5.3"
 
 [tool.coverage.run]
 branch = true

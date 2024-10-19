@@ -583,7 +583,7 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 name = "whitenoise"
 version = "6.7.0"
 description = "Radically simplified static file serving for WSGI applications"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "whitenoise-6.7.0-py3-none-any.whl", hash = "sha256:a1ae85e01fdc9815d12fa33f17765bc132ed2c54fa76daf9e39e879dd93566f6"},
@@ -599,4 +599,4 @@ whitenoise = ["whitenoise"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "13088188679d9b58fff342a2a14c2cbf5489b50182b2bc655677c7cb0a6ae7ca"
+content-hash = "bd447018e19b53192b02cffca6289a0f4f5a5d251f3a00d86affdc9e07222024"
