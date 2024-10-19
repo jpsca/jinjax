@@ -121,6 +121,8 @@ The tags above will not work if your application can't return the content of tho
 
 For that reason, JinjaX includes WSGI middleware that will process those URLs if you add it to your application.
 
+**This is not needed if your components doesn't use static assets or if you serve them by other means.**
+
 ```py
 from flask import Flask
 from jinjax import Catalog
@@ -138,7 +140,14 @@ app.wsgi_app = catalog.get_middleware(
 )
 ```
 
-The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css* and *.js* files inside the component(s) folder(s). You can configure it to also return files with other extensions. For example:
+The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css* and *.js* files inside the component(s) folder(s).
+Yo must install it first:
+
+```bash
+pip install jinjax[whitenoise]
+```
+
+Then, you can configure it to also return files with other extensions. For example:
 
 ```python
 catalog.get_middleware(app, allowed_ext=[".css", .js", .svg", ".png"])
