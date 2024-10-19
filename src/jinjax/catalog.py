@@ -16,6 +16,10 @@ from .middleware import ComponentsMiddleware
 from .utils import DELIMITER, SLASH, get_url_prefix, logger
 
 
+if t.TYPE_CHECKING:
+    from .middleware import ComponentsMiddleware
+
+
 DEFAULT_URL_ROOT = "/static/components/"
 ALLOWED_EXTENSIONS = (".css", ".js", ".mjs")
 DEFAULT_PREFIX = ""
@@ -436,14 +440,15 @@ class Catalog:
         application: t.Callable,
         allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
         **kwargs,
-    ) -> ComponentsMiddleware:
+    ) -> "ComponentsMiddleware":
         """
         Wraps you application with
         [Withenoise](https://whitenoise.readthedocs.io/),
         a static file serving middleware.
 
-        Tecnically not neccesary if your components doesn't use static assets
-        or if you serve them by other means.
+        Tecnically not necessary if your components doesn't use static assets
+        or if you serve them by other means. Requires the `whitenoise` python
+        package to be installed.
 
         Arguments:
 
@@ -455,6 +460,8 @@ class Catalog:
                 read and return. By default, is just ".css", ".js", and ".mjs".
 
         """
+        from .middleware import ComponentsMiddleware
+
         logger.debug("Creating middleware")
         middleware = ComponentsMiddleware(
             application=application,

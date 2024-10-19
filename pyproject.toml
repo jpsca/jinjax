@@ -34,7 +34,10 @@ classifiers = [
 python = "^3.10"
 jinja2 = ">=3.0"
 markupsafe = ">=2.0"
-whitenoise = ">=5.3"
+whitenoise = { version = ">=5.3", optional = true }
+
+[tool.poetry.extras]
+whitenoise = ["whitenoise"]
 
 [tool.poetry.group.dev]
 optional = true
