@@ -1,6 +1,11 @@
 from .catalog import Catalog
 from .component import Component
-from .exceptions import *  # noqa
+from .exceptions import (
+    ComponentNotFound,
+    DuplicateDefDeclaration,
+    InvalidArgument,
+    MissingRequiredArgument,
+)
 from .html_attrs import HTMLAttrs, LazyString
 from .jinjax import JinjaX
 
