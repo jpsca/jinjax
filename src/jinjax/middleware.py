@@ -6,22 +6,23 @@ from pathlib import Path
 try:
     from whitenoise import WhiteNoise
     from whitenoise.responders import Redirect, StaticFile
-except ImportError as err :
-    raise ImportError(
-        "This feature requires the package `whitenoise` to be installed. \n"
-        + "Run `pip install jinjax[whitenoise]` to do it."
-    ) from err
-
+except ImportError:
+    WhiteNoise = object
 
 RX_FINGERPRINT = re.compile("(.*)-([abcdef0-9]{64})")
 
 
-class ComponentsMiddleware(WhiteNoise):
+class ComponentsMiddleware(WhiteNoise):  # type: ignore
     """WSGI middleware for serving components assets"""
 
     allowed_ext: tuple[str, ...]
 
     def __init__(self, **kwargs) -> None:
+        if WhiteNoise is object:
+            raise ImportError(
+                "The ComponentsMiddleware requires the package `whitenoise`"
+                + " to be installed. \nRun `pip install jinjax[whitenoise]` to do it."
+            )
         self.allowed_ext = kwargs.pop("allowed_ext", ())
         super().__init__(**kwargs)
 
