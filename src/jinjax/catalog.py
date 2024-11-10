@@ -12,7 +12,6 @@ from .component import Component
 from .exceptions import ComponentNotFound, InvalidArgument
 from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
-from .middleware import ComponentsMiddleware
 from .utils import DELIMITER, SLASH, get_url_prefix, logger
 
 
