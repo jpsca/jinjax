@@ -12,7 +12,7 @@ from .component import Component
 from .exceptions import ComponentNotFound, InvalidArgument
 from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
-from .utils import DELIMITER, SLASH, get_url_prefix, logger
+from .utils import DELIMITER, SLASH, get_random_id, get_url_prefix, logger
 
 
 if t.TYPE_CHECKING:
@@ -186,7 +186,9 @@ class Catalog:
             jinja_env.filters["catalog"] = self
 
         globals["catalog"] = self
+        globals["get_random_id"] = get_random_id
         filters["catalog"] = self
+        filters["random_id"] = get_random_id
 
         for ext in extensions:
             env.add_extension(ext)

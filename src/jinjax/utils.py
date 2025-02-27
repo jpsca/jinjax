@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 
 logger = logging.getLogger("jinjax")
@@ -14,3 +15,7 @@ def get_url_prefix(prefix: str) -> str:
     if url_prefix:
         url_prefix = f"{url_prefix}{SLASH}"
     return url_prefix
+
+
+def get_random_id(prefix="id") -> str:
+    return f"{prefix}-{str(uuid.uuid4().hex)}"

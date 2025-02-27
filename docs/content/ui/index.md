@@ -1,10 +1,10 @@
 ---
-title: UI components
+title: Introduction
 description: Unstyled, fully accessible UI components, to integrate with your projects.
 ---
 
-<Header title="UI components" :section="false">
-  Unstyled, fully accessible UI components, to integrate with your projects.
+<Header title="Introduction" section="UI components">
+  Accessible UI components, to integrate with your projects.
 </Header>
 
 <div class="cd-cards not-prose">

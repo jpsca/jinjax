@@ -34,6 +34,7 @@ pages = [
         [
             "UI components", [
                 "ui/index.md",
+                "ui/button.md",
                 "ui/tabs.md",
                 "ui/popover.md",
                 "ui/menu.md",
