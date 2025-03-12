@@ -1,18 +1,16 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
 
 
-[tool.poetry]
+[project]
 name = "jinjax"
 version = "0.49"
 description = "Replace your HTML templates with Python server-Side components"
-authors = ["Juan-Pablo Scaletti <juanpablo@jpscaletti.com>"]
-license = "MIT"
+authors = [
+    {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
+]
+license = { "file" = "MIT-LICENSE" }
 readme = "README.md"
-homepage = "https://jinjax.scaletti.dev/"
-repository = "https://github.com/jpsca/jinjax"
-documentation = "https://jinjax.scaletti.dev/guides/"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
@@ -30,33 +28,37 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: HTML",
     "Typing :: Typed",
 ]
+requires-python = ">=3.10,<4"
+dependencies = [
+    "jinja2 >= 3.0",
+    "markupsafe >= 2.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-jinja2 = ">=3.0"
-markupsafe = ">=2.0"
-whitenoise = { version = ">=5.3", optional = true }
+[project.urls]
+homepage = "https://jinjax.scaletti.dev/"
+repository = "https://github.com/jpsca/jinjax"
+documentation = "https://jinjax.scaletti.dev/guides/"
 
-[tool.poetry.extras]
-whitenoise = ["whitenoise"]
 
-[tool.poetry.group.dev]
-optional = true
+[dependency-groups]
+dev = [
+    "ipdb >= 0.13",
+    "pyright >= 1.1",
+    "pre-commit",
+    "ruff >= 0.2.0",
+    "tox-uv",
+]
+test = [
+    "pytest >= 7.2",
+    "pytest-cov",
+    "ruff > 0.3",
+    "whitenoise >= 5.3",
+]
 
-[tool.poetry.group.dev.dependencies]
-pyright = ">=1.1.282"
-pre-commit = "*"
-tox = "*"
-typing-extensions = "^4.11.0"
 
-[tool.poetry.group.test]
-optional = true
+[tool.setuptools.packages.find]
+where = ["src"]
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.1.1"
-pytest-cov = "*"
-ruff = ">0.3"
-whitenoise = ">=5.3"
 
 [tool.coverage.run]
 branch = true
@@ -72,8 +74,18 @@ exclude_lines = [
     "if __name__ == .__main__.:"
 ]
 
+
 [tool.coverage.html]
 directory = "covreport"
+exclude_lines = [
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
 
 
 [tool.pyright]
@@ -83,7 +95,6 @@ exclude = [
     "**/__pycache__",
     "**/tests",
 ]
-ignore = []
 reportPrivateImportUsage = false
 reportWildcardImportFromLibrary = false
 
@@ -96,14 +107,11 @@ addopts = "--doctest-modules"
 legacy_tox_ini = """
 [tox]
 skipsdist = True
-envlist = py310,py311,py312,py313,pypy3.10
+envlist = py310,py311,py312,py313,py314
 
 [testenv]
 skip_install = true
-allowlist_externals = poetry
 commands =
-    pip install -U pip wheel
-    poetry install --with test
     pytest -x src/jinjax tests
 """
 
@@ -112,16 +120,15 @@ commands =
 line-length = 90
 indent-width = 4
 target-version = "py311"
-
 exclude = [
   ".*",
   "_build",
   "build",
   "covreport",
   "dist",
+  "benchmark",
 ]
 include = ["*.py"]
-
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -149,7 +156,6 @@ docstring-code-format = false
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
-
 
 [tool.ruff.lint]
 fixable = ["ALL"]
@@ -185,9 +191,9 @@ select = [
 	"W",
 ]
 
-
 [tool.ruff.lint.isort]
 known-first-party = ["jinjax"]
+known-local-folder = ["src/jinjax"]
 
 # Use two line after imports.
 lines-after-imports = 2

@@ -3,10 +3,6 @@ title: Slots / Content
 description: Working with content in components.
 ---
 
-<Header title="Slots / Content">
-Besides attributes, components can also accept content to render inside them.
-</Header>
-
 Everything between the open and close tags of the components will be rendered and passed to the component as an implicit `content` variable
 
 This is a very common pattern, and it is called a **_slot_**. A slot is a placeholder for content that can be provided by the user of the component. For example, we may have a `<FancyButton>` component that supports usage like this:
@@ -25,7 +21,7 @@ The template of `<FancyButton>` looks like this:
 </button>
 ```
 
-![slot diagram](/static/img/slots-diagram.png)
+![slot diagram](./img/slots-diagram.png)
 
 The `<FancyButton>` is responsible for rendering the outer `<button>` (and its fancy styling), while the inner content is provided by the parent component.
 
@@ -97,7 +93,7 @@ There are cases when a component is complex enough to need multiple content slot
 
 One way to implement it is using multiple content slots. To do so, instead of rendering `content` as a string, you can also _call_ it with name. Then, the parent component can provide a content _for_ that name.
 
-![_slot variable](/static/img/slots-_slot.png)
+![_slot variable](./img/slots-_slot.png)
 
 Note the `_slot` special variable. This is automatically available in the content in the parent component and contains the named the component has used to call request its content.
 

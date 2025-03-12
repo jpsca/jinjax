@@ -72,8 +72,8 @@ From another component:
 
 Notice how the folder name doesn't need to start with an uppercase if you don't want it to.
 
-<a href="/static/img/anatomy-en.png" target="_blank">
-  <img src="/static/img/anatomy-en.png" style="margin:0 auto;width:90%;max-width:35rem;">
+<a href="./img/anatomy-en.png" target="_blank">
+  <img src="./img/anatomy-en.png" style="margin:0 auto;width:90%;max-width:35rem;">
 </a>
 
 ## Taking Arguments

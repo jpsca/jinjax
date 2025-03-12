@@ -1,9 +1,7 @@
 ---
 title: Motivation
+description: An overview of what Jinja is about, and a glimpse into my disjointed decision-making process that got me here.
 ---
-<Header title="Motivation">
-An overview of what Jinja is about, and a glimpse into my disjointed decision-making process that got me here.
-</Header>
 
 ## Components are cool
 

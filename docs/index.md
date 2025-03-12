@@ -1,10 +1,8 @@
 ---
 title: Introduction
+description: JinjaX is a Python library for creating reusable "components": encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.
 ---
 
-<Header title="Introduction">
-JinjaX is a Python library for creating reusable "components": encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.
-</Header>
 
 Unlike Jinja's `{% include "..." %}` or macros, JinjaX components integrate naturally with the rest of your template code.
 
