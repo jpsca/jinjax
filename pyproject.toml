@@ -34,6 +34,9 @@ dependencies = [
     "markupsafe >= 2.0",
 ]
 
+[project.optional-dependencies]
+whitenoise = ["whitenoise"]
+
 [project.urls]
 homepage = "https://jinjax.scaletti.dev/"
 repository = "https://github.com/jpsca/jinjax"

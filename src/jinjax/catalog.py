@@ -29,6 +29,7 @@ ARGS_CONTENT = "content"
 # Create ContextVars containers at module level
 collected_css: dict[int, ContextVar[list[str]]] = {}
 collected_js: dict[int, ContextVar[list[str]]] = {}
+tmpl_globals: dict[int, ContextVar[dict[str, t.Any]]] = {}
 
 
 class CallerWrapper(UserString):
@@ -140,7 +141,6 @@ class Catalog:
         "fingerprint",
         "auto_reload",
         "use_cache",
-        "_tmpl_globals",
         "_cache",
         "_key",
     )
@@ -199,7 +199,6 @@ class Catalog:
 
         self.jinja_env = env
 
-        self._tmpl_globals: "t.MutableMapping[str, t.Any] | None" = None
         self._cache: dict[str, dict] = {}
         self._key = id(self)
 
@@ -215,29 +214,52 @@ class Catalog:
     def collected_css(self) -> list[str]:
         if self._key not in collected_css:
             name = f"collected_css_{self._key}"
-            collected_css[self._key] = ContextVar(name, default=[])
+            collected_css[self._key] = ContextVar(name)
+            collected_css[self._key].set([])
+
         return collected_css[self._key].get()
 
     @collected_css.setter
     def collected_css(self, value: list[str]) -> None:
         if self._key not in collected_css:
             name = f"collected_css_{self._key}"
-            collected_css[self._key] = ContextVar(name, default=[])
+            collected_css[self._key] = ContextVar(name)
+
         collected_css[self._key].set(list(value))
 
     @property
     def collected_js(self) -> list[str]:
         if self._key not in collected_js:
             name = f"collected_js_{self._key}"
-            collected_js[self._key] = ContextVar(name, default=[])
+            collected_js[self._key] = ContextVar(name)
+            collected_js[self._key].set([])
+
         return collected_js[self._key].get()
 
     @collected_js.setter
     def collected_js(self, value: list[str]) -> None:
         if self._key not in collected_js:
             name = f"collected_js_{self._key}"
-            collected_js[self._key] = ContextVar(name, default=[])
+            collected_js[self._key] = ContextVar(name)
+
         collected_js[self._key].set(list(value))
+
+    @property
+    def tmpl_globals(self) -> dict[str, t.Any]:
+        if self._key not in tmpl_globals:
+            name = f"tmpl_globals_{self._key}"
+            tmpl_globals[self._key] = ContextVar(name)
+            tmpl_globals[self._key].set({})
+
+        return tmpl_globals[self._key].get()
+
+    @tmpl_globals.setter
+    def tmpl_globals(self, value: dict[str, t.Any]) -> None:
+        if self._key not in tmpl_globals:
+            name = f"tmpl_globals_{self._key}"
+            tmpl_globals[self._key] = ContextVar(name)
+
+        tmpl_globals[self._key].set(value.copy())
 
     @property
     def paths(self) -> list[Path]:
@@ -351,7 +373,7 @@ class Catalog:
         """
         self.collected_css = []
         self.collected_js = []
-        self._tmpl_globals = kw.pop("__globals", None)
+        self.tmpl_globals = kw.pop("__globals", {})
         return self.irender(__name, caller=caller, **kw)
 
     def irender(
@@ -537,7 +559,7 @@ class Catalog:
         prefix: str,
         source: str,
     ) -> Component:
-        tmpl = self.jinja_env.from_string(source, globals=self._tmpl_globals)
+        tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
         component = Component(
             name=name, prefix=prefix, source=source, tmpl=tmpl
         )
@@ -554,7 +576,7 @@ class Catalog:
         cache = self._from_cache(key)
         if cache:
             component = Component.from_cache(
-                cache, auto_reload=self.auto_reload, globals=self._tmpl_globals
+                cache, auto_reload=self.auto_reload, globals=self.tmpl_globals
             )
             if component:
                 return component
@@ -584,7 +606,7 @@ class Catalog:
         )
         component = Component(name=name, prefix=prefix, path=path)
         component.tmpl = self.jinja_env.get_template(
-            tmpl_name, globals=self._tmpl_globals
+            tmpl_name, globals=self.tmpl_globals
         )
         return component
 
