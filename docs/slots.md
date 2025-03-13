@@ -27,14 +27,27 @@ The `<FancyButton>` is responsible for rendering the outer `<button>` (and its f
 
 A great use case of the `content` is to make layout components:
 
-<ExampleTabs
-  prefix="slots-layouts"
-  panels={{ {
-    "ArchivePage.jinja": "guide.slots.CompArchive",
-    "Layout.jinja": "guide.slots.CompLayout",
-  } }}
-/>
+```html+jinja title="ArchivePage.jinja"
+{#def posts #}
+<Layout title="Archive">
+  {% for post in posts %}
+    <Post :post=post />
+  {% endfor %}
+</Layout>
+```
 
+```html+jinja title="Layout.jinja"
+{#def title #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+</head>
+<body>
+  {{ content }}
+</body>
+```
 
 ## Fallback Content
 
@@ -144,15 +157,33 @@ Consider a `Modal` component that requires three distinct sections: a header, a 
 
 Now, the `Modal` component is responsible for rendering the outer `<dialog>` and its styling, while the inner content is provided by the child components.
 
-<ExampleTabs
-  prefix="slots-modal"
-  panels={{ {
-    "Modal.jinja": "guide.slots.Modal",
-    "ModalHeader.jinja": "guide.slots.ModalHeader",
-    "ModalBody.jinja": "guide.slots.ModalBody",
-    "ModalFooter.jinja": "guide.slots.ModalFooter",
-  } }}
-/>
+```html+jinja title="Modal.jinja"
+<dialog class="modal">
+  {{ content }}
+</dialog>
+```
+
+```html+jinja title="ModalHeader.jinja"
+<header class="modal-header>
+  <h2 class="modal-title">
+    {{ content }}
+  </h2>
+  <CloseButton />
+</header>
+```
+
+```html+jinja title="ModalBody.jinja"
+<div class="modal-body">
+  {{ content }}
+</div>
+```
+
+```html+jinja title="ModalFooter.jinja"
+<footer class="modal-footer">
+  {{ content }}
+</footer>
+```
+
 
 ### Advantages of Composability
 
