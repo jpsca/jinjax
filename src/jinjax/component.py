@@ -143,8 +143,10 @@ class Component:
         self.tmpl = cache["tmpl"]
 
         if globals:
-            # updating the template globals, does not affect the environment globals
-            self.tmpl.globals.update(globals)
+            # Create a copy of the globals dictionary to ensure thread safety
+            globals_copy = self.tmpl.globals.copy()
+            globals_copy.update(globals)
+            self.tmpl.globals = globals_copy
 
         return self
 

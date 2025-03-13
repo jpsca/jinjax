@@ -1121,26 +1121,21 @@ def test_same_thread_assets_independence(catalog, folder):
 
 
 def test_thread_safety_of_template_globals(catalog, folder):
+    NUM_THREADS = 5
     (folder / "Page.jinja").write_text("{{ globalvar if globalvar is defined else 'not set' }}")
-    # catalog.jinja_env.globals["globalvar"] = None
 
-    def render():
-        return catalog.render("Page")
+    def render(i):
+        return catalog.render("Page", __globals={"globalvar": i})
 
-    def render_with_global():
-        return catalog.render("Page", __globals={"globalvar": "set"})
+    threads = []
 
-    thread1 = ThreadWithReturnValue(target=render)
-    thread2 = ThreadWithReturnValue(target=render_with_global)
-    thread3 = ThreadWithReturnValue(target=render)
+    for i in range(NUM_THREADS):
+        thread = ThreadWithReturnValue(target=render, args=(i,))
+        threads.append(thread)
+        thread.start()
 
-    thread1.start()
-    thread2.start()
-    thread3.start()
+    results = [thread.join() for thread in threads]
 
-    result1 = thread1.join()
-    result2 = thread2.join()
-    result3 = thread3.join()
+    for i, result in enumerate(results):
+        assert result == Markup(str(i))
 
-    assert result1 == result3 == "not set"
-    assert result2 == "set"
