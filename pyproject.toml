@@ -28,7 +28,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: HTML",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10,<4"
+requires-python = ">=3.11,<4"
 dependencies = [
     "jinja2 >= 3.0",
     "markupsafe >= 2.0",
@@ -109,11 +109,19 @@ addopts = "--doctest-modules"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-skipsdist = True
-envlist = py310,py311,py312,py313,py314
+env_list =
+    3.11
+    3.12
+    3.13
+    3.14
 
 [testenv]
-skip_install = true
+runner = uv-venv-lock-runner
+dependency_groups =
+    dev
+    test
+extras =
+    whitenoise
 commands =
     pytest -x src/jinjax tests
 """
