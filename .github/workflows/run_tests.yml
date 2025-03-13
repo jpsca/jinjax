@@ -15,14 +15,15 @@ jobs:
       - uses: actions/setup-python@v2
       - name: "Installs dependencies"
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-      - run: ~/.local/share/pypoetry/venv/bin/poetry install --with test
+          pip install -U uv
+          uv sync --group dev --group test
+          pip install -e .
       - run: make lint
   tests:
     name: tests
     strategy:
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.12", "3.13", "3.14"]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -32,6 +33,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: "Installs dependencies"
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-      - run: ~/.local/share/pypoetry/venv/bin/poetry install --with test
+          pip install -U uv
+          uv sync --group dev --group test
+          pip install -e .
       - run: make test

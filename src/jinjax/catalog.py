@@ -259,7 +259,7 @@ class Catalog:
             name = f"tmpl_globals_{self._key}"
             tmpl_globals[self._key] = ContextVar(name)
 
-        tmpl_globals[self._key].set(value.copy())
+        tmpl_globals[self._key].set(dict(value))
 
     @property
     def paths(self) -> list[Path]:

@@ -18,12 +18,14 @@ jobs:
 
       - name: "Installs dependencies"
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
+          pip install -U uv
+          uv sync --group dev --group test
+          pip install -e .
 
       - name: "Builds and uploads to PyPI"
         run: |
-          ~/.local/share/pypoetry/venv/bin/poetry build
-          ~/.local/share/pypoetry/venv/bin/poetry publish
+          uv build
+          uv publish
 
         env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.TOKEN_PYPI }}
+          UV_PUBLISH_TOKEN: ${{ secrets.TOKEN_PYPI }}

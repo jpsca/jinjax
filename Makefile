@@ -6,16 +6,16 @@ install:
 
 .PHONY: test
 test:
-	pytest -x src/jinjax tests
+	uv run pytest -x src/jinjax tests
 
 .PHONY: lint
 lint:
-	ruff check src/jinjax tests
+	uv run ruff check src/jinjax tests
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=pyproject.toml --cov-report html --cov jinjax src/jinjax tests
+	uv run pytest --cov-config=pyproject.toml --cov-report html --cov jinjax src/jinjax tests
 
 .PHONY: types
 types:
-	pyright src/jinjax
+	uv run pyright src/jinjax
