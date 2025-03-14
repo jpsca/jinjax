@@ -12,7 +12,7 @@ from .component import Component
 from .exceptions import ComponentNotFound, InvalidArgument
 from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
-from .utils import DELIMITER, SLASH, get_random_id, get_url_prefix, logger
+from .utils import DELIMITER, SLASH, get_random_id, get_url_prefix, kebab_case, logger
 
 
 if t.TYPE_CHECKING:
@@ -305,25 +305,17 @@ class Catalog:
                 have. The default is empty.
 
         """
-        prefix = (
-            prefix.strip()
-            .strip(f"{DELIMITER}{SLASH}")
-            .replace(SLASH, DELIMITER)
-        )
+        prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
 
         root_path = str(root_path)
         if prefix in self.prefixes:
             loader = self.prefixes[prefix]
             if root_path in loader.searchpath:
                 return
-            logger.debug(
-                f"Adding folder `{root_path}` with the prefix `{prefix}`"
-            )
+            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             loader.searchpath.append(root_path)
         else:
-            logger.debug(
-                f"Adding folder `{root_path}` with the prefix `{prefix}`"
-            )
+            logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
     def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
@@ -349,9 +341,7 @@ class Catalog:
 
         """
         mprefix = (
-            prefix
-            if prefix is not None
-            else getattr(module, "prefix", DEFAULT_PREFIX)
+            prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
         )
         self.add_folder(module.components_path, prefix=mprefix)
 
@@ -402,19 +392,13 @@ class Catalog:
 
         if source:
             logger.debug("Rendering from source %s", __name)
-            component = self._get_from_source(
-                name=name, prefix=prefix, source=source
-            )
+            component = self._get_from_source(name=name, prefix=prefix, source=source)
         elif self.use_cache:
             logger.debug("Rendering from cache or file %s", __name)
-            component = self._get_from_cache(
-                prefix=prefix, name=name, file_ext=file_ext
-            )
+            component = self._get_from_cache(prefix=prefix, name=name, file_ext=file_ext)
         else:
             logger.debug("Rendering from file %s", __name)
-            component = self._get_from_file(
-                prefix=prefix, name=name, file_ext=file_ext
-            )
+            component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
 
         root_path = component.path.parent if component.path else None
 
@@ -560,9 +544,7 @@ class Catalog:
         source: str,
     ) -> Component:
         tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
-        component = Component(
-            name=name, prefix=prefix, source=source, tmpl=tmpl
-        )
+        component = Component(name=name, prefix=prefix, source=source, tmpl=tmpl)
         return component
 
     def _get_from_cache(
@@ -574,6 +556,7 @@ class Catalog:
     ) -> Component:
         key = f"{prefix}.{name}.{file_ext}"
         cache = self._from_cache(key)
+
         if cache:
             component = Component.from_cache(
                 cache, auto_reload=self.auto_reload, globals=self.tmpl_globals
@@ -582,9 +565,7 @@ class Catalog:
                 return component
 
         logger.debug("Loading %s", key)
-        component = self._get_from_file(
-            prefix=prefix, name=name, file_ext=file_ext
-        )
+        component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
         self._to_cache(key, component)
         return component
 
@@ -598,16 +579,10 @@ class Catalog:
     def _to_cache(self, key: str, component: Component) -> None:
         self._cache[key] = component.serialize()
 
-    def _get_from_file(
-        self, *, prefix: str, name: str, file_ext: str
-    ) -> Component:
-        path, tmpl_name = self._get_component_path(
-            prefix, name, file_ext=file_ext
-        )
+    def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component:
+        path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
         component = Component(name=name, prefix=prefix, path=path)
-        component.tmpl = self.jinja_env.get_template(
-            tmpl_name, globals=self.tmpl_globals
-        )
+        component.tmpl = self.jinja_env.get_template(tmpl_name, globals=self.tmpl_globals)
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:
@@ -626,9 +601,14 @@ class Catalog:
         name: str,
         file_ext: "tuple[str, ...] | str" = "",
     ) -> tuple[Path, str]:
-        name = name.replace(DELIMITER, SLASH)
         root_paths = self.prefixes[prefix].searchpath
-        name_dot = f"{name}."
+
+        name = name.replace(DELIMITER, SLASH)
+        name_path = Path(name)
+        kebab_stem = kebab_case(name_path.stem)
+        kebab_name = str(name_path.with_name(kebab_stem))
+        dot_names = (f"{name}.", f"{kebab_name}.")
+
         file_ext = file_ext or self.file_ext
 
         for root_path in root_paths:
@@ -636,7 +616,7 @@ class Catalog:
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
-                if relfolder and not name_dot.startswith(relfolder):
+                if relfolder and not name.startswith(relfolder):
                     continue
 
                 for filename in files:
@@ -644,15 +624,16 @@ class Catalog:
                         filepath = f"{relfolder}/{filename}"
                     else:
                         filepath = filename
-                    if (
-                        filepath.startswith(name_dot) and
-                        filepath.endswith(file_ext)
-                    ):
+                    if filepath.startswith(dot_names) and filepath.endswith(file_ext):
                         return Path(curr_folder) / filename, filepath
 
+        msg_names = name
+        if kebab_name != name:
+            msg_names = f"{name} or {kebab_name}"
+
         raise ComponentNotFound(
-            f"Unable to find a file named {name}{file_ext} "
-            f"or one following the pattern {name_dot}*{file_ext}"
+            f"Unable to find a file with a name starting with {msg_names}"
+            f"; and a {file_ext} extension"
         )
 
     def _render_attrs(self, attrs: dict[str, t.Any]) -> Markup:
