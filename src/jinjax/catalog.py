@@ -217,7 +217,7 @@ class Catalog:
             collected_css[self._key] = ContextVar(name)
             collected_css[self._key].set([])
 
-        return collected_css[self._key].get()
+        return collected_css[self._key].get([])
 
     @collected_css.setter
     def collected_css(self, value: list[str]) -> None:
@@ -234,7 +234,7 @@ class Catalog:
             collected_js[self._key] = ContextVar(name)
             collected_js[self._key].set([])
 
-        return collected_js[self._key].get()
+        return collected_js[self._key].get([])
 
     @collected_js.setter
     def collected_js(self, value: list[str]) -> None:
@@ -251,7 +251,7 @@ class Catalog:
             tmpl_globals[self._key] = ContextVar(name)
             tmpl_globals[self._key].set({})
 
-        return tmpl_globals[self._key].get()
+        return tmpl_globals[self._key].get({})
 
     @tmpl_globals.setter
     def tmpl_globals(self, value: dict[str, t.Any]) -> None:
