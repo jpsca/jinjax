@@ -580,9 +580,9 @@ class Catalog:
         self._cache[key] = component.serialize()
 
     def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component:
-        path, tmpl_name = self._get_component_path(prefix, name, file_ext=file_ext)
-        component = Component(name=name, prefix=prefix, path=path)
-        component.tmpl = self.jinja_env.get_template(tmpl_name, globals=self.tmpl_globals)
+        path, relpath = self._get_component_path(prefix, name, file_ext=file_ext)
+        component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
+        component.tmpl = self.jinja_env.get_template(str(relpath), globals=self.tmpl_globals)
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:
@@ -600,7 +600,7 @@ class Catalog:
         prefix: str,
         name: str,
         file_ext: "tuple[str, ...] | str" = "",
-    ) -> tuple[Path, str]:
+    ) -> tuple[Path, Path]:
         root_paths = self.prefixes[prefix].searchpath
 
         name = name.replace(DELIMITER, SLASH)
@@ -625,7 +625,7 @@ class Catalog:
                     else:
                         filepath = filename
                     if filepath.startswith(dot_names) and filepath.endswith(file_ext):
-                        return Path(curr_folder) / filename, filepath
+                        return Path(curr_folder) / filename, Path(filepath)
 
         msg_names = name
         if kebab_name != name:

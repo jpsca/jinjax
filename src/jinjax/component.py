@@ -12,7 +12,7 @@ from .exceptions import (
     InvalidArgument,
     MissingRequiredArgument,
 )
-from .utils import DELIMITER, get_url_prefix
+from .utils import get_url_prefix
 
 
 if t.TYPE_CHECKING:
@@ -73,6 +73,7 @@ class Component:
         "css",
         "js",
         "path",
+        "relpath",
         "mtime",
         "tmpl",
     )
@@ -87,6 +88,7 @@ class Component:
         mtime: float = 0,
         tmpl: "Template | None" = None,
         path: "Path | None" = None,
+        relpath: "Path | None" = None,
     ) -> None:
         self.name = name
         self.prefix = prefix
@@ -102,18 +104,17 @@ class Component:
         if source:
             self.load_metadata(source)
 
-        if path is not None:
-            default_name = self.name.replace(DELIMITER, "/")
-
-            default_css = f"{default_name}.css"
+        if path is not None and relpath is not None:
+            default_css = str(relpath.with_suffix(".css"))
             if (path.with_suffix(".css")).is_file():
                 self.css.extend(self.parse_files_expr(default_css))
 
-            default_js = f"{default_name}.js"
+            default_js = str(relpath.with_suffix(".js"))
             if (path.with_suffix(".js")).is_file():
                 self.js.extend(self.parse_files_expr(default_js))
 
         self.path = path
+        self.relpath = relpath
         self.mtime = mtime
         self.tmpl = tmpl
 
