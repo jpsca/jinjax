@@ -210,11 +210,14 @@ def test_required_attr_are_required(catalog, folder, autoescape):
 
 @pytest.mark.parametrize("autoescape", [True, False])
 def test_subfolder(catalog, folder, autoescape):
+    """Components can be organized in subfolders and called
+    using the dot notation.
+    """
     catalog.jinja_env.autoescape = autoescape
 
-    sub = folder / "UI"
+    sub = folder / "ui"
     sub.mkdir()
-    (folder / "Meh.jinja").write_text("<UI.Tab>Meh</UI.Tab>")
+    (folder / "Meh.jinja").write_text("<ui.Tab>Meh</ui.Tab>")
     (sub / "Tab.jinja").write_text('<div class="tab">{{ content }}</div>')
 
     html = catalog.render("Meh")
