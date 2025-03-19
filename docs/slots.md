@@ -3,13 +3,13 @@ title: Slots / Content
 description: Working with content in components.
 ---
 
-Everything between the open and close tags of the components will be rendered and passed to the component as an implicit `content` variable
+Everything between the open and close tags of a component will be rendered and passed to the component as an implicit `content` variable.
 
 This is a very common pattern, and it is called a **_slot_**. A slot is a placeholder for content that can be provided by the user of the component. For example, we may have a `<FancyButton>` component that supports usage like this:
 
 ```html+jinja
 <FancyButton>
-  <i class="icon></i> Click me!
+  <i class="icon"></i> Click me!
 </FancyButton>
 ```
 
@@ -25,7 +25,7 @@ The template of `<FancyButton>` looks like this:
 
 The `<FancyButton>` is responsible for rendering the outer `<button>` (and its fancy styling), while the inner content is provided by the parent component.
 
-A great use case of the `content` is to make layout components:
+A great use case for the `content` variable is creating layout components:
 
 ```html+jinja title="ArchivePage.jinja"
 {#def posts #}
@@ -104,11 +104,11 @@ Then the provided content will be rendered instead:
 
 There are cases when a component is complex enough to need multiple content slots. For example, a `<Modal>` component might need a `header`, a `body`, and a `footer` content.
 
-One way to implement it is using multiple content slots. To do so, instead of rendering `content` as a string, you can also _call_ it with name. Then, the parent component can provide a content _for_ that name.
+One way to implement this is by using multiple content slots. To do so, instead of rendering `content` as a string, you can also _call_ it with a name. Then, the parent component can provide content _for_ that name.
 
 ![_slot variable](./img/slots-_slot.png)
 
-Note the `_slot` special variable. This is automatically available in the content in the parent component and contains the named the component has used to call request its content.
+Note the `_slot` special variable. This is automatically available in the content of the parent component and contains the name that the component has used to request its content.
 
 The `_slot` variable is scoped to the content of that component, so it's not available outside of it:
 
@@ -133,7 +133,7 @@ Named slots are a quick way to have multiple content slots, but are a bit messy 
 
 Composability offers a more flexible and idiomatic approach when multiple content slots are needed. The idea is to have separated components for each content slot, and then compose them together. Let's explore this concept using the same example as above.
 
-Consider a `Modal` component that requires three distinct sections: a header, a body, and a footer. Instead of using named slots, we can create separate components for each section and composing them within a `Modal` component wrapper.
+Consider a `Modal` component that requires three distinct sections: a header, a body, and a footer. Instead of using named slots, we can create separate components for each section and compose them within a `Modal` component wrapper.
 
 ```html+jinja
 <Modal>
@@ -164,7 +164,7 @@ Now, the `Modal` component is responsible for rendering the outer `<dialog>` and
 ```
 
 ```html+jinja title="ModalHeader.jinja"
-<header class="modal-header>
+<header class="modal-header">
   <h2 class="modal-title">
     {{ content }}
   </h2>

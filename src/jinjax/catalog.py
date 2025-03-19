@@ -279,21 +279,7 @@ class Catalog:
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
         """
-        Add a folder path from where to search for components, optionally
-        under a prefix.
-
-        The prefix acts like a namespace. For example, the name of a
-        `components/Card.jinja` component is, by default, "Card",
-        but under the prefix "common", it becomes "common.Card".
-
-        The rule for subfolders remains the same: a
-        `components/wrappers/Card.jinja` name is, by default,
-        "wrappers.Card", but under the prefix "common", it
-        becomes "common.wrappers.Card".
-
-        If there is more than one component with the same name in multiple
-        added folders under the same prefix, the one in the folder added
-        first takes precedence.
+        Add a folder path from which to search for components, optionally under a prefix.
 
         Arguments:
 
@@ -301,8 +287,28 @@ class Catalog:
                 Absolute path of the folder with component files.
 
             prefix:
-                Optional prefix that all the components in the folder will
-                have. The default is empty.
+                Optional prefix that all the components in the folder will have.
+                The default is empty.
+
+        The prefix acts like a namespace. For example, the name of a
+        `Card.jinja` component is, by default, "Card", but under
+        the prefix "common", it becomes "common.Card".
+
+        An important caveat is that when a component under a prefix calls another
+        component without a prefix, the called component is searched **first**
+        under the caller's prefix and then under the empty prefix.
+
+        The rule for subfolders remains the same: a `components/wrappers/Card.jinja`
+        name is, by default, "wrappers.Card", but under the prefix "common", it becomes
+        "common.wrappers.Card".
+
+        The prefixes take precedence over subfolders, so don't create a subfolder with
+        the same name as a prefix because it will be ignored.
+
+        If **under the same prefix** (including the empty one), there are more than one
+        component with the same name in multiple added folders, the one in the folder
+        added **first** takes precedence. You can use this to override components loaded
+        from a library: just add your folder first.
 
         """
         prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(SLASH, DELIMITER)
@@ -318,7 +324,7 @@ class Catalog:
             logger.debug(f"Adding folder `{root_path}` with the prefix `{prefix}`")
             self.prefixes[prefix] = jinja2.FileSystemLoader(root_path)
 
-    def add_module(self, module: t.Any, *, prefix: str | None = None) -> None:
+    def add_module(self, module: t.Any, *, prefix: str = DEFAULT_PREFIX) -> None:
         """
         Reads an absolute path from `module.components_path` and an optional
         prefix from `module.prefix`, then calls
@@ -340,10 +346,7 @@ class Catalog:
                 might include.
 
         """
-        mprefix = (
-            prefix if prefix is not None else getattr(module, "prefix", DEFAULT_PREFIX)
-        )
-        self.add_folder(module.components_path, prefix=mprefix)
+        self.add_folder(module.components_path, prefix=prefix)
 
     def render(
         self,

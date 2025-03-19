@@ -1,6 +1,6 @@
 ---
 title: Motivation
-description: An overview of what Jinja is about, and a glimpse into my disjointed decision-making process that got me here.
+description: An overview of what JinjaX is about, and a glimpse into the decision-making process that led to its creation.
 ---
 
 ## Components are cool
@@ -13,11 +13,11 @@ Components, *as a way to organize template code*. Reactivity is cool too, but un
 
 When writing Python, we aim for the code to be easy to understand and test. However, we often forget all of that when writing templates that don't even meet basic standards: long methods, deep conditional nesting, and mysterious variables everywhere.
 
-Components are way cooler than the HTML soup tag of server-side rendered templates. They make it very clear what arguments they take and how they can render. More than anything, components are modular: markup, logic, and relevant styles all in one package. You can copy and paste them between projects, and you can share them with other people.
+Components are far superior to the HTML soup tag approach of server-side rendered templates. They clearly specify what arguments they accept and how they render. More importantly, components are modular: markup, logic, and relevant styles all in one package. You can easily copy and paste them between projects and share them with others.
 
 This means a community has formed around sharing these components. Now you can easily find hundreds of ready-to-use components—some of them very polished—for every common UI widget, even the "complex" ones, like color-pickers. The big problem is that you can only use them with React (and Vue components with Vue, etc.) and in a single-page application.
 
-Jinja is about bringing that innovation back to server-side-rendered applications.
+JinjaX is about bringing that innovation back to server-side-rendered applications.
 
 ## Not quite there: Jinja macros
 
@@ -45,7 +45,7 @@ You can then import the macro to your template to use it:
 <p>{{ input("password", type="password") }}</p>
 {% call button("submit") %}Submit{% endcall %}
 ```
-You must use the `{% call x %}` to pass the child content to the macro—by using the weird incantation `{{ caller() }}`—otherwise you can just call it like it were a function.
+You must use the `{% call x %}` syntax to pass child content to the macro—by using the `{{ caller() }}` function—otherwise you can simply call it as if it were a regular function.
 
 So, can we use macros as components and call it a day? Well... no. This looks terrible:
 
@@ -110,4 +110,4 @@ It's a hidden gem that doesn't get much attention because of network effects. Se
 
 Mako also has `<% include %>`s with arguments, which is another way of doing components if you don't need to pass content.
 
-However, in the end, the network effects, my familiarity with Jinja, and a little of not-invented-here syndrome tipped the scales to write a Jinja extension.
+However, in the end, the network effects, familiarity with Jinja, and perhaps a touch of not-invented-here syndrome tipped the scales toward writing a Jinja extension instead.

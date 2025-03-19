@@ -21,7 +21,7 @@ Unlike Jinja's `{% include "..." %}` or macros, JinjaX components integrate natu
 
 ### Simple
 
-JinjaX components are simple Jinja templates. You use them as if they were HTML tags without having to import them: easy to use and easy to read.
+JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.
 
 ### Encapsulated
 
@@ -33,7 +33,7 @@ All components can be unit tested independently of the pages where they are used
 
 ### Composable
 
-A JinjaX component can wrap HTML code or other components with a natural syntax, as if they were another tag.
+A JinjaX component can wrap HTML code or other components with a natural syntax, treating them as if they were native HTML tags.
 
 ### Modern
 
@@ -66,7 +66,7 @@ Then, create a folder that will contain your components, for example:
 
 #### Catalog
 
-Finally, you must create a "catalog" of components in your app. This is the object that manages the components and their global settings. You then add the path of the folder with your components to the catalog:
+Finally, you must create a "catalog" of components in your app. This object manages the components and their global settings. You then add the path to your components folder to this catalog:
 
 ```python
 from jinjax import Catalog
@@ -77,7 +77,7 @@ catalog.add_folder("myapp/components")
 
 #### Render
 
-You will use the catalog to render components from your views.
+You'll use the catalog to render components from your views.
 
 ```python
 def myview():
@@ -89,7 +89,7 @@ def myview():
   )
 ```
 
-In this example, it is a component for the whole page, but you can also render smaller components, even from inside a regular Jinja template if you add the catalog as a global:
+In this example, we're rendering a component for the whole page, but you can also render smaller components, even from inside a regular Jinja template by adding the catalog as a global:
 
 ```python
 app.jinja_env.globals["catalog"] = catalog
@@ -107,7 +107,7 @@ app.jinja_env.globals["catalog"] = catalog
 
 ## How It Works
 
-JinjaX uses Jinja to render the component templates. In fact, it currently works as a pre-processor, replacing all:
+JinjaX uses Jinja to render component templates. It works as a pre-processor, replacing code like:
 
 ```html
 <Component attr="value">content</Component>
@@ -119,7 +119,7 @@ with function calls like:
 {% call catalog.irender("Component", attr="value") %}content{% endcall %}
 ```
 
-These calls are evaluated at render time. Each call loads the source of the component file, parses it to extract the names of CSS/JS files, required and/or optional attributes, pre-processes the template (replacing components with function calls, as before), and finally renders the new template.
+These calls are evaluated at render time. Each call loads the component file's source, extracts the names of CSS/JS files and required/optional attributes, pre-processes the template (replacing components with function calls as described above), and finally renders the complete template.
 
 ### Reusing Jinja's Globals, Filters, and Tests
 
