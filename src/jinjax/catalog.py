@@ -96,9 +96,6 @@ class Catalog:
         file_ext:
             The extensions the components files have. By default, ".jinja".
 
-            This argument can also be a list to allow more than one type of
-            file to be a component.
-
         use_cache:
             Cache the metadata of the component in memory.
 
@@ -148,21 +145,19 @@ class Catalog:
     def __init__(
         self,
         *,
-        globals: "dict[str, t.Any] | None" = None,
-        filters: "dict[str, t.Any] | None" = None,
-        tests: "dict[str, t.Any] | None" = None,
-        extensions: "list | None" = None,
-        jinja_env: "jinja2.Environment | None" = None,
+        globals: dict[str, t.Any] | None = None,
+        filters: dict[str, t.Any] | None = None,
+        tests: dict[str, t.Any] | None = None,
+        extensions: list | None = None,
+        jinja_env: jinja2.Environment | None = None,
         root_url: str = DEFAULT_URL_ROOT,
-        file_ext: "str | list[str] | tuple[str, ...]" = DEFAULT_EXTENSION,
+        file_ext: str = DEFAULT_EXTENSION,
         use_cache: bool = True,
         auto_reload: bool = True,
         fingerprint: bool = False,
     ) -> None:
         self.prefixes: dict[str, jinja2.FileSystemLoader] = {}
-        if isinstance(file_ext, list):
-            file_ext = tuple(file_ext)
-        self.file_ext = file_ext
+        self.file_ext = file_ext or DEFAULT_EXTENSION
         self.use_cache = use_cache
         self.auto_reload = auto_reload
         self.fingerprint = fingerprint
@@ -274,7 +269,7 @@ class Catalog:
 
     def add_folder(
         self,
-        root_path: "str | Path",
+        root_path: str | Path,
         *,
         prefix: str = DEFAULT_PREFIX,
     ) -> None:
@@ -326,8 +321,8 @@ class Catalog:
 
     def add_module(self, module: t.Any, *, prefix: str = DEFAULT_PREFIX) -> None:
         """
-        Reads an absolute path from `module.components_path` and an optional
-        prefix from `module.prefix`, then calls
+        DEPRECATED
+        Reads an absolute path from `module.components_path` and then calls
         `Catalog.add_folder(path, prefix)`.
 
         The prefix can also be passed as an argument instead of being read
@@ -353,7 +348,7 @@ class Catalog:
         /,
         __name: str,
         *,
-        caller: "t.Callable | None" = None,
+        caller: t.Callable | None = None,
         **kw,
     ) -> str:
         """
@@ -366,7 +361,7 @@ class Catalog:
         """
         self.collected_css = []
         self.collected_js = []
-        self.tmpl_globals = kw.pop("__globals", {})
+        self.tmpl_globals = kw.pop("_globals", kw.pop("__globals", None)) or {}
         return self.irender(__name, caller=caller, **kw)
 
     def irender(
@@ -374,7 +369,7 @@ class Catalog:
         /,
         __name: str,
         *,
-        caller: "t.Callable | None" = None,
+        caller: t.Callable | None = None,
         **kw,
     ) -> str:
         """
@@ -387,24 +382,56 @@ class Catalog:
         """
         content = (kw.pop("_content", kw.pop("__content", "")) or "").strip()
         attrs = kw.pop("_attrs", kw.pop("__attrs", None)) or {}
-        file_ext = kw.pop("_file_ext", kw.pop("__file_ext", ""))
         source = kw.pop("_source", kw.pop("__source", ""))
+        file_ext = kw.pop("_file_ext", kw.pop("__file_ext", "")) or self.file_ext
+        caller_prefix = kw.pop("__prefix", "")
 
-        prefix, name = self._split_name(__name)
-        self.jinja_env.loader = self.prefixes[prefix]
+        cname = __name
+        prefix, name = self._split_name(cname)
+        component = None
 
         if source:
-            logger.debug("Rendering from source %s", __name)
-            component = self._get_from_source(name=name, prefix=prefix, source=source)
-        elif self.use_cache:
-            logger.debug("Rendering from cache or file %s", __name)
-            component = self._get_from_cache(prefix=prefix, name=name, file_ext=file_ext)
+            logger.debug("Rendering from source %s", cname)
+            self.jinja_env.loader = self.prefixes[prefix]
+            component = self._get_from_source(prefix=prefix, name=name, source=source)
         else:
-            logger.debug("Rendering from file %s", __name)
-            component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
+            if self.use_cache:
+                logger.debug("Rendering from cache or file %s", cname)
+                if caller_prefix:
+                    self.jinja_env.loader = self.prefixes[caller_prefix]
+                    component = self._get_from_cache(
+                        prefix=caller_prefix,
+                        name=cname,
+                        file_ext=file_ext
+                    )
+                if not component:
+                    self.jinja_env.loader = self.prefixes[prefix]
+                    component = self._get_from_cache(
+                        prefix=prefix,
+                        name=name,
+                        file_ext=file_ext
+                    )
+            else:
+                logger.debug("Rendering from file %s", cname)
+                if caller_prefix:
+                    self.jinja_env.loader = self.prefixes[caller_prefix]
+                    component = self._get_from_file(
+                        prefix=caller_prefix,
+                        name=cname,
+                        file_ext=file_ext
+                    )
+                if not component:
+                    self.jinja_env.loader = self.prefixes[prefix]
+                    component = self._get_from_file(
+                        prefix=prefix,
+                        name=name,
+                        file_ext=file_ext
+                    )
+
+            if not component:
+                raise ComponentNotFound(cname, file_ext)
 
         root_path = component.path.parent if component.path else None
-
         css = self.collected_css
         js = self.collected_js
 
@@ -442,13 +469,14 @@ class Catalog:
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
+        args["__prefix"] = component.prefix
         args[ARGS_CONTENT] = CallerWrapper(caller=caller, content=content)
         return component.render(**args)
 
     def get_middleware(
         self,
         application: t.Callable,
-        allowed_ext: "t.Iterable[str] | None" = ALLOWED_EXTENSIONS,
+        allowed_ext: t.Iterable[str] | None = ALLOWED_EXTENSIONS,
         **kwargs,
     ) -> "ComponentsMiddleware":
         """
@@ -489,14 +517,17 @@ class Catalog:
     def get_source(
         self,
         cname: str,
-        file_ext: "tuple[str, ...] | str" = "",
+        file_ext: str = "",
     ) -> str:
         """
         A helper method that returns the source file of a component.
         """
+        file_ext = file_ext or self.file_ext
         prefix, name = self._split_name(cname)
-        path, _ = self._get_component_path(prefix, name, file_ext=file_ext)
-        return path.read_text()
+        paths = self._get_component_path(prefix, name, file_ext=file_ext)
+        if not paths:
+            raise ComponentNotFound(cname, file_ext)
+        return paths[0].read_text()
 
     def render_assets(self) -> str:
         """
@@ -542,12 +573,12 @@ class Catalog:
     def _get_from_source(
         self,
         *,
-        name: str,
         prefix: str,
+        name: str,
         source: str,
     ) -> Component:
         tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
-        component = Component(name=name, prefix=prefix, source=source, tmpl=tmpl)
+        component = Component(prefix=prefix, name=name, source=source, tmpl=tmpl)
         return component
 
     def _get_from_cache(
@@ -556,7 +587,7 @@ class Catalog:
         prefix: str,
         name: str,
         file_ext: str,
-    ) -> Component:
+    ) -> Component | None:
         key = f"{prefix}.{name}.{file_ext}"
         cache = self._from_cache(key)
 
@@ -569,6 +600,8 @@ class Catalog:
 
         logger.debug("Loading %s", key)
         component = self._get_from_file(prefix=prefix, name=name, file_ext=file_ext)
+        if not component:
+            return
         self._to_cache(key, component)
         return component
 
@@ -582,8 +615,11 @@ class Catalog:
     def _to_cache(self, key: str, component: Component) -> None:
         self._cache[key] = component.serialize()
 
-    def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component:
-        path, relpath = self._get_component_path(prefix, name, file_ext=file_ext)
+    def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component | None:
+        paths = self._get_component_path(prefix, name, file_ext=file_ext)
+        if not paths:
+            return
+        path, relpath = paths
         component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
         component.tmpl = self.jinja_env.get_template(str(relpath), globals=self.tmpl_globals)
         return component
@@ -602,8 +638,8 @@ class Catalog:
         self,
         prefix: str,
         name: str,
-        file_ext: "tuple[str, ...] | str" = "",
-    ) -> tuple[Path, Path]:
+        file_ext: str,
+    ) -> tuple[Path, Path] | None:
         root_paths = self.prefixes[prefix].searchpath
 
         name = name.replace(DELIMITER, SLASH)
@@ -611,8 +647,6 @@ class Catalog:
         kebab_stem = kebab_case(name_path.stem)
         kebab_name = str(name_path.with_name(kebab_stem))
         dot_names = (f"{name}.", f"{kebab_name}.")
-
-        file_ext = file_ext or self.file_ext
 
         for root_path in root_paths:
             for curr_folder, _, files in os.walk(
@@ -629,15 +663,6 @@ class Catalog:
                         filepath = filename
                     if filepath.startswith(dot_names) and filepath.endswith(file_ext):
                         return Path(curr_folder) / filename, Path(filepath)
-
-        msg_names = name
-        if kebab_name != name:
-            msg_names = f"{name} or {kebab_name}"
-
-        raise ComponentNotFound(
-            f"Unable to find a file with a name starting with {msg_names}"
-            f"; and a {file_ext} extension"
-        )
 
     def _render_attrs(self, attrs: dict[str, t.Any]) -> Markup:
         html_attrs = []

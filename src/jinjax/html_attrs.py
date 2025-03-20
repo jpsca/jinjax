@@ -68,6 +68,8 @@ class HTMLAttrs:
         self.__classes = {name for name in class_names if name}
 
         for name, value in attrs.items():
+            if name.startswith("__"):
+                continue
             name = name.replace("_", "-")
             if value is True:
                 properties.add(name)

@@ -137,7 +137,7 @@ def test_thread_safety_of_template_globals(catalog, folder):
     (folder / "Page.jinja").write_text("{{ globalvar if globalvar is defined else 'not set' }}")
 
     def render(i):
-        return catalog.render("Page", __globals={"globalvar": i})
+        return catalog.render("Page", _globals={"globalvar": i})
 
     threads = []
 

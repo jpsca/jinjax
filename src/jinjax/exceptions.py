@@ -4,8 +4,8 @@ class ComponentNotFound(Exception):
     added folders, probably because of a typo.
     """
 
-    def __init__(self, name: str) -> None:
-        msg = f"File with pattern `{name}` not found"
+    def __init__(self, name: str, file_ext: str) -> None:
+        msg = f"Unable to find component `{name}` with file extension `*{file_ext}`"
         super().__init__(msg)
 
 

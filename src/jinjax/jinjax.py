@@ -10,9 +10,9 @@ from .utils import logger
 
 
 RENDER_CMD = "catalog.irender"
-BLOCK_CALL = '{% call(_slot="") [CMD]("[TAG]"[ATTRS]) -%}[CONTENT]{%- endcall %}'
+BLOCK_CALL = '{% call(_slot="") [CMD]("[TAG]", __prefix=__prefix[ATTRS]) -%}[CONTENT]{%- endcall %}'
 BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD)
-INLINE_CALL = '{{ [CMD]("[TAG]"[ATTRS]) }}'
+INLINE_CALL = '{{ [CMD]("[TAG]", __prefix=__prefix[ATTRS]) }}'
 INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD)
 
 re_raw = r"\{%-?\s*raw\s*-?%\}.+?\{%-?\s*endraw\s*-?%\}"

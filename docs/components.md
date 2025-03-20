@@ -393,7 +393,7 @@ Adding multiple separate folders makes JinjaX search for a component in each fol
 
 For example, imagine that you add these three folders:
 
-```
+```bash
 A/
 ├── Alert.jinja
 └── common
@@ -466,4 +466,5 @@ the same name as a prefix because it will be ignored.
 
 If **under the same prefix** there is more than one component with the same name
 in multiple added folders, the one in the folder added **first** takes precedence.
-You can use this to override components loaded from a library by simply adding your folder first.
+You can use this to override components loaded from a library by simply adding a folder first
+with the target prefix.
