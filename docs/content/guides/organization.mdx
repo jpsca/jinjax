@@ -1,0 +1,103 @@
+---
+title: Organizing your components
+description: Keeping Your Components Neat and Tidy
+---
+
+There are two ways to organize your components to your liking: using subfolders and/or adding multiple component folders.
+
+### Using subfolders
+
+To call components inside subfolders, you use a dot after each subfolder name. For example,
+to call a `Button.jinja` component inside a `form` subfolder, you use the name:
+
+```html+jinja
+<form.Button> ... </form.Button>
+```
+
+If the component is inside a sub-subfolder, for instance `product/items/Header.jinja`, you use a dot for each subfolder:
+
+```html+jinja
+<product.items.Header> ... </product.items.Header>
+```
+
+### Adding multiple separate folders
+
+Adding multiple separate folders makes JinjaX search for a component in each folder, in order, until it finds it. This means that even if different folders have components with the same name, the component found first will be used.
+
+For example, imagine that you add these three folders:
+
+```bash
+A/
+├── Alert.jinja
+└── common
+    └── Error.jinja
+
+whatever/B/
+├── Alert.jinja
+└── form
+    └── Error.jinja
+└── common
+    └── Welcome.jinja
+
+C/
+├── Alert.jinja
+├── Header.jinja
+└── common
+    └── Error.jinja
+    └── Welcome.jinja
+```
+
+```python
+catalog.add_folder("A")
+catalog.add_folder("whatever/B")
+catalog.add_folder("C")
+```
+
+- Even though there is an `Alert.jinja` in all three folders, it will be loaded from "A",
+  because that folder was added first.
+- `common.Error` will also be loaded from "A", but `form.Error` will be loaded from "B",
+  because the subfolder is part of the component's name.
+- `common.Welcome` will be loaded from "B" and `Header` from "C", because that's where
+  they will be found first.
+- Finally, using `common.Header` will raise an error, because there is no component under
+  that name.
+
+### Third-party components libraries
+
+You can also add a folder of components from an installed library. For example:
+
+```python
+import jinjax_ui
+...
+catalog.add_folder(jinjax_ui.components_path)
+```
+
+In order for this to work, the path given by the library should be absolute.
+
+### Prefixes
+
+The `add_folder()` method takes an optional `prefix` argument.
+
+The prefix acts like a namespace. For example, the name of a
+`Card.jinja` component is, by default, "Card", but under
+the prefix "common", it becomes "common.Card".
+
+The rule for subfolders remains the same: a `wrappers/Card.jinja`
+name is, by default, "wrappers.Card", but under the prefix "common", it becomes
+"common.wrappers.Card".
+
+An important caveat is that when a component under a prefix calls another
+component without a prefix, the called component is searched **first**
+under the caller's prefix and then under the empty prefix. This allows third-party
+component libraries to call their own components without knowing under what prefix
+your app is using them.
+
+<Callout type="warning">
+The prefixes take precedence over subfolders, so don't create a subfolder with
+the same name as a prefix because it will be ignored.
+</Callout>
+
+If **under the same prefix** there is more than one component with the same name
+in multiple added folders, the one in the folder added **first** takes precedence.
+You can use this to override components loaded from a library by simply adding a folder first
+with the target prefix.

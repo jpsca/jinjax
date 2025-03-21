@@ -21,7 +21,7 @@ The template of `<FancyButton>` looks like this:
 </button>
 ```
 
-![slot diagram](./img/slots-diagram.png)
+![slot diagram](/static/img/slots-diagram.png)
 
 The `<FancyButton>` is responsible for rendering the outer `<button>` (and its fancy styling), while the inner content is provided by the parent component.
 
@@ -106,7 +106,7 @@ There are cases when a component is complex enough to need multiple content slot
 
 One way to implement this is by using multiple content slots. To do so, instead of rendering `content` as a string, you can also _call_ it with a name. Then, the parent component can provide content _for_ that name.
 
-![_slot variable](./img/slots-_slot.png)
+![_slot variable](/static/img/slots-_slot.png)
 
 Note the `_slot` special variable. This is automatically available in the content of the parent component and contains the name that the component has used to request its content.
 

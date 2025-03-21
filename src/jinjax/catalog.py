@@ -395,41 +395,26 @@ class Catalog:
             self.jinja_env.loader = self.prefixes[prefix]
             component = self._get_from_source(prefix=prefix, name=name, source=source)
         else:
-            if self.use_cache:
-                logger.debug("Rendering from cache or file %s", cname)
-                if caller_prefix:
-                    self.jinja_env.loader = self.prefixes[caller_prefix]
-                    component = self._get_from_cache(
-                        prefix=caller_prefix,
-                        name=cname,
-                        file_ext=file_ext
-                    )
-                if not component:
-                    self.jinja_env.loader = self.prefixes[prefix]
-                    component = self._get_from_cache(
-                        prefix=prefix,
-                        name=name,
-                        file_ext=file_ext
-                    )
-            else:
-                logger.debug("Rendering from file %s", cname)
-                if caller_prefix:
-                    self.jinja_env.loader = self.prefixes[caller_prefix]
-                    component = self._get_from_file(
-                        prefix=caller_prefix,
-                        name=cname,
-                        file_ext=file_ext
-                    )
-                if not component:
-                    self.jinja_env.loader = self.prefixes[prefix]
-                    component = self._get_from_file(
-                        prefix=prefix,
-                        name=name,
-                        file_ext=file_ext
-                    )
+            logger.debug("Rendering from cache or file %s", cname)
+            get_from = self._get_from_cache if self.use_cache else self._get_from_file
 
+            if caller_prefix:
+                self.jinja_env.loader = self.prefixes[caller_prefix]
+                component = get_from(
+                    prefix=caller_prefix,
+                    name=cname,
+                    file_ext=file_ext
+                )
             if not component:
-                raise ComponentNotFound(cname, file_ext)
+                self.jinja_env.loader = self.prefixes[prefix]
+                component = get_from(
+                    prefix=prefix,
+                    name=name,
+                    file_ext=file_ext
+                )
+
+        if not component:
+            raise ComponentNotFound(cname, file_ext)
 
         root_path = component.path.parent if component.path else None
         css = self.collected_css
@@ -588,7 +573,7 @@ class Catalog:
         name: str,
         file_ext: str,
     ) -> Component | None:
-        key = f"{prefix}.{name}.{file_ext}"
+        key = f"{prefix}.{name}{file_ext}"
         cache = self._from_cache(key)
 
         if cache:
