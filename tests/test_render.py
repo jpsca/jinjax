@@ -558,7 +558,7 @@ def test_template_globals(catalog, folder, autoescape):
 <Form><Input name="foo" :value="value"/></Form>
 """)
 
-    html = catalog.render("Page", value="bar", __globals={"csrf_token": "abc"})
+    html = catalog.render("Page", value="bar", _globals={"csrf_token": "abc"})
     print(html)
     assert """<input type="hidden" name="csrft" value="abc">""" in html
 
@@ -572,11 +572,11 @@ def test_template_globals_update_cache(catalog, folder, autoescape):
     )
     (folder / "Page.jinja").write_text("""<CsrfToken/>""")
 
-    html = catalog.render("Page", __globals={"csrf_token": "abc"})
+    html = catalog.render("Page", _globals={"csrf_token": "abc"})
     print(html)
     assert """<input type="hidden" name="csrft" value="abc">""" in html
 
-    html = catalog.render("Page", __globals={"csrf_token": "xyz"})
+    html = catalog.render("Page", _globals={"csrf_token": "xyz"})
     print(html)
     assert """<input type="hidden" name="csrft" value="xyz">""" in html
 

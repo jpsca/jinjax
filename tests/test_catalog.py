@@ -45,11 +45,10 @@ def test_add_same_folder_in_same_prefix_does_nothing():
 def test_add_module_legacy():
     class Module:
         components_path = "legacy_path"
-        prefix = "legacy"
 
     catalog = jinjax.Catalog()
     module = Module()
-    catalog.add_module(module)
+    catalog.add_module(module, prefix="legacy")
 
     assert "legacy_path" in catalog.prefixes["legacy"].searchpath
 
@@ -63,19 +62,6 @@ def test_add_module_legacy_with_default_prefix():
     catalog.add_module(module)
 
     assert "legacy_path" in catalog.prefixes[""].searchpath
-
-
-def test_add_module_legacy_with_custom_prefix():
-    class Module:
-        components_path = "legacy_path"
-        prefix = "legacy"
-
-    catalog = jinjax.Catalog()
-    module = Module()
-    catalog.add_module(module, prefix="custom")
-
-    assert "legacy" not in catalog.prefixes
-    assert "legacy_path" in catalog.prefixes["custom"].searchpath
 
 
 def test_add_module_fails_with_other_modules():

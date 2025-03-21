@@ -1,9 +1,9 @@
 ---
-title: Adding CSS and JS
+title: Adding CSS and JS assets
 description: Your components might need custom styles or custom JavaScript for many reasons.
 ---
 
-Instead of using global stylesheet or script files, writing assets for each individual component has several advantages:
+Instead of using global stylesheets or script files, writing assets for each individual component has several advantages:
 
 - **Portability**: You can copy a component from one project to another, knowing it will keep working as expected.
 - **Performance**: Only load the CSS and JS that you need on each page. Additionally, the browser will have already cached the assets of the components for other pages that use them.
@@ -30,7 +30,7 @@ In addition to auto-loading assets, the CSS and/or JS of a component can be decl
 
 The best practice is to store both CSS and JS files of the component within the same folder. Doing this has several advantages, including easier component reuse in other projects, improved code readability, and simplified debugging.
 
-However, there are instances when you may need to rely on global CSS or JS files, such as third-party libraries. In such cases, you can specify these dependencies in the component's metadata using URLs that start with either "/", "http://," or "https://."
+However, there are instances when you may need to rely on global CSS or JS files, such as third-party libraries. In such cases, you can specify these dependencies in the component's metadata using URLs that start with either "/", "http://", or "https://".
 
 When you do this, JinjaX will render them as is, instead of prepending them with the component's prefix like it normally does.
 
@@ -55,7 +55,7 @@ will be rendered as this HTML output:
 
 ## Including assets in your pages
 
-The catalog will collect all CSS and JS file paths from the components used on a "page" render on the `catalog.collected_css` and `catalog.collected_js` lists.
+The catalog will collect all CSS and JS file paths from the components used on a "page" and store them in the `catalog.collected_css` and `catalog.collected_js` lists.
 
 For example, after rendering this component:
 
@@ -118,7 +118,7 @@ The tags above will not work if your application can't return the content of tho
 
 For that reason, JinjaX includes WSGI middleware that will process those URLs if you add it to your application.
 
-**This is not needed if your components doesn't use static assets or if you serve them by other means.**
+**This is not needed if your components don't use static assets or if you serve them by other means.**
 
 ```py
 from flask import Flask
@@ -138,7 +138,7 @@ app.wsgi_app = catalog.get_middleware(
 ```
 
 The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css* and *.js* files inside the component(s) folder(s).
-Yo must install it first:
+You must install it first:
 
 ```bash
 pip install jinjax[whitenoise]
@@ -147,7 +147,7 @@ pip install jinjax[whitenoise]
 Then, you can configure it to also return files with other extensions. For example:
 
 ```python
-catalog.get_middleware(app, allowed_ext=[".css", .js", .svg", ".png"])
+catalog.get_middleware(app, allowed_ext=[".css", ".js", ".svg", ".png"])
 ```
 
 Be aware that if you use this option, `get_middleware()` must be called **after** all folders are added.
@@ -156,7 +156,7 @@ Be aware that if you use this option, `get_middleware()` must be called **after*
 
 ### CSS Scoping
 
-The styles of your components will not be auto-scoped. This means the styles of a component can affect other components and likewise, it will be affected by global styles or the styles of other components.
+The styles of your components will not be auto-scoped. This means the styles of a component can affect other components and likewise, they will be affected by global styles or the styles of other components.
 
 To protect yourself against that, *always* add a custom class to the root element(s) of your component and use it to scope the rest of the component styles.
 

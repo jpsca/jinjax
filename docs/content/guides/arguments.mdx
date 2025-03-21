@@ -1,84 +1,9 @@
 ---
-title: Components
-description: Declaring and using components.
+title: Arguments
+description: More often than not, a component takes one or more arguments to render.
 ---
 
-<Header title="Components">
-</Header>
-
-## Declaring and Using Components
-
-The components are simple text files that look like regular Jinja templates, with three requirements:
-
-**First**, components must be placed inside a folder registered in the catalog or a subfolder of it.
-
-```python
-catalog.add_folder("myapp/components")
-```
-
-You can call that folder whatever you want, not just "components". You can also add more than one folder:
-
-```python
-catalog.add_folder("myapp/layouts")
-catalog.add_folder("myapp/components")
-```
-
-If you end up having more than one component with the same name, the one in the first folder will take priority.
-
-**Second**, they must have a ".jinja" extension. This also helps code editors automatically select the correct language syntax to highlight. However, you can configure it in the catalog.
-
-**Third**, the component name must start with an uppercase letter. Why? This is how JinjaX differentiates a component from a regular HTML tag when using it. I recommend using PascalCase names, like Python classes.
-
-The name of the file (minus the extension) is also how you call the component. For example, if the file is "components/PersonForm.jinja":
-
-```
-└ myapp/
-  ├── app.py
-  ├── components/
-        └─ PersonForm.jinja
-```
-
-The name of the component is "PersonForm" and can be called like this:
-
-From Python code or a non-component template:
-
-- `catalog.render("PersonForm")`
-
-From another component:
-
-- `<PersonForm> some content </PersonForm>`, or
-- `<PersonForm />`
-
-If the component is in a subfolder, the name of that folder becomes part of its name too:
-
-```
-└ myapp/
-  ├── app.py
-  ├── components/
-        └─ person
-            └─ PersonForm.jinja
-```
-
-A "components/person/PersonForm.jinja" component is named "person.PersonForm", meaning the name of the subfolder and the name of the file separated by a dot. This is the full name you use to call it:
-
-From Python code or a non-component template:
-
-- `catalog.render("person.PersonForm")`
-
-From another component:
-
-- `<person.PersonForm> some content </person.PersonForm>`, or
-- `<person.PersonForm />`
-
-Notice how the folder name doesn't need to start with an uppercase if you don't want it to.
-
-<a href="./img/anatomy-en.png" target="_blank">
-  <img src="./img/anatomy-en.png" style="margin:0 auto;width:90%;max-width:35rem;">
-</a>
-
-## Taking Arguments
-
-More often than not, a component takes one or more arguments to render. Every argument must be declared at the beginning of the component with `{#def arg1, arg2, ... #}`.
+Every argument must be declared at the beginning of the component with `{#def arg1, arg2, ... #}`.
 
 ```html+jinja
 {#def action, method="post", multipart=False #}
@@ -145,7 +70,7 @@ There are two different but equivalent ways to pass non-string arguments:
 />
 ```
 
-<Callout type="note">
+<Callout type="info">
   For `True` values, you can just use the name, like in HTML:
   <br>
   ```html+jinja
@@ -153,7 +78,7 @@ There are two different but equivalent ways to pass non-string arguments:
   ```
 </Callout>
 
-<Callout type="note">
+<Callout type="info">
   You can also use dashes when passing an argument, but they will be translated to underscores:
   <br>
   ```html+jinja
@@ -166,9 +91,11 @@ There are two different but equivalent ways to pass non-string arguments:
   ```
 </Callout>
 
+
 ## With Content
 
 There is always an extra implicit argument: **the content** inside the component. Read more about it in the [next](/guide/slots) section.
+
 
 ## Extra Arguments
 
@@ -225,7 +152,7 @@ Or directly in the `attrs.render()` call:
 ```
 
 <Callout type="info">
-The string values passed into components as attrs are not cast to `str` until the string representation is **actually** needed, for example when `attrs.render()` is invoked.
+The string values passed into components as attrs are not cast to `str` until their string representation is **actually** needed, for example when `attrs.render()` is invoked.
 </Callout>
 
 ### `attrs` Methods
@@ -235,7 +162,7 @@ The string values passed into components as attrs are not cast to `str` until th
 Renders the attributes and properties as a string.
 
 Any arguments you use with this function are merged with the existing
-attibutes/properties by the same rules as the `HTMLAttrs.set()` function:
+attributes/properties by the same rules as the `HTMLAttrs.set()` function:
 
 - Pass a name and a value to set an attribute (e.g. `type="text"`)
 - Use `True` as a value to set a property (e.g. `disabled`)
@@ -252,6 +179,7 @@ are sorted by name and rendered like this:
 ```html+jinja
 <Example class="ipsum" width="42" data-good />
 ```
+
 ```html+jinja
 <div {{ attrs.render() }}>
 <!-- <div class="ipsum" width="42" data-good> -->
@@ -344,5 +272,3 @@ or the default value if it doesn't exist.
 ```html+jinja
 {%- set role = attrs.get("role", "tab") %}
 ```
-
-...
