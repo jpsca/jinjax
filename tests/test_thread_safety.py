@@ -60,7 +60,6 @@ def test_thread_safety_of_render_assets(catalog, folder):
     def render(i):
         return catalog.render(f"Page{i}")
 
-
     for i in range(NUM_THREADS):
         si = str(i)
         child_name = f"Child{i}.jinja"
@@ -98,22 +97,35 @@ def test_same_thread_assets_independence(catalog, folder):
     catalog2 = jinjax.Catalog()
     catalog2.add_folder(folder)
 
-    print(catalog._key)
-    print(catalog2._key)
+    print("Catalog1 key:", catalog._key)
+    print("Catalog2 key:", catalog2._key)
 
-    (folder / "Parent.jinja").write_text("""
+    # Check if the context variables exist before the test
+    print("Before any rendering:")
+    print("Catalog1 in collected_css:", catalog._key in jinjax.catalog.collected_css)
+    print("Catalog2 in collected_css:", catalog2._key in jinjax.catalog.collected_css)
+    print("collected_css keys:", list(jinjax.catalog.collected_css.keys()))
+    print("collected_js keys:", list(jinjax.catalog.collected_js.keys()))
+
+    (folder / "Parent.jinja").write_text(
+        """
 {{ catalog.render_assets() }}
-{{ content }}""".strip())
+{{ content }}""".strip()
+    )
 
-    (folder / "Comp1.jinja").write_text("""
+    (folder / "Comp1.jinja").write_text(
+        """
 {#css "a.css" #}
 {#js "a.js" #}
-<Parent />""".strip())
+<Parent />""".strip()
+    )
 
-    (folder / "Comp2.jinja").write_text("""
+    (folder / "Comp2.jinja").write_text(
+        """
 {#css "b.css" #}
 {#js "b.js" #}
-<Parent />""".strip())
+<Parent />""".strip()
+    )
 
     expected_1 = """
 <link rel="stylesheet" href="/static/components/a.css">
@@ -123,18 +135,41 @@ def test_same_thread_assets_independence(catalog, folder):
 <link rel="stylesheet" href="/static/components/b.css">
 <script type="module" src="/static/components/b.js"></script>""".strip()
 
+    # Render first component with first catalog
     html1 = catalog.render("Comp1")
+
+    # Check context variables after first render
+    print("\nAfter first render:")
+    print("Catalog1 collected_css:", catalog.collected_css)
+    print("Catalog2 collected_css:", catalog2.collected_css)
+    print("Catalog1 in collected_css:", catalog._key in jinjax.catalog.collected_css)
+    print("Catalog2 in collected_css:", catalog2._key in jinjax.catalog.collected_css)
+    print("collected_css keys:", list(jinjax.catalog.collected_css.keys()))
+
     # `irender` instead of `render` so the assets are not cleared
     html2 = catalog2.irender("Comp2")
-    print(html1)
-    print(html2)
+
+    # Check context variables after second render
+    print("\nAfter second render:")
+    print("Catalog1 collected_css:", catalog.collected_css)
+    print("Catalog2 collected_css:", catalog2.collected_css)
+    print("Catalog1 in collected_css:", catalog._key in jinjax.catalog.collected_css)
+    print("Catalog2 in collected_css:", catalog2._key in jinjax.catalog.collected_css)
+    print("collected_css keys:", list(jinjax.catalog.collected_css.keys()))
+
+    print("\nHTML outputs:")
+    print("HTML1:", html1)
+    print("HTML2:", html2)
+
     assert html1 == Markup(expected_1)
     assert html2 == Markup(expected_2)
 
 
 def test_thread_safety_of_template_globals(catalog, folder):
     NUM_THREADS = 5
-    (folder / "Page.jinja").write_text("{{ globalvar if globalvar is defined else 'not set' }}")
+    (folder / "Page.jinja").write_text(
+        "{{ globalvar if globalvar is defined else 'not set' }}"
+    )
 
     def render(i):
         return catalog.render("Page", _globals={"globalvar": i})
@@ -150,4 +185,3 @@ def test_thread_safety_of_template_globals(catalog, folder):
 
     for i, result in enumerate(results):
         assert result == Markup(str(i))
-

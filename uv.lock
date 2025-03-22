@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11, <4"
 
 [[package]]
@@ -215,7 +214,7 @@ wheels = [
 
 [[package]]
 name = "jinjax"
-version = "0.52"
+version = "0.53"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
@@ -248,7 +247,6 @@ requires-dist = [
     { name = "markupsafe", specifier = ">=2.0" },
     { name = "whitenoise", marker = "extra == 'whitenoise'" },
 ]
-provides-extras = ["whitenoise"]
 
 [package.metadata.requires-dev]
 dev = [

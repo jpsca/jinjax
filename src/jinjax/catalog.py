@@ -198,63 +198,110 @@ class Catalog:
         self._key = id(self)
 
     def __del__(self) -> None:
-        name = f"collected_css_{self._key}"
-        if name in collected_css:
-            del collected_css[name]
-        name = f"collected_js_{self._key}"
-        if name in collected_js:
-            del collected_js[name]
+        # Safely clean up context variables associated with this catalog
+        try:
+            key = self._key
+            # Clean up the collected_css
+            if key in collected_css:
+                del collected_css[key]
+
+            # Clean up the collected_js
+            if key in collected_js:
+                del collected_js[key]
+
+            # Clean up the tmpl_globals
+            if key in tmpl_globals:
+                del tmpl_globals[key]
+        except Exception:
+            # Ignore exceptions during cleanup
+            pass
 
     @property
     def collected_css(self) -> list[str]:
-        if self._key not in collected_css:
-            name = f"collected_css_{self._key}"
-            collected_css[self._key] = ContextVar(name)
-            collected_css[self._key].set([])
+        key = self._key
+        if key not in collected_css:
+            name = f"collected_css_{key}"
+            collected_css[key] = ContextVar(name)
+            value = []
+            collected_css[key].set(value)
+            return value
 
-        return collected_css[self._key].get([])
+        try:
+            # Make a defensive copy to avoid shared references
+            return list(collected_css[key].get())
+        except (KeyError, LookupError):
+            # Handle case where the ContextVar exists but no value was set
+            value = []
+            collected_css[key].set(value)
+            return value
 
     @collected_css.setter
     def collected_css(self, value: list[str]) -> None:
-        if self._key not in collected_css:
-            name = f"collected_css_{self._key}"
-            collected_css[self._key] = ContextVar(name)
+        key = self._key
+        if key not in collected_css:
+            name = f"collected_css_{key}"
+            collected_css[key] = ContextVar(name)
 
-        collected_css[self._key].set(list(value))
+        # Make a defensive copy to avoid shared references
+        collected_css[key].set(list(value))
 
     @property
     def collected_js(self) -> list[str]:
-        if self._key not in collected_js:
-            name = f"collected_js_{self._key}"
-            collected_js[self._key] = ContextVar(name)
-            collected_js[self._key].set([])
+        key = self._key
+        if key not in collected_js:
+            name = f"collected_js_{key}"
+            collected_js[key] = ContextVar(name)
+            value = []
+            collected_js[key].set(value)
+            return value
 
-        return collected_js[self._key].get([])
+        try:
+            # Make a defensive copy to avoid shared references
+            return list(collected_js[key].get())
+        except (KeyError, LookupError):
+            # Handle case where the ContextVar exists but no value was set
+            value = []
+            collected_js[key].set(value)
+            return value
 
     @collected_js.setter
     def collected_js(self, value: list[str]) -> None:
-        if self._key not in collected_js:
-            name = f"collected_js_{self._key}"
-            collected_js[self._key] = ContextVar(name)
+        key = self._key
+        if key not in collected_js:
+            name = f"collected_js_{key}"
+            collected_js[key] = ContextVar(name)
 
-        collected_js[self._key].set(list(value))
+        # Make a defensive copy to avoid shared references
+        collected_js[key].set(list(value))
 
     @property
     def tmpl_globals(self) -> dict[str, t.Any]:
-        if self._key not in tmpl_globals:
-            name = f"tmpl_globals_{self._key}"
-            tmpl_globals[self._key] = ContextVar(name)
-            tmpl_globals[self._key].set({})
+        key = self._key
+        if key not in tmpl_globals:
+            name = f"tmpl_globals_{key}"
+            tmpl_globals[key] = ContextVar(name)
+            value = {}
+            tmpl_globals[key].set(value)
+            return value
 
-        return tmpl_globals[self._key].get({})
+        try:
+            # Make a defensive copy to avoid shared references
+            return dict(tmpl_globals[key].get())
+        except (KeyError, LookupError):
+            # Handle case where the ContextVar exists but no value was set
+            value = {}
+            tmpl_globals[key].set(value)
+            return value
 
     @tmpl_globals.setter
     def tmpl_globals(self, value: dict[str, t.Any]) -> None:
-        if self._key not in tmpl_globals:
-            name = f"tmpl_globals_{self._key}"
-            tmpl_globals[self._key] = ContextVar(name)
+        key = self._key
+        if key not in tmpl_globals:
+            name = f"tmpl_globals_{key}"
+            tmpl_globals[key] = ContextVar(name)
 
-        tmpl_globals[self._key].set(dict(value))
+        # Make a defensive copy to avoid shared references
+        tmpl_globals[key].set(dict(value))
 
     @property
     def paths(self) -> list[Path]:
@@ -359,6 +406,7 @@ class Catalog:
         view/controller in your app.
 
         """
+        # Clear any existing assets
         self.collected_css = []
         self.collected_js = []
         self.tmpl_globals = kw.pop("_globals", kw.pop("__globals", None)) or {}
@@ -417,9 +465,12 @@ class Catalog:
             raise ComponentNotFound(cname, file_ext)
 
         root_path = component.path.parent if component.path else None
-        css = self.collected_css
-        js = self.collected_js
+        # Get current assets lists
+        css_list = self.collected_css
+        js_list = self.collected_js
 
+        # Process CSS assets
+        css_to_add = []
         for url in component.css:
             if (
                 root_path
@@ -428,9 +479,17 @@ class Catalog:
             ):
                 url = self._fingerprint(root_path, url)
 
-            if url not in css:
-                css.append(url)
+            if url not in css_list:
+                css_to_add.append(url)
 
+        # Update CSS assets in one operation if needed
+        if css_to_add:
+            new_css = list(css_list)
+            new_css.extend(css_to_add)
+            self.collected_css = new_css
+
+        # Process JS assets
+        js_to_add = []
         for url in component.js:
             if (
                 root_path
@@ -439,8 +498,14 @@ class Catalog:
             ):
                 url = self._fingerprint(root_path, url)
 
-            if url not in js:
-                js.append(url)
+            if url not in js_list:
+                js_to_add.append(url)
+
+        # Update JS assets in one operation if needed
+        if js_to_add:
+            new_js = list(js_list)
+            new_js.extend(js_to_add)
+            self.collected_js = new_js
 
         attrs = attrs.as_dict if isinstance(attrs, HTMLAttrs) else attrs
         attrs.update(kw)
@@ -524,16 +589,29 @@ class Catalog:
         "http://" or "https://".
         """
         html_css = []
+        # Use a set to track rendered URLs to avoid duplicates
+        rendered_urls = set()
+
         for url in self.collected_css:
             if not url.startswith(("http://", "https://")):
-                url = f"{self.root_url}{url}"
-            html_css.append(f'<link rel="stylesheet" href="{url}">')
+                full_url = f"{self.root_url}{url}"
+            else:
+                full_url = url
+
+            if full_url not in rendered_urls:
+                html_css.append(f'<link rel="stylesheet" href="{full_url}">')
+                rendered_urls.add(full_url)
 
         html_js = []
         for url in self.collected_js:
             if not url.startswith(("http://", "https://")):
-                url = f"{self.root_url}{url}"
-            html_js.append(f'<script type="module" src="{url}"></script>')
+                full_url = f"{self.root_url}{url}"
+            else:
+                full_url = url
+
+            if full_url not in rendered_urls:
+                html_js.append(f'<script type="module" src="{full_url}"></script>')
+                rendered_urls.add(full_url)
 
         return Markup("\n".join(html_css + html_js))
 
