@@ -1,0 +1,23 @@
+
+{#def action, label, method="post" #}
+{#css form.css, /static/theme.css #}
+{#js form.js #}
+
+{% set method = method.lower() %}
+
+<form {{ attrs.render(
+  class="form",
+  action=action,
+  method=method,
+  novalidate=True,
+) }}>
+  {% if method == "post" -%}
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+  {%- endif %}
+
+  {{ content }}
+
+  <FormActions>
+    <Button type="submit" label={{label}} />
+  </FormActions>
+</form>

@@ -10,6 +10,7 @@
   --color-panel-bg-hover: #e0e0e0;
 
   --color-border-default: #c6c6c6;
+  --color-border-muted: #ddd;
 
   --color-shadow-inset: #d0d7de33;
 
@@ -43,6 +44,12 @@
 @supports (font-variation-settings: normal) {
   :root {
     --font-family-sans: InterVariable, sans-serif;
+  }
+}
+@media (max-width: 480px) {
+  :root {
+    --cd-padding-left: max(0.5rem, env(safe-area-inset-right));
+    --cd-padding-right: max(0.5rem, env(safe-area-inset-left));
   }
 }
 
@@ -223,6 +230,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+body > * {
+  max-width: 100%;
+}
 
 a.headerlink {
   display: inline-block;
@@ -262,6 +272,11 @@ h6:hover a.headerlink {
 
   font-size: 1em;
   line-height: 1.75;
+}
+@media (max-width: 640px) {
+  .prose {
+    font-size: 1.125em;
+  }
 }
 
 .prose h1:not(:where([class~="not-prose"] *)) ,
@@ -800,9 +815,10 @@ h6:hover a.headerlink {
 pre {
   font-weight: 400;
   font-feature-settings: "kern";
-  white-space: pre-wrap;
+  white-space: pre;
   scrollbar-width: thin;
   padding: 1rem 2rem 1rem 0.5rem;
+  overflow-x: auto;
 }
 pre::-webkit-scrollbar {
   width: 2px;
