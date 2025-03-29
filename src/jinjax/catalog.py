@@ -430,41 +430,10 @@ class Catalog:
         """
         content = (kw.pop("_content", kw.pop("__content", "")) or "").strip()
         attrs = kw.pop("_attrs", kw.pop("__attrs", None)) or {}
-        source = kw.pop("_source", kw.pop("__source", ""))
-        file_ext = kw.pop("_file_ext", kw.pop("__file_ext", "")) or self.file_ext
-        caller_prefix = kw.pop("__prefix", "")
 
-        cname = __name
-        prefix, name = self._split_name(cname)
-        component = None
-
-        if source:
-            logger.debug("Rendering from source %s", cname)
-            self.jinja_env.loader = self.prefixes[prefix]
-            component = self._get_from_source(prefix=prefix, name=name, source=source)
-        else:
-            logger.debug("Rendering from cache or file %s", cname)
-            get_from = self._get_from_cache if self.use_cache else self._get_from_file
-
-            if caller_prefix:
-                self.jinja_env.loader = self.prefixes[caller_prefix]
-                component = get_from(
-                    prefix=caller_prefix,
-                    name=cname,
-                    file_ext=file_ext
-                )
-            if not component:
-                self.jinja_env.loader = self.prefixes[prefix]
-                component = get_from(
-                    prefix=prefix,
-                    name=name,
-                    file_ext=file_ext
-                )
-
-        if not component:
-            raise ComponentNotFound(cname, file_ext)
-
+        component = self._get_component(__name, **kw)
         root_path = component.path.parent if component.path else None
+
         # Get current assets lists
         css_list = self.collected_css
         js_list = self.collected_js
@@ -632,6 +601,39 @@ class Catalog:
         parent = "" if parent == "." else f"{parent}/"
 
         return f"{parent}{stem}-{fingerprint}{ext}"
+
+    def _get_component(self, cname: str, **kw) -> Component:
+        source = kw.pop("_source", kw.pop("__source", ""))
+        file_ext = kw.pop("_file_ext", kw.pop("__file_ext", "")) or self.file_ext
+        caller_prefix = kw.pop("__prefix", "")
+
+        prefix, name = self._split_name(cname)
+        component = None
+
+        if source:
+            logger.debug("Rendering from source %s", cname)
+            self.jinja_env.loader = self.prefixes[prefix]
+            return self._get_from_source(prefix=prefix, name=name, source=source)
+
+        logger.debug("Rendering from cache or file %s", cname)
+        get_from = self._get_from_cache if self.use_cache else self._get_from_file
+        if caller_prefix:
+            self.jinja_env.loader = self.prefixes[caller_prefix]
+            component = get_from(
+                prefix=caller_prefix,
+                name=cname,
+                file_ext=file_ext
+            )
+        if not component:
+            self.jinja_env.loader = self.prefixes[prefix]
+            component = get_from(
+                prefix=prefix,
+                name=name,
+                file_ext=file_ext
+            )
+        if component:
+            return component
+        raise ComponentNotFound(cname, file_ext)
 
     def _get_from_source(
         self,
