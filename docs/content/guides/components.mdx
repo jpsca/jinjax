@@ -26,8 +26,7 @@ If you end up having more than one component with the same name, the one in the 
 
 **Third**, the filename must be either PascalCased (like Python classes) or "kebab-cased" (lowercase with words separated by dashes).
 
-The PascalCased name of the file (minus the extension) is always how you call the component (even if the
-filename is kebab-cased). This is how JinjaX differentiates a component from a regular HTML tag when using it.
+The PascalCased name of the file (minus the extension) is always how you call the component (even if the filename is kebab-cased). This is how JinjaX differentiates a component from a regular HTML tag when using it.
 
 For example, if the file is "components/PersonForm.jinja":
 
@@ -66,6 +65,7 @@ Do not mix PascalCased files with kebab-cased files. Choose a name format you li
 and stick with it.
 </Callout>
 
+### Subfolders
 
 If the component is in a subfolder, the name of that folder becomes part of its name too:
 
@@ -73,22 +73,41 @@ If the component is in a subfolder, the name of that folder becomes part of its 
 └ myapp/
   ├── app.py
   ├── components/
-        └─ person
-            └─ PersonForm.jinja
+        └─ Person/
+            └─ Form.jinja
 ```
 
-A "components/person/PersonForm.jinja" component is named "person.PersonForm", meaning the name of the subfolder and the name of the file separated by a dot. This is the full name you use to call it:
+A "components/person/PersonForm.jinja" component is named "Person.Form", meaning the name of the subfolder and the name of the file separated by a dot. This is the full name you use to call it:
 
 From Python code or a non-component template:
 
-- `catalog.render("person.PersonForm")`
+- `catalog.render("Person.Form")`
 
 From another component:
 
-- `<person.PersonForm> some content </person.PersonForm>`, or
-- `<person.PersonForm />`
+- `<Person.Form> some content </Person.Form>`, or
+- `<Person.Form />`
 
-Notice that the folder name doesn't need to follow any naming convention if you don't want it to.
+You can also use kebab-cased filenames in subfolders and call them the same way:
+
+```
+└ myapp/
+  ├── app.py
+  ├── components/
+        └─ password-reset/
+            └─ form.jinja
+```
+
+From Python code or a non-component template:
+
+- `catalog.render("PasswordReset.Form")`
+
+From another component:
+
+- `<PasswordReset.Form> some content </PasswordReset.Form>`, or
+- `<PasswordReset.Form />`
+
+## Anatomy of a Component
 
 <a href="/static/img/anatomy-en.svg" target="_blank" style="display:block; text-align:center;">
   <img src="/static/img/anatomy-en.svg" width="940" height="840" style="width:100%;max-width:940px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);" />

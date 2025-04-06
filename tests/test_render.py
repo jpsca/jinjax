@@ -805,12 +805,15 @@ def test_slots(catalog, folder, autoescape):
 
 
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_alt_cased_component_names(catalog, folder, autoescape):
-    (folder / "a_tricky-FOLDER").mkdir()
+def test_kebab_cased_component_names(catalog, folder, autoescape):
     catalog.jinja_env.autoescape = autoescape
+    (folder / "a_tricky-FOLDER").mkdir()
+    (folder / "kebab-folder").mkdir()
 
     (folder / "kebab-cased.jinja").write_text("kebab")
     (folder / "a_tricky-FOLDER" / "Greeting.jinja").write_text("pascal")
+    (folder / "kebab-folder" / "kebab-cased.jinja").write_text("superkebab")
 
     assert catalog.render("KebabCased") == Markup("kebab")
     assert catalog.render("a_tricky-FOLDER.Greeting") == Markup("pascal")
+    assert catalog.render("KebabFolder.KebabCased") == Markup("superkebab")

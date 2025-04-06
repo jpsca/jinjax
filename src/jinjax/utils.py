@@ -32,6 +32,10 @@ def kebab_case(word: str) -> str:
         'html'
         >>> kebab_case("ui.AwesomeDialog")
         'ui.awesome-dialog'
+        >>> kebab_case("MyFolder/DeviceType")
+        'my-folder/device-type'
+        >>> kebab_case("MyFolder.DeviceType")
+        'my-folder.device-type'
 
     """
     word = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1-\2", word)

@@ -708,9 +708,7 @@ class Catalog:
         root_paths = self.prefixes[prefix].searchpath
 
         name = name.replace(DELIMITER, SLASH)
-        name_path = Path(name)
-        kebab_stem = kebab_case(name_path.stem)
-        kebab_name = str(name_path.with_name(kebab_stem))
+        kebab_name = kebab_case(name)
         dot_names = (f"{name}.", f"{kebab_name}.")
 
         for root_path in root_paths:
@@ -718,7 +716,10 @@ class Catalog:
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
-                if relfolder and not name.startswith(relfolder):
+                if relfolder and not (
+                    name.startswith(relfolder)
+                    or kebab_name.startswith(relfolder)
+                ):
                     continue
 
                 for filename in files:
@@ -726,6 +727,7 @@ class Catalog:
                         filepath = f"{relfolder}/{filename}"
                     else:
                         filepath = filename
+
                     if filepath.startswith(dot_names) and filepath.endswith(file_ext):
                         return Path(curr_folder) / filename, Path(filepath)
 
