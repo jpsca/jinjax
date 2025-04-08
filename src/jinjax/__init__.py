@@ -1,3 +1,4 @@
+from . import utils  # noqa
 from .catalog import Catalog
 from .component import Component
 from .exceptions import (
