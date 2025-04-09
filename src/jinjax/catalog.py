@@ -686,7 +686,7 @@ class Catalog:
             return
         path, relpath = paths
         component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
-        component.tmpl = self.jinja_env.get_template(str(relpath), globals=self.tmpl_globals)
+        component.tmpl = self.jinja_env.get_template(str(relpath.as_posix()), globals=self.tmpl_globals)
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:

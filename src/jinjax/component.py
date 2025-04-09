@@ -105,11 +105,11 @@ class Component:
             self.load_metadata(source)
 
         if path is not None and relpath is not None:
-            default_css = str(relpath.with_suffix(".css"))
+            default_css = str(relpath.with_suffix(".css").as_posix())
             if (path.with_suffix(".css")).is_file():
                 self.css.extend(self.parse_files_expr(default_css))
 
-            default_js = str(relpath.with_suffix(".js"))
+            default_js = str(relpath.with_suffix(".js").as_posix())
             if (path.with_suffix(".js")).is_file():
                 self.js.extend(self.parse_files_expr(default_js))
 
