@@ -40,7 +40,7 @@ class ComponentsMiddleware(WhiteNoise):  # type: ignore
             stem = fingerprinted.group(1)
             relpath = relpath.with_name(f"{stem}{ext}")
 
-        return super().find_file(str(relpath))
+        return super().find_file(str(relpath.as_posix()))
 
     def add_file_to_dictionary(
         self, url: str, path: str, stat_cache: t.Any = None
