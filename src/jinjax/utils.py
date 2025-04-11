@@ -8,6 +8,8 @@ logger = logging.getLogger("jinjax")
 DELIMITER = "."
 SLASH = "/"
 
+ARGS_PREFIX = "__prefix"
+
 
 def get_url_prefix(prefix: str) -> str:
     url_prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(DELIMITER, SLASH)

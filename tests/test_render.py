@@ -9,9 +9,11 @@ from markupsafe import Markup
 import jinjax
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_render_simple(catalog, folder, autoescape):
+def test_render_simple(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text(
         """
@@ -23,9 +25,11 @@ def test_render_simple(catalog, folder, autoescape):
     assert html == Markup('<div class="greeting [&_a]:flex">Hello world!</div>')
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_render_source(catalog, autoescape):
+def test_render_source(catalog, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     source = '{#def message #}\n<div class="greeting [&_a]:flex">{{ message }}</div>'
     expected = Markup('<div class="greeting [&_a]:flex">Hello world!</div>')
@@ -38,9 +42,11 @@ def test_render_source(catalog, autoescape):
     assert expected == html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_render_content(catalog, folder, autoescape):
+def test_render_content(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Card.jinja").write_text("""
 <section class="card">
@@ -60,6 +66,7 @@ def test_render_content(catalog, folder, autoescape):
     assert expected == html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
 @pytest.mark.parametrize(
     "source, expected",
@@ -76,8 +83,10 @@ def test_render_mix_of_contentful_and_contentless_components(
     source,
     expected,
     autoescape,
+    undefined,
 ):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Icon.jinja").write_text('<i class="icon"></i>')
     (folder / "Title.jinja").write_text("<h1>{{ content }}</h1>")
@@ -87,9 +96,11 @@ def test_render_mix_of_contentful_and_contentless_components(
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_composition(catalog, folder, autoescape):
+def test_composition(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text(
         """
@@ -138,9 +149,11 @@ def test_composition(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_just_properties(catalog, folder, autoescape):
+def test_just_properties(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Lorem.jinja").write_text(
         """
@@ -181,9 +194,11 @@ def test_just_properties(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_global_values(catalog, folder, autoescape):
+def test_global_values(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Global.jinja").write_text("""{{ globalvar }}""")
     message = "Hello world!"
@@ -193,9 +208,11 @@ def test_global_values(catalog, folder, autoescape):
     assert message in html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_required_attr_are_required(catalog, folder, autoescape):
+def test_required_attr_are_required(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text(
         """
@@ -208,12 +225,14 @@ def test_required_attr_are_required(catalog, folder, autoescape):
         catalog.render("Greeting")
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_subfolder(catalog, folder, autoescape):
+def test_subfolder(catalog, folder, autoescape, undefined):
     """Components can be organized in subfolders and called
     using the dot notation.
     """
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     sub = folder / "ui"
     sub.mkdir()
@@ -224,9 +243,11 @@ def test_subfolder(catalog, folder, autoescape):
     assert html == Markup('<div class="tab">Meh</div>')
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_default_attr(catalog, folder, autoescape):
+def test_default_attr(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text(
         """
@@ -259,9 +280,11 @@ def test_default_attr(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_raw_content(catalog, folder, autoescape):
+def test_raw_content(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Code.jinja").write_text("""
 <pre class="code">
@@ -293,9 +316,11 @@ def test_raw_content(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_multiple_raw(catalog, folder, autoescape):
+def test_multiple_raw(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "C.jinja").write_text("""
 <div {{ attrs.render() }}></div>
@@ -325,9 +350,11 @@ def test_multiple_raw(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_check_for_unclosed(catalog, folder, autoescape):
+def test_check_for_unclosed(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Lorem.jinja").write_text("""
 {#def ipsum=False #}
@@ -348,9 +375,11 @@ def test_check_for_unclosed(catalog, folder, autoescape):
             raise
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_dict_as_attr(catalog, folder, autoescape):
+def test_dict_as_attr(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "CitiesList.jinja").write_text("""
 {#def cities #}
@@ -370,9 +399,11 @@ def test_dict_as_attr(catalog, folder, autoescape):
     assert html == Markup("<p>Lima, Peru</p><p>New York, USA</p>")
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape):
-    """https://github.com/jpsca/jinjax/issues/19"""
+def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape, undefined):
+    """Fix https://github.com/jpsca/jinjax/issues/19
+    """
     (folder_t / "greeting.html").write_text("Jinja still works")
     (folder / "Greeting.jinja").write_text("JinjaX works")
 
@@ -384,6 +415,7 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape):
     jinja_env.filters = {"fil": lambda x: x}
     jinja_env.tests = {"tes": lambda x: x}
     jinja_env.autoescape = autoescape
+    jinja_env.undefined = undefined
 
     catalog = jinjax.Catalog(
         jinja_env=jinja_env,
@@ -422,9 +454,11 @@ def test_do_not_mess_with_external_jinja_env(folder_t, folder, autoescape):
     assert "jinja2.ext.DebugExtension" not in jinja_env.extensions
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_auto_reload(catalog, folder, autoescape):
+def test_auto_reload(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Layout.jinja").write_text("""
 <html>
@@ -482,9 +516,11 @@ def test_auto_reload(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_subcomponents(catalog, folder, autoescape):
+def test_subcomponents(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     """Issue https://github.com/jpsca/jinjax/issues/32"""
     (folder / "Page.jinja").write_text("""
@@ -520,9 +556,11 @@ def test_subcomponents(catalog, folder, autoescape):
     assert html == Markup(expected.strip())
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_colon_in_attrs(catalog, folder, autoescape):
+def test_colon_in_attrs(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "C.jinja").write_text("""
 <div {{ attrs.render() }}></div>
@@ -537,9 +575,11 @@ def test_colon_in_attrs(catalog, folder, autoescape):
     assert """<div hx-on:click="show = !show"></div>""" in html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_template_globals(catalog, folder, autoescape):
+def test_template_globals(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Input.jinja").write_text("""
 {# def name, value #}<input type="text" name="{{name}}" value="{{value}}">
@@ -563,9 +603,11 @@ def test_template_globals(catalog, folder, autoescape):
     assert """<input type="hidden" name="csrft" value="abc">""" in html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_template_globals_update_cache(catalog, folder, autoescape):
+def test_template_globals_update_cache(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "CsrfToken.jinja").write_text(
         """<input type="hidden" name="csrft" value="{{csrf_token}}">"""
@@ -581,9 +623,11 @@ def test_template_globals_update_cache(catalog, folder, autoescape):
     assert """<input type="hidden" name="csrft" value="xyz">""" in html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_alpine_sintax(catalog, folder, autoescape):
+def test_alpine_sintax(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
@@ -595,9 +639,11 @@ def test_alpine_sintax(catalog, folder, autoescape):
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_alpine_sintax_in_component(catalog, folder, autoescape):
+def test_alpine_sintax_in_component(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Button.jinja").write_text(
         """<button {{ attrs.render() }}>{{ content }}</button>"""
@@ -613,9 +659,11 @@ def test_alpine_sintax_in_component(catalog, folder, autoescape):
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_autoescaped_attrs(catalog, folder, autoescape):
+def test_autoescaped_attrs(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "CheckboxItem.jinja").write_text(
         """<div {{ attrs.render(class="relative") }}></div>"""
@@ -708,9 +756,11 @@ def test_autoescaped_attrs(catalog, folder, autoescape):
         ),
     ],
 )
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_strip_comment(catalog, folder, autoescape, template):
+def test_strip_comment(catalog, folder, autoescape, template, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "A.jinja").write_text(template)
 
@@ -767,9 +817,11 @@ def test_mixed_syntax(catalog, folder):
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_slots(catalog, folder, autoescape):
+def test_slots(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Component.jinja").write_text(
         """
@@ -804,9 +856,11 @@ def test_slots(catalog, folder, autoescape):
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_kebab_cased_component_names(catalog, folder, autoescape):
+def test_kebab_cased_component_names(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
     (folder / "a_tricky-FOLDER").mkdir()
     (folder / "kebab-folder").mkdir()
 

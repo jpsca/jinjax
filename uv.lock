@@ -215,7 +215,7 @@ wheels = [
 
 [[package]]
 name = "jinjax"
-version = "0.54"
+version = "0.55"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },

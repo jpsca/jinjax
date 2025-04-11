@@ -1,12 +1,15 @@
 from pathlib import Path
 
+import jinja2
 import pytest
 from markupsafe import Markup
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_render_assets(catalog, folder, autoescape):
+def test_render_assets(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Greeting.jinja").write_text(
         """
@@ -72,9 +75,11 @@ def test_render_assets(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_cleanup_assets(catalog, folder, autoescape):
+def test_cleanup_assets(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Layout.jinja").write_text("""
 <html>
@@ -122,9 +127,11 @@ def test_cleanup_assets(catalog, folder, autoescape):
     )
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_fingerprint_assets(catalog, folder: Path, autoescape):
+def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Layout.jinja").write_text("""
 <html>
@@ -150,9 +157,11 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape):
     assert 'href="http://example.com/super.css' in html
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
+def test_auto_load_assets_with_same_name(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Layout.jinja").write_text(
         """{{ catalog.render_assets() }}\n{{ content }}"""
@@ -194,9 +203,11 @@ def test_auto_load_assets_with_same_name(catalog, folder, autoescape):
     assert html == Markup(expected)
 
 
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
-def test_auto_load_assets_for_kebab_cased_names(catalog, folder, autoescape):
+def test_auto_load_assets_for_kebab_cased_names(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
 
     (folder / "Layout.jinja").write_text(
         """{{ catalog.render_assets() }}\n{{ content }}"""

@@ -35,3 +35,14 @@ class InvalidArgument(Exception):
     Raised when the arguments passed to the component cannot be parsed
     by JinjaX because of an invalid syntax.
     """
+
+
+class UnknownPrefix(Exception):
+    """
+    Raised when a component is used/invoked with a prefix that is
+    not registered.
+    """
+
+    def __init__(self, name: str) -> None:
+        msg = f"The prefix `{name}` is not registered"
+        super().__init__(msg)

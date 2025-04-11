@@ -9,10 +9,18 @@ import jinja2
 from markupsafe import Markup
 
 from .component import Component
-from .exceptions import ComponentNotFound, InvalidArgument
+from .exceptions import ComponentNotFound, InvalidArgument, UnknownPrefix
 from .html_attrs import HTMLAttrs
 from .jinjax import JinjaX
-from .utils import DELIMITER, SLASH, get_random_id, get_url_prefix, kebab_case, logger
+from .utils import (
+    ARGS_PREFIX,
+    DELIMITER,
+    SLASH,
+    get_random_id,
+    get_url_prefix,
+    kebab_case,
+    logger,
+)
 
 
 if t.TYPE_CHECKING:
@@ -25,6 +33,7 @@ DEFAULT_PREFIX = ""
 DEFAULT_EXTENSION = ".jinja"
 ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
+PREFIX_SEP = ":"
 
 # Create ContextVars containers at module level
 collected_css: dict[int, ContextVar[list[str]]] = {}
@@ -488,7 +497,6 @@ class Catalog:
                 f"were parsed incorrectly as:\n {str(kw)}"
             ) from exc
 
-        args["__prefix"] = component.prefix
         args[ARGS_CONTENT] = CallerWrapper(caller=caller, content=content)
         return component.render(**args)
 
@@ -605,7 +613,7 @@ class Catalog:
     def _get_component(self, cname: str, **kw) -> Component:
         source = kw.pop("_source", kw.pop("__source", ""))
         file_ext = kw.pop("_file_ext", kw.pop("__file_ext", "")) or self.file_ext
-        caller_prefix = kw.pop("__prefix", "")
+        caller_prefix = kw.pop(ARGS_PREFIX, "")
 
         prefix, name = self._split_name(cname)
         component = None
@@ -691,13 +699,13 @@ class Catalog:
 
     def _split_name(self, cname: str) -> tuple[str, str]:
         cname = cname.strip().strip(DELIMITER)
-        if DELIMITER not in cname:
+        if PREFIX_SEP not in cname:
             return DEFAULT_PREFIX, cname
-        for prefix in self.prefixes.keys():
-            _prefix = f"{prefix}{DELIMITER}"
-            if cname.startswith(_prefix):
-                return prefix, cname.removeprefix(_prefix)
-        return DEFAULT_PREFIX, cname
+
+        prefix, cname = cname.split(PREFIX_SEP, 1)
+        if prefix not in self.prefixes:
+            raise UnknownPrefix(prefix)
+        return prefix, cname
 
     def _get_component_path(
         self,

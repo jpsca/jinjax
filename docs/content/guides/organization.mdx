@@ -80,11 +80,11 @@ The `add_folder()` method takes an optional `prefix` argument.
 
 The prefix acts like a namespace. For example, the name of a
 `Card.jinja` component is, by default, "Card", but under
-the prefix "common", it becomes "common.Card".
+the prefix "common", it becomes "common:Card".
 
 The rule for subfolders remains the same: a `wrappers/Card.jinja`
 name is, by default, "wrappers.Card", but under the prefix "common", it becomes
-"common.wrappers.Card".
+"common:wrappers.Card".
 
 An important caveat is that when a component under a prefix calls another
 component without a prefix, the called component is searched **first**

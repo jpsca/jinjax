@@ -1,0 +1,2 @@
+-e ../../claydocs
+-e ../jinjax[whitenoise]

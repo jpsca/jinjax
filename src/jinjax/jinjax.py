@@ -6,19 +6,23 @@ from jinja2.exceptions import TemplateSyntaxError
 from jinja2.ext import Extension
 from jinja2.filters import do_forceescape
 
-from .utils import logger
+from .utils import ARGS_PREFIX, logger
 
 
 RENDER_CMD = "catalog.irender"
-BLOCK_CALL = '{% call(_slot="") [CMD]("[TAG]", __prefix=__prefix[ATTRS]) -%}[CONTENT]{%- endcall %}'
-BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD)
-INLINE_CALL = '{{ [CMD]("[TAG]", __prefix=__prefix[ATTRS]) }}'
-INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD)
+
+BLOCK_CALL = '{% call(_slot="") [CMD]("[TAG]", [ARGS_PREFIX]=[ARGS_PREFIX][ATTRS]) -%}[CONTENT]{%- endcall %}'
+BLOCK_CALL = BLOCK_CALL.replace("[CMD]", RENDER_CMD).replace("[ARGS_PREFIX]", ARGS_PREFIX)
+
+INLINE_CALL = '{{ [CMD]("[TAG]", [ARGS_PREFIX]=[ARGS_PREFIX][ATTRS]) }}'
+INLINE_CALL = INLINE_CALL.replace("[CMD]", RENDER_CMD).replace("[ARGS_PREFIX]", ARGS_PREFIX)
 
 re_raw = r"\{%-?\s*raw\s*-?%\}.+?\{%-?\s*endraw\s*-?%\}"
 RX_RAW = re.compile(re_raw, re.DOTALL)
 
-re_tag_name = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
+re_tag_prefix = r"([0-9A-Za-z_-]+\:)?"
+re_tag_path = r"([0-9A-Za-z_-]+\.)*[A-Z][0-9A-Za-z_-]*"
+re_tag_name = rf"{re_tag_prefix}{re_tag_path}"
 re_raw_attrs = r"(?P<attrs>[^\>]*)"
 re_tag = rf"<(?P<tag>{re_tag_name}){re_raw_attrs}\s*/?>"
 RX_TAG = re.compile(re_tag)

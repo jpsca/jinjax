@@ -12,7 +12,7 @@ from .exceptions import (
     InvalidArgument,
     MissingRequiredArgument,
 )
-from .utils import get_url_prefix
+from .utils import ARGS_PREFIX, get_url_prefix
 
 
 if t.TYPE_CHECKING:
@@ -254,6 +254,7 @@ class Component:
 
     def render(self, **kwargs):
         assert self.tmpl, f"Component {self.name} has no template"
+        kwargs.setdefault(ARGS_PREFIX, self.prefix)
         html = self.tmpl.render(**kwargs).strip()
         return Markup(html)
 
