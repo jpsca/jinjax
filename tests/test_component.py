@@ -1,3 +1,7 @@
+"""
+JinjaX
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
 import pytest
 
 from jinjax import Component, DuplicateDefDeclaration, InvalidArgument

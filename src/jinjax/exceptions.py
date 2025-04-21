@@ -1,3 +1,8 @@
+"""
+JinjaX
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
+
 class ComponentNotFound(Exception):
     """
     Raised when JinjaX can't find a component by name in none of the

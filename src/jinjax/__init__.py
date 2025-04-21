@@ -1,3 +1,7 @@
+"""
+JinjaX
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
 from . import utils  # noqa
 from .catalog import Catalog
 from .component import Component

@@ -1,3 +1,7 @@
+"""
+JinjaX Benchmark
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
 import timeit
 from pathlib import Path
 

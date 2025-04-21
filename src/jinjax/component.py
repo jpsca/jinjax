@@ -1,3 +1,7 @@
+"""
+JinjaX
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
 import ast
 import re
 import typing as t

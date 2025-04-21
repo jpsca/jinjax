@@ -1,3 +1,7 @@
+"""
+JinjaX Benchmark
+Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
+"""
 from pathlib import Path
 
 from jinjax import Catalog, Component
