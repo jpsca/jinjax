@@ -594,7 +594,7 @@ class Catalog:
                 html_js.append(f'<script type="module" src="{full_url}"></script>')
                 rendered_urls.add(full_url)
 
-        return Markup("\n".join(html_css + html_js))
+        return Markup("\n".join(sorted(html_css) + sorted(html_js)))
 
     # Private
 

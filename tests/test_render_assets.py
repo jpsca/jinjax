@@ -61,14 +61,14 @@ def test_render_assets(catalog, folder, autoescape, undefined):
     assert (
         """
 <html>
-<link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
 <link rel="stylesheet" href="http://example.com/super.css">
-<script type="module" src="https://somewhere.com/blabla.js"></script>
-<script type="module" src="/static/components/shared.js"></script>
+<link rel="stylesheet" href="https://somewhere.com/style.css">
 <script type="module" src="/static/components/card.js"></script>
 <script type="module" src="/static/components/greeting.js"></script>
+<script type="module" src="/static/components/shared.js"></script>
+<script type="module" src="https://somewhere.com/blabla.js"></script>
 <section class="card">
 <div class="greeting [&_a]:flex">Hello</div>
 <button type="button">Close</button>
@@ -199,8 +199,8 @@ def test_auto_load_assets_with_same_name(catalog, folder, autoescape, undefined)
 <link rel="stylesheet" href="/static/components/Page.css">
 <link rel="stylesheet" href="/static/components/common/Form.css">
 <script type="module" src="/static/components/Page.js"></script>
-<script type="module" src="/static/components/shared.js"></script>
 <script type="module" src="/static/components/common/Form.js"></script>
+<script type="module" src="/static/components/shared.js"></script>
 <form></form>
 """.strip()
 
