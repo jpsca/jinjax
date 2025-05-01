@@ -738,7 +738,7 @@ class Catalog:
                         continue
 
                     # Allow for index.jinja files in subfolders
-                    # to be used as the folder name
+                    # to be called with just the folder name
                     if relfolder in (name, kebab_name):
                         filename = f"index{file_ext}"
                         fullpath = Path(curr_folder) / filename
