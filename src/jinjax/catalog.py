@@ -44,6 +44,8 @@ collected_css: dict[int, ContextVar[list[str]]] = {}
 collected_js: dict[int, ContextVar[list[str]]] = {}
 tmpl_globals: dict[int, ContextVar[dict[str, t.Any]]] = {}
 
+RelPath = Path
+
 
 class CallerWrapper(UserString):
     _content = ""
@@ -716,7 +718,7 @@ class Catalog:
         prefix: str,
         name: str,
         file_ext: str,
-    ) -> tuple[Path, Path] | None:
+    ) -> tuple[Path, RelPath] | None:
         root_paths = self.prefixes[prefix].searchpath
 
         name = name.replace(DELIMITER, SLASH)
@@ -728,11 +730,21 @@ class Catalog:
                 root_path, topdown=False, followlinks=True
             ):
                 relfolder = os.path.relpath(curr_folder, root_path).strip(".")
-                if relfolder and not (
-                    name.startswith(relfolder)
-                    or kebab_name.startswith(relfolder)
-                ):
-                    continue
+                if relfolder:
+                    if not (
+                        name.startswith(relfolder)
+                        or kebab_name.startswith(relfolder)
+                    ):
+                        continue
+
+                    # Allow for index.jinja files in subfolders
+                    # to be used as the folder name
+                    if relfolder in (name, kebab_name):
+                        filename = f"index{file_ext}"
+                        fullpath = Path(curr_folder) / filename
+                        if fullpath.is_file():
+                            relpath = Path(f"{relfolder}/{filename}")
+                            return fullpath, relpath
 
                 for filename in files:
                     if relfolder:
@@ -741,7 +753,10 @@ class Catalog:
                         filepath = filename
 
                     if filepath.startswith(dot_names) and filepath.endswith(file_ext):
-                        return Path(curr_folder) / filename, Path(filepath)
+                        fullpath = Path(curr_folder) / filename
+                        relpath = Path(filepath)
+                        if fullpath.is_file():
+                            return fullpath, relpath
 
     def _render_attrs(self, attrs: dict[str, t.Any]) -> Markup:
         html_attrs = []

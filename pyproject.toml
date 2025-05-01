@@ -45,7 +45,7 @@ documentation = "https://jinjax.scaletti.dev/guides/"
 [dependency-groups]
 dev = [
     "ipdb >= 0.13",
-    "pyright >= 1.1",
+    "pyright >= 1.1.400",
     "pre-commit",
     "ruff >= 0.2.0",
     "tox-uv",

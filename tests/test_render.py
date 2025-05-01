@@ -249,6 +249,24 @@ def test_subfolder(catalog, folder, autoescape, undefined):
 
 @pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
 @pytest.mark.parametrize("autoescape", [True, False])
+def test_subfolder_index_file(catalog, folder, autoescape, undefined):
+    """Components named "index.jinja" in subfolders can be called
+    using the subfolder names.
+    """
+    catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
+
+    sub = folder / "tab"
+    sub.mkdir()
+    (sub / "index.jinja").write_text("Hello")
+    (sub / "panel.jinja").write_text("World")
+
+    assert catalog.render("Tab") == Markup("Hello")
+    assert catalog.render("Tab.Panel") == Markup("World")
+
+
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
+@pytest.mark.parametrize("autoescape", [True, False])
 def test_default_attr(catalog, folder, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
     catalog.jinja_env.undefined = undefined
