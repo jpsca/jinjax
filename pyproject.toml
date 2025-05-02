@@ -41,6 +41,8 @@ homepage = "https://jinjax.scaletti.dev/"
 repository = "https://github.com/jpsca/jinjax"
 documentation = "https://jinjax.scaletti.dev/guides/"
 
+[tool.uv.sources]
+claydocs = { path = "../claydocs", editable = true }
 
 [dependency-groups]
 dev = [
@@ -55,6 +57,10 @@ test = [
     "pytest-cov",
     "ruff > 0.3",
     "whitenoise >= 5.3",
+]
+docs = [
+    "claydocs",
+    "whitenoise ~= 6.9.0"
 ]
 
 
