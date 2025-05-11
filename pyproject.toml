@@ -34,15 +34,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-whitenoise = ["whitenoise"]
+whitenoise = ["whitenoise ~= 6.9.0"]
 
 [project.urls]
 homepage = "https://jinjax.scaletti.dev/"
 repository = "https://github.com/jpsca/jinjax"
 documentation = "https://jinjax.scaletti.dev/guides/"
-
-[tool.uv.sources]
-claydocs = { path = "../claydocs", editable = true }
 
 [dependency-groups]
 dev = [
@@ -58,15 +55,10 @@ test = [
     "ruff > 0.3",
     "whitenoise >= 5.3",
 ]
-docs = [
-    "claydocs",
-    "whitenoise ~= 6.9.0"
-]
 
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
 
 [tool.coverage.run]
 branch = true
