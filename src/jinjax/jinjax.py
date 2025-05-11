@@ -126,12 +126,12 @@ class JinjaX(Extension):
         return f"{source[:start]}{repl}{source[end:]}"
 
     def _parse_opening_tag(self, source: str, start: int) -> tuple[str, int]:
-        max = len(source)
+        eof = len(source)
         in_single_quotes = in_double_quotes = in_braces = False   # dentro de '…'  /  "…"
         i = start
         end = -1
 
-        while i < max:
+        while i < eof:
             ch = source[i]
             ch2 = source[i:i + 2]
             # print(ch, ch2, in_single_quotes, in_double_quotes, in_braces)
