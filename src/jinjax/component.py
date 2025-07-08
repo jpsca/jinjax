@@ -133,7 +133,7 @@ class Component:
 
         self.path = path
         self.relpath = relpath
-        self.root_path = Path(str(path).removesuffix(str(relpath))) if path else None
+        self.root_path = self._get_root_path()
         self.mtime = mtime
         self.tmpl = tmpl
 
@@ -152,37 +152,19 @@ class Component:
                 return None
 
         self = cls(name=cache["name"])
-        self.prefix = cache["prefix"]
-        self.url_prefix = cache["url_prefix"]
-        self.required = cache["required"]
-        self.optional = cache["optional"]
-        self.css = cache["css"]
-        self.js = cache["js"]
-        self.path = path
-        self.mtime = cache["mtime"]
-        self.tmpl = cache["tmpl"]
+        for key in self.__slots__:
+            setattr(self, key, cache[key])
 
-        if self.tmpl and globals:
+        if self.tmpl:
             # Create a copy of the globals dictionary to ensure thread safety
             globals_copy = {**self.tmpl.globals}
-            globals_copy.update(globals)
+            globals_copy.update(globals or {})
             self.tmpl.globals = globals_copy
 
         return self
 
     def serialize(self) -> dict[str, t.Any]:
-        return {
-            "name": self.name,
-            "prefix": self.prefix,
-            "url_prefix": self.url_prefix,
-            "required": self.required,
-            "optional": self.optional,
-            "css": self.css,
-            "js": self.js,
-            "path": self.path,
-            "mtime": self.mtime,
-            "tmpl": self.tmpl,
-        }
+        return {k: getattr(self, k) for k in self.__slots__}
 
     def load_metadata(self, source: str) -> None:
         match = RX_META_HEADER.match(source)
@@ -279,3 +261,13 @@ class Component:
 
     def __repr__(self) -> str:
         return f'<Component "{self.name}">'
+
+    def _get_root_path(self) -> Path | None:
+        """Get the root path of the component."""
+        if self.path is None or self.relpath is None:
+            return None
+        suffix = str(self.relpath.as_posix())
+        if self.url_prefix:
+            suffix = f"{self.url_prefix}{suffix}"
+
+        return Path(str(self.path).removesuffix(str(suffix)))

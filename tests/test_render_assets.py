@@ -139,8 +139,19 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
 
     subfolder = folder / "sub"
     subfolder.mkdir()
+    prefixed = folder/ "ui"
+    prefixed.mkdir()
+
+    catalog.add_folder(prefixed, prefix="ui")
+
     (folder / "app.css").write_text("...")
     (subfolder / "sub.css").write_text("...")
+    (prefixed / "button.css").write_text("...")
+
+    (prefixed / "Button.jinja").write_text("""
+{#css button.css #}
+<button class="btn">{{ content }}</button>
+""")
 
     (folder / "Layout.jinja").write_text("""
 <html>
@@ -150,9 +161,9 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
 """)
 
     (folder / "Page.jinja").write_text("""
-{#css app.css, sub/sub.css, http://example.com/super.css #}
+{#css app.css, sub/sub.css, http://example.com/external.css #}
 {#js app.js #}
-<Layout>Hi</Layout>
+<Layout><ui:Button>Hi</ui:Button></Layout>
 """)
 
     catalog.fingerprint = True
@@ -163,11 +174,12 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
     assert 'src="/static/components/app.js"' in html
 
     # external URLs are not fingerprinted
-    assert 'href="http://example.com/super.css' in html
+    assert 'href="http://example.com/external.css' in html
 
     # fingerprinted assets
     assert 'href="/static/components/sub/sub-' in html
     assert 'href="/static/components/app-' in html
+    assert 'href="/static/components/ui/button-' in html
 
 
 @pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])

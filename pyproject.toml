@@ -4,7 +4,7 @@ requires = ["setuptools"]
 
 [project]
 name = "jinjax"
-version = "0.59"
+version = "0.60"
 description = "Replace your HTML templates with Python server-Side components"
 authors = [
     {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
