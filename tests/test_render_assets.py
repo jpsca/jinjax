@@ -137,6 +137,11 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
     catalog.jinja_env.autoescape = autoescape
     catalog.jinja_env.undefined = undefined
 
+    subfolder = folder / "sub"
+    subfolder.mkdir()
+    (folder / "app.css").write_text("...")
+    (subfolder / "sub.css").write_text("...")
+
     (folder / "Layout.jinja").write_text("""
 <html>
 {{ catalog.render_assets() }}
@@ -145,20 +150,24 @@ def test_fingerprint_assets(catalog, folder: Path, autoescape, undefined):
 """)
 
     (folder / "Page.jinja").write_text("""
-{#css app.css, http://example.com/super.css #}
+{#css app.css, sub/sub.css, http://example.com/super.css #}
 {#js app.js #}
 <Layout>Hi</Layout>
 """)
-
-    (folder / "app.css").write_text("...")
 
     catalog.fingerprint = True
     html = catalog.render("Page", message="Hello")
     print(html)
 
+    # "app.js" doesn't exists, so it cannot be fingerprinted
     assert 'src="/static/components/app.js"' in html
-    assert 'href="/static/components/app-' in html
+
+    # external URLs are not fingerprinted
     assert 'href="http://example.com/super.css' in html
+
+    # fingerprinted assets
+    assert 'href="/static/components/sub/sub-' in html
+    assert 'href="/static/components/app-' in html
 
 
 @pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])

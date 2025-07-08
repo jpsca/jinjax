@@ -78,9 +78,23 @@ class Component:
         "js",
         "path",
         "relpath",
+        "root_path",
         "mtime",
         "tmpl",
     )
+
+    name: str
+    prefix: str
+    url_prefix: str
+    required: list[str]
+    optional: dict[str, t.Any]
+    css: list[str]
+    js: list[str]
+    path: Path | None
+    relpath: Path | None
+    root_path: Path | None
+    mtime: float
+    tmpl: "Template | None"
 
     def __init__(
         self,
@@ -97,10 +111,10 @@ class Component:
         self.name = name
         self.prefix = prefix
         self.url_prefix = url_prefix or get_url_prefix(prefix)
-        self.required: list[str] = []
-        self.optional: dict[str, t.Any] = {}
-        self.css: list[str] = []
-        self.js: list[str] = []
+        self.required = []
+        self.optional = {}
+        self.css = []
+        self.js = []
 
         if path is not None:
             source = source or path.read_text()
@@ -119,6 +133,7 @@ class Component:
 
         self.path = path
         self.relpath = relpath
+        self.root_path = Path(str(path).removesuffix(str(relpath))) if path else None
         self.mtime = mtime
         self.tmpl = tmpl
 
@@ -147,9 +162,9 @@ class Component:
         self.mtime = cache["mtime"]
         self.tmpl = cache["tmpl"]
 
-        if globals:
+        if self.tmpl and globals:
             # Create a copy of the globals dictionary to ensure thread safety
-            globals_copy = self.tmpl.globals.copy()
+            globals_copy = {**self.tmpl.globals}
             globals_copy.update(globals)
             self.tmpl.globals = globals_copy
 

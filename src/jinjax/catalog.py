@@ -447,7 +447,7 @@ class Catalog:
         attrs = kw.pop("_attrs", kw.pop("__attrs", None)) or {}
 
         component = self._get_component(__name, **kw)
-        root_path = component.path.parent if component.path else None
+        root_path = component.root_path
 
         # Get current assets lists
         css_list = self.collected_css
@@ -557,10 +557,10 @@ class Catalog:
         """
         file_ext = file_ext or self.file_ext
         prefix, name = self._split_name(cname)
-        paths = self._get_component_path(prefix, name, file_ext=file_ext)
-        if not paths:
+        path, _relpath = self._get_component_path(prefix, name, file_ext=file_ext)
+        if not path:
             raise ComponentNotFound(cname, file_ext)
-        return paths[0].read_text()
+        return path.read_text()
 
     def render_assets(self) -> str:
         """
@@ -695,10 +695,9 @@ class Catalog:
         self._cache[key] = component.serialize()
 
     def _get_from_file(self, *, prefix: str, name: str, file_ext: str) -> Component | None:
-        paths = self._get_component_path(prefix, name, file_ext=file_ext)
-        if not paths:
+        path, relpath = self._get_component_path(prefix, name, file_ext=file_ext)
+        if path is None or relpath is None:
             return
-        path, relpath = paths
         component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
         component.tmpl = self.jinja_env.get_template(str(relpath.as_posix()), globals=self.tmpl_globals)
         return component
@@ -718,7 +717,7 @@ class Catalog:
         prefix: str,
         name: str,
         file_ext: str,
-    ) -> tuple[Path, RelPath] | None:
+    ) -> tuple[Path, RelPath] | tuple[None, None]:
         root_paths = self.prefixes[prefix].searchpath
 
         name = name.replace(DELIMITER, SLASH)
@@ -757,6 +756,7 @@ class Catalog:
                         relpath = Path(filepath)
                         if fullpath.is_file():
                             return fullpath, relpath
+        return None, None
 
     def _render_attrs(self, attrs: dict[str, t.Any]) -> Markup:
         html_attrs = []
