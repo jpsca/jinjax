@@ -155,6 +155,9 @@ class Catalog:
         "use_cache",
         "_cache",
         "_key",
+        # placeholders for delayed asset injection
+        "_assets_placeholder",
+        "_emit_assets_later",
     )
 
     def __init__(
@@ -211,6 +214,9 @@ class Catalog:
 
         self._cache: dict[str, dict] = {}
         self._key = id(self)
+        # prepare delayed asset injection: placeholder and flag
+        self._assets_placeholder = f"@@jinjax_assets_{self._key}@@"
+        self._emit_assets_later = False
 
     def __del__(self) -> None:
         # Safely clean up context variables associated with this catalog
@@ -425,7 +431,11 @@ class Catalog:
         self.collected_css = []
         self.collected_js = []
         self.tmpl_globals = kw.pop("_globals", kw.pop("__globals", None)) or {}
-        return self.irender(__name, caller=caller, **kw)
+        out = self.irender(__name, caller=caller, **kw)
+        if self._emit_assets_later:
+            # inject full assets bundle in place of the placeholder
+            out = self._finalize_assets(out)
+        return out
 
     def irender(
         self,
@@ -564,16 +574,24 @@ class Catalog:
 
     def render_assets(self) -> str:
         """
-        Uses the `collected_css` and `collected_js` lists to generate
-        an HTML fragment with `<link rel="stylesheet" href="{url}">`
-        and `<script type="module" src="{url}"></script>` tags.
+        Placeholder for assets injection. During rendering this emits a
+        unique token; after the full template is rendered, the token is
+        replaced with all collected CSS/JS asset tags, regardless of
+        ordering in the template.
+        """
+        self._emit_assets_later = True
+        return self._assets_placeholder
+
+    def _format_collected_assets(self) -> Markup:
+        """
+        Internal helper to format collected_css and collected_js into
+        HTML <link> and <script> tags.
 
         The URLs are prepended by `root_url` unless they begin with
         "http://" or "https://".
         """
-        html_css = []
-        # Use a set to track rendered URLs to avoid duplicates
-        rendered_urls = set()
+        html_css: list[str] = []
+        rendered_urls: set[str] = set()
 
         for url in self.collected_css:
             if not url.startswith(("http://", "https://")):
@@ -585,7 +603,7 @@ class Catalog:
                 html_css.append(f'<link rel="stylesheet" href="{full_url}">')
                 rendered_urls.add(full_url)
 
-        html_js = []
+        html_js: list[str] = []
         for url in self.collected_js:
             if not url.startswith(("http://", "https://")):
                 full_url = f"{self.root_url}{url}"
@@ -597,6 +615,19 @@ class Catalog:
                 rendered_urls.add(full_url)
 
         return Markup("\n".join(html_css + html_js))
+
+    def _finalize_assets(self, html: str) -> str:
+        """
+        Replace the placeholder token in the rendered HTML with the fully
+        formatted asset tags, then reset asset state for the next render.
+        """
+        # format assets fragment and reset state
+        assets_html = str(self._format_collected_assets())
+        self._emit_assets_later = False
+        self.collected_css = []
+        self.collected_js = []
+        # coerce to plain str before replace to avoid Markup.replace escaping
+        return str(html).replace(self._assets_placeholder, assets_html)
 
     # Private
 
