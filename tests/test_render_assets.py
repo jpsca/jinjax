@@ -248,3 +248,38 @@ def test_auto_load_assets_for_kebab_cased_names(catalog, folder, autoescape, und
 
     assert  "/static/components/my-component.css" in html
     assert  "/static/components/my-component.js" in html
+
+
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
+@pytest.mark.parametrize("autoescape", [True, False])
+def test_render_assets_before_component_usage_injects_assets(catalog, folder, autoescape, undefined):
+    """
+    Ensure that calling render_assets() before any component usage still
+    collects and renders the component assets, irrespective of ordering
+    in the template.
+    """
+    catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
+
+    # Define a simple component with associated JS asset
+    (folder / "TestComponent.jinja").write_text("<div>Test</div>")
+    (folder / "TestComponent.js").touch()
+
+    # Template invokes render_assets() before using the component
+    (folder / "IssueExample.jinja").write_text(
+        """
+<!DOCTYPE html>
+<html>
+<head>
+    {{ catalog.render_assets() }}
+</head>
+<body>
+    <TestComponent />
+</body>
+</html>
+"""
+    )
+
+    html = catalog.render("IssueExample")
+    # Assets are injected even though render_assets() appears before the component
+    assert "/static/components/TestComponent.js" in html
