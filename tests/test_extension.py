@@ -1,7 +1,8 @@
 import jinja2
 import pytest
+from markupsafe import Markup
 
-from jinjax import JinjaX
+from jinjax import Catalog, JinjaX
 
 
 VALID_DATA = (
@@ -142,3 +143,33 @@ def test_process_nested_Same_tag():
     result = jinjax.process_tags(source)
     print(result)
     assert result.strip() == expected.strip()
+
+
+def test_finalizing_assets(folder):
+    # Test that finalizing assets works as expected when reusing Jinja env
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(folder))
+    env.add_extension(JinjaX)
+
+    catalog = Catalog(jinja_env=env)
+    catalog.add_folder(folder)
+
+    (folder / "Parent.jinja").write_text(
+        """
+{{ catalog.render_assets() }}
+{{ content }}""".strip()
+    )
+    (folder / "Comp1.jinja").write_text(
+        """
+{#css "a.css" #}
+{#js "a.js" #}
+<Parent />""".strip()
+    )
+    (folder / "index.html").write_text("<Comp1 />".strip())
+
+    expected = """
+<link rel="stylesheet" href="/static/components/a.css">
+<script type="module" src="/static/components/a.js"></script>""".strip()
+
+    template = env.get_template("index.html")
+    html = template.render()
+    assert html == Markup(expected)
