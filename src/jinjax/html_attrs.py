@@ -2,7 +2,6 @@
 JinjaX
 Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
 """
-import re
 import typing as t
 from collections import UserString
 from functools import cached_property
@@ -13,10 +12,6 @@ from markupsafe import Markup
 CLASS_KEY = "class"
 CLASS_ALT_KEY = "classes"
 CLASS_KEYS = (CLASS_KEY, CLASS_ALT_KEY)
-
-
-def split(ssl: str) -> list[str]:
-    return re.split(r"\s+", ssl.strip())
 
 
 def quote(text: str) -> str:
@@ -47,29 +42,32 @@ class LazyString(UserString):
 
 
 class HTMLAttrs:
-    """
-    Contains all the HTML attributes/properties (a property is an
-    attribute without a value) passed to a component but that weren't
-    in the declared attributes list.
-
-    For HTML classes you can use the name "classes" (instead of "class")
-    if you need to.
-
-    **NOTE**: The string values passed to this class, are not cast to `str` until
-    the string representation is actually needed, for example when
-    `attrs.render()` is invoked.
-
-    """
+    __classes: dict[str, int]
+    __attributes: dict[str, str | LazyString]
+    __properties: set[str]
 
     def __init__(self, attrs: "dict[str, t.Any| LazyString]") -> None:
+        """
+        Contains all the HTML attributes/properties (a property is an
+        attribute without a value) passed to a component but that weren't
+        in the declared attributes list.
+
+        For HTML classes you can use the name "classes" (instead of "class")
+        if you need to.
+
+        **NOTE**: The string values passed to this class, are not cast to `str` until
+        the string representation is actually needed, for example when
+        `attrs.render()` is invoked.
+
+        """
         attributes: "dict[str, str | LazyString]" = {}
         properties: set[str] = set()
 
-        class_names = split(" ".join([
+        class_names = (" ".join([
             str(attrs.pop(CLASS_KEY, "")),
             str(attrs.get(CLASS_ALT_KEY, "")),
-        ]))
-        self.__classes = {name for name in class_names if name}
+        ])).strip().split()
+        self.__classes = {name: 1 for name in class_names if name}
 
         for name, value in attrs.items():
             if name.startswith("__"):
@@ -86,7 +84,7 @@ class HTMLAttrs:
     @property
     def classes(self) -> str:
         """
-        All the HTML classes alphabetically sorted and separated by a space.
+        All the HTML classes separated by a space.
 
         Example:
 
@@ -94,11 +92,11 @@ class HTMLAttrs:
             attrs = HTMLAttrs({"class": "italic bold bg-blue wide abcde"})
             attrs.set(class="bold text-white")
             print(attrs.classes)
-            abcde bg-blue bold italic text-white wide
+            italic bold bg-blue wide abcde text-white
             ```
 
         """
-        return " ".join(sorted((self.__classes)))
+        return " ".join(self.__classes.keys())
 
     @property
     def as_dict(self) -> dict[str, t.Any]:
@@ -119,7 +117,7 @@ class HTMLAttrs:
             attrs.as_dict
             {
                 "aria_label": "hello",
-                "class": "ipsum lorem",
+                "class": "lorem ipsum",
                 "id": "world",
                 "data_test": True,
                 "hidden": True
@@ -173,7 +171,7 @@ class HTMLAttrs:
             attrs = HTMLAttrs({"class": "b c a"})
             attrs.set(class="c b f d e")
             attrs.as_dict
-            {"class": "a b c d e f"}
+            {"class": "b c a f d e"}
             ```
 
         """
@@ -235,8 +233,8 @@ class HTMLAttrs:
 
         """
         for names in values:
-            for name in split(names):
-                self.__classes.add(name)
+            for name in names.strip().split():
+                self.__classes[name] = 1
 
     def remove_class(self, *names: str) -> None:
         """
@@ -253,7 +251,7 @@ class HTMLAttrs:
 
         """
         for name in names:
-            self.__classes.remove(name)
+            self.__classes.pop(name, None)
 
     def get(self, name: str, default: t.Any = None) -> t.Any:
         """
@@ -347,7 +345,7 @@ class HTMLAttrs:
         Removes an attribute or property.
         """
         if name in CLASS_KEYS:
-            self.__classes = set()
+            self.__classes = {}
         if name in self.__attributes:
             del self.__attributes[name]
         if name in self.__properties:

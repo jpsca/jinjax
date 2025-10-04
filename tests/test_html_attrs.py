@@ -19,8 +19,8 @@ def test_parse_initial_attrs():
             "foobar": None,
         }
     )
-    assert attrs.classes == "a1 b2 c3 z4"
-    assert attrs.get("class") == "a1 b2 c3 z4"
+    assert attrs.classes == "z4 c3 a1 b2"
+    assert attrs.get("class") == "z4 c3 a1 b2"
     assert attrs.get("data-position") == "top"
     assert attrs.get("data_position") == "top"
     assert attrs.get("title") == "hi"
@@ -37,6 +37,7 @@ def test_parse_initial_attrs():
     assert attrs.get("data-position") is None
     assert attrs.get("data_position") is None
 
+
 def test_getattr():
     attrs = HTMLAttrs(
         {
@@ -45,7 +46,7 @@ def test_getattr():
             "open": True,
         }
     )
-    assert attrs["class"] == "a1 b2 c3 z4"
+    assert attrs["class"] == "z4 c3 a1 b2"
     assert attrs["title"] == "hi"
     assert attrs["open"] is True
     assert attrs["lorem"] is None
@@ -59,7 +60,7 @@ def test_deltattr():
             "open": True,
         }
     )
-    assert attrs["class"] == "a1 b2 c3 z4"
+    assert attrs["class"] == "z4 c3 a1 b2"
     del attrs["title"]
     assert attrs["title"] is None
 
@@ -74,7 +75,7 @@ def test_render():
             "disabled": False,
         }
     )
-    assert 'class="a1 b2 c3 z4" data-position="top" title="hi" open' == attrs.render()
+    assert 'class="z4 c3 a1 b2" data-position="top" title="hi" open' == attrs.render()
 
 
 def test_set():
@@ -90,15 +91,15 @@ def test_set():
 def test_class_management():
     attrs = HTMLAttrs(
         {
-            "class": "z4 c3 a1 z4 b2",
+            "class": "button | z4 c3  a1  z4  b2",
         }
     )
     attrs.set(classes="lorem bipsum lorem a1")
 
-    assert attrs.classes == "a1 b2 bipsum c3 lorem z4"
+    assert attrs.classes == "button | z4 c3 a1 b2 lorem bipsum"
 
-    attrs.remove_class("bipsum")
-    assert attrs.classes == "a1 b2 c3 lorem z4"
+    attrs.remove_class("lorem")
+    assert attrs.classes == "button | z4 c3 a1 b2 bipsum"
 
     attrs.set(classes=None)
     attrs.set(classes="meh")
@@ -131,7 +132,7 @@ def test_as_dict():
         }
     )
     assert attrs.as_dict == {
-        "class": "a1 b2 c3 z4",
+        "class": "z4 c3 a1 b2",
         "data-position": "top",
         "title": "hi",
         "open": True,
@@ -155,7 +156,7 @@ def test_as_dict_no_classes():
 
 def test_render_attrs_lik_set():
     attrs = HTMLAttrs({"class": "lorem"})
-    expected = 'class="ipsum lorem" data-position="top" title="hi" open'
+    expected = 'class="lorem ipsum" data-position="top" title="hi" open'
     result = attrs.render(
         title="hi",
         data_position="top",
@@ -168,7 +169,7 @@ def test_render_attrs_lik_set():
 
 def test_do_not_escape_tailwind_syntax():
     attrs = HTMLAttrs({"class": "lorem [&_a]:flex"})
-    expected = 'class="[&_a]:flex ipsum lorem" title="Hi&Stuff"'
+    expected = 'class="lorem [&_a]:flex ipsum" title="Hi&Stuff"'
     result = attrs.render(
         **{
             "title": "Hi&Stuff",

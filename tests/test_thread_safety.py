@@ -150,8 +150,8 @@ def test_same_thread_assets_independence(catalog, folder):
     print("Catalog2 in collected_css:", catalog2._key in jinjax.catalog.collected_css)
     print("collected_css keys:", list(jinjax.catalog.collected_css.keys()))
 
-    # `irender` instead of `render` so the assets are not cleared
-    html2 = catalog2.irender("Comp2")
+    # Render second component with second catalog
+    html2 = catalog2.render("Comp2")
 
     # Check context variables after second render
     print("\nAfter second render:")
