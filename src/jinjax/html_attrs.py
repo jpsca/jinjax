@@ -42,7 +42,7 @@ class LazyString(UserString):
 
 
 class HTMLAttrs:
-    __classes: dict[str, int]
+    __classes: tuple[str, ...]
     __attributes: dict[str, str | LazyString]
     __properties: set[str]
 
@@ -67,7 +67,11 @@ class HTMLAttrs:
             str(attrs.pop(CLASS_KEY, "")),
             str(attrs.get(CLASS_ALT_KEY, "")),
         ])).strip().split()
-        self.__classes = {name: 1 for name in class_names if name}
+        classes = []
+        for name in class_names:
+            if name and name not in classes:
+                classes.append(name)
+        self.__classes = tuple(classes)
 
         for name, value in attrs.items():
             if name.startswith("__"):
@@ -96,7 +100,7 @@ class HTMLAttrs:
             ```
 
         """
-        return " ".join(self.__classes.keys())
+        return " ".join(self.__classes)
 
     @property
     def as_dict(self) -> dict[str, t.Any]:
@@ -220,13 +224,14 @@ class HTMLAttrs:
 
     def add_class(self, *values: str) -> None:
         """
-        Adds one or more classes to the list of classes, if not already present.
+        Adds one or more classes to the end of the list of classes,
+        if not already present.
 
         Example:
 
             ```python
             attrs = HTMLAttrs({"class": "a b c"})
-            attrs.add_class("c", "d")
+            attrs.add_class("c d")
             attrs.as_dict
             {"class": "a b c d"}
             ```
@@ -234,7 +239,32 @@ class HTMLAttrs:
         """
         for names in values:
             for name in names.strip().split():
-                self.__classes[name] = 1
+                if name not in self.__classes:
+                    self.__classes += (name,)
+
+    def prepend_class(self, *values: str) -> None:
+        """
+        Adds one or more classes to the beginning of the list of classes,
+        if not already present.
+
+        Example:
+
+            ```python
+            attrs = HTMLAttrs({"class": "a b c"})
+            attrs.add_class("c d |")
+            attrs.as_dict
+            {"class": "d | a b c"}
+            ```
+
+        """
+        new_classes = [
+            name
+            for names in values
+            for name in names.strip().split()
+            if name not in self.__classes
+        ]
+
+        self.__classes = tuple(new_classes) + self.__classes
 
     def remove_class(self, *names: str) -> None:
         """
@@ -250,8 +280,7 @@ class HTMLAttrs:
             ```
 
         """
-        for name in names:
-            self.__classes.pop(name, None)
+        self.__classes = tuple(c for c in self.__classes if c not in names)
 
     def get(self, name: str, default: t.Any = None) -> t.Any:
         """
@@ -345,7 +374,7 @@ class HTMLAttrs:
         Removes an attribute or property.
         """
         if name in CLASS_KEYS:
-            self.__classes = {}
+            self.__classes = ()
         if name in self.__attributes:
             del self.__attributes[name]
         if name in self.__properties:

@@ -91,15 +91,18 @@ def test_set():
 def test_class_management():
     attrs = HTMLAttrs(
         {
-            "class": "button | z4 c3  a1  z4  b2",
+            "class": "z4 c3  a1  z4  b2",
         }
     )
     attrs.set(classes="lorem bipsum lorem a1")
 
-    assert attrs.classes == "button | z4 c3 a1 b2 lorem bipsum"
+    assert attrs.classes == "z4 c3 a1 b2 lorem bipsum"
 
     attrs.remove_class("lorem")
-    assert attrs.classes == "button | z4 c3 a1 b2 bipsum"
+    assert attrs.classes == "z4 c3 a1 b2 bipsum"
+
+    attrs.prepend_class("button |", "wat")
+    assert attrs.classes == "button | wat z4 c3 a1 b2 bipsum"
 
     attrs.set(classes=None)
     attrs.set(classes="meh")
