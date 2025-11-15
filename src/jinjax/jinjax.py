@@ -32,7 +32,7 @@ RX_TAG_NAME = re.compile(rf"<(?P<tag>{re_tag_name})(\s|\n|/|>)")
 re_attr_name = r""
 re_equal = r""
 re_attr = r"""
-(?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-]*)
+(?P<name>[a-zA-Z@:$_][a-zA-Z@:$_0-9-.]*)
 (?:
     \s*=\s*
     (?P<value>".*?"|'.*?'|\{\{.*?\}\})

@@ -653,11 +653,11 @@ def test_alpine_sintax(catalog, folder, autoescape, undefined):
 
     (folder / "Greeting.jinja").write_text("""
 {#def message #}
-<button @click="alert('{{ message }}')">Say Hi</button>""")
+<button @click.prevent="alert('{{ message }}')">Say Hi</button>""")
 
     html = catalog.render("Greeting", message="Hello world!")
     print(html)
-    expected = """<button @click="alert('Hello world!')">Say Hi</button>"""
+    expected = """<button @click.prevent="alert('Hello world!')">Say Hi</button>"""
     assert html == Markup(expected)
 
 
@@ -672,12 +672,12 @@ def test_alpine_sintax_in_component(catalog, folder, autoescape, undefined):
     )
 
     (folder / "Greeting.jinja").write_text(
-        """<Button @click="alert('Hello world!')">Say Hi</Button>"""
+        """<Button @click.prevent="alert('Hello world!')">Say Hi</Button>"""
     )
 
     html = catalog.render("Greeting")
     print(html)
-    expected = """<button @click="alert('Hello world!')">Say Hi</button>"""
+    expected = """<button @click.prevent="alert('Hello world!')">Say Hi</button>"""
     assert html == Markup(expected)
 
 
