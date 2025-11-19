@@ -4,7 +4,7 @@ requires = ["setuptools"]
 
 [project]
 name = "jinjax"
-version = "0.61"
+version = "0.62"
 description = "Replace your HTML templates with Python server-Side components"
 authors = [
     {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
@@ -106,10 +106,11 @@ addopts = "--doctest-modules"
 legacy_tox_ini = """
 [tox]
 env_list =
-    3.11
-    3.12
-    3.13
+    pypy
     3.14
+    3.13
+    3.12
+    3.11
 
 [testenv]
 runner = uv-venv-lock-runner
