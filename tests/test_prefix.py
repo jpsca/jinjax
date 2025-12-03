@@ -109,3 +109,17 @@ def test_prefix_namespace_assets(catalog, folder, folder_t, autoescape, undefine
 <link rel="stylesheet" href="/static/components/ui/Title.css">
 prefix
 """.strip())
+
+
+@pytest.mark.parametrize("undefined", [jinja2.Undefined, jinja2.StrictUndefined])
+@pytest.mark.parametrize("autoescape", [True, False])
+def test_allow_dots_in_prefixes(catalog, folder, folder_t, autoescape, undefined):
+    catalog.jinja_env.autoescape = autoescape
+    catalog.jinja_env.undefined = undefined
+    catalog.add_folder(folder_t, prefix="ui.widgets")
+
+    (folder_t / "Title.jinja").write_text("prefix")
+    (folder / "Test.jinja").write_text("<ui.widgets:Title />")
+
+    html = catalog.render("Test")
+    assert html == Markup("prefix")
