@@ -514,7 +514,12 @@ class Catalog:
             ) from exc
 
         args[ARGS_CONTENT] = CallerWrapper(caller=caller, content=content)
-        return component.render(**args)
+
+        out = component.render(**args)
+        if self._emit_assets_later:
+            # inject full assets bundle in place of the placeholder
+            out = self._finalize_assets(out, reset=False)
+        return out
 
     def get_middleware(
         self,
@@ -616,16 +621,17 @@ class Catalog:
 
         return Markup("\n".join(html_css + html_js))
 
-    def _finalize_assets(self, html: str) -> str:
+    def _finalize_assets(self, html: str, reset: bool = True) -> str:
         """
         Replace the placeholder token in the rendered HTML with the fully
         formatted asset tags, then reset asset state for the next render.
         """
         # format assets fragment and reset state
         assets_html = str(self._format_collected_assets())
-        self._emit_assets_later = False
-        self.collected_css = []
-        self.collected_js = []
+        if reset:
+            self._emit_assets_later = False
+            self.collected_css = []
+            self.collected_js = []
         # coerce to plain str before replace to avoid Markup.replace escaping
         return str(html).replace(self._assets_placeholder, assets_html)
 
