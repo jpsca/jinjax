@@ -657,20 +657,17 @@ class Catalog:
 
         if source:
             logger.debug("Rendering from source %s", cname)
-            self.jinja_env.loader = self.prefixes[prefix]
             return self._get_from_source(prefix=prefix, name=name, source=source)
 
         logger.debug("Rendering from cache or file %s", cname)
         get_from = self._get_from_cache if self.use_cache else self._get_from_file
         if caller_prefix:
-            self.jinja_env.loader = self.prefixes[caller_prefix]
             component = get_from(
                 prefix=caller_prefix,
                 name=cname,
                 file_ext=file_ext
             )
         if not component:
-            self.jinja_env.loader = self.prefixes[prefix]
             component = get_from(
                 prefix=prefix,
                 name=name,
@@ -730,7 +727,9 @@ class Catalog:
         if path is None or relpath is None:
             return
         component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
-        component.tmpl = self.jinja_env.get_template(str(relpath.as_posix()), globals=self.tmpl_globals)
+        with open(path) as f:
+            source = f.read()
+            component.tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:
