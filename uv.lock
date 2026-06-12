@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11, <4"
 
 [[package]]
@@ -229,7 +229,7 @@ wheels = [
 
 [[package]]
 name = "jinjax"
-version = "0.63"
+version = "0.64"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
