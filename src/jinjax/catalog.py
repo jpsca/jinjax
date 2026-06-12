@@ -727,9 +727,17 @@ class Catalog:
         if path is None or relpath is None:
             return
         component = Component(name=name, prefix=prefix, path=path, relpath=relpath)
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             source = f.read()
-            component.tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
+        # Compile from source (instead of `jinja_env.get_template`) to avoid
+        # mutating the shared `jinja_env.loader`, which is not thread-safe.
+        # Pass `name`/`filename` so tracebacks and syntax errors point at the
+        # component file instead of an anonymous `<template>`.
+        gs = self.jinja_env.make_globals(self.tmpl_globals)
+        code = self.jinja_env.compile(
+            source, name=str(relpath.as_posix()), filename=str(path)
+        )
+        component.tmpl = self.jinja_env.template_class.from_code(self.jinja_env, code, gs)
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:
