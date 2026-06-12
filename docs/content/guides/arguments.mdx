@@ -186,11 +186,11 @@ are sorted by name and rendered like this:
 <!-- <div class="ipsum" width="42" data-good> -->
 
 <div {{ attrs.render(class="abc", data_good=False, tabindex=0) }}>
-<!-- <div class="abc ipsum" width="42" tabindex="0"> -->
+<!-- <div class="ipsum abc" tabindex="0" width="42"> -->
 ```
 
 <Callout type="warning">
-Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to macros before the page render.
+Using `<Component {{ attrs.render() }}>` to pass the extra arguments to other components **WILL NOT WORK**. That is because the components are translated to function calls before the page render.
 
 You must pass them as the special argument `_attrs`.
 
@@ -249,11 +249,20 @@ becomes the attribute `aria-selected`.
 
 #### `.add_class(name1, name2, ...)`
 
-Adds one or more classes to the list of classes, if not already present.
+Adds one or more classes to the end of the list of classes, if not already present.
 
 ```html+jinja
 {% do attrs.add_class("hidden") %}
 {% do attrs.add_class("active", "animated") %}
+```
+
+#### `.prepend_class(name1, name2, ...)`
+
+Adds one or more classes to the beginning of the list of classes, if not already present.
+
+```html+jinja
+{% do attrs.prepend_class("hidden") %}
+{% do attrs.prepend_class("active", "animated") %}
 ```
 
 #### `.remove_class(name1, name2, ...)`

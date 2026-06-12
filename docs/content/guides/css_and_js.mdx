@@ -25,7 +25,7 @@ In addition to auto-loading assets, the CSS and/or JS of a component can be decl
 
 - The file paths must be relative to the root of your components catalog (e.g., `components/form.js`) or absolute (e.g., `http://example.com/styles.css`).
 - Multiple assets must be separated by commas.
-- Only **one** `{#css ... #}` and **one** `{#js ... #}` tag is allowed per component at most, but both are optional.
+- Both declarations are optional. If a component has more than one `{#css ... #}` or `{#js ... #}` declaration, the lists of files are merged.
 
 ### Global assets
 
@@ -138,7 +138,7 @@ app.wsgi_app = catalog.get_middleware(
 )
 ```
 
-The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css* and *.js* files inside the component(s) folder(s).
+The middleware uses the battle-tested [Whitenoise library](http://whitenoise.evans.io/) and will only respond to the *.css*, *.js*, and *.mjs* files inside the component(s) folder(s).
 You must install it first:
 
 ```bash

@@ -90,6 +90,12 @@ def myview():
   )
 ```
 
+You can also pass extra template globals for that render call with the special `_globals` argument:
+
+```python
+catalog.render("Page", title="Lorem ipsum", _globals={"current_user": user})
+```
+
 In this example, we're rendering a component for the whole page, but you can also render smaller components, even from inside a regular Jinja template by adding the catalog as a global:
 
 ```python
@@ -143,13 +149,19 @@ or afterward.
 catalog.jinja_env.globals.update({ ... })
 catalog.jinja_env.filters.update({ ... })
 catalog.jinja_env.tests.update({ ... })
-catalog.jinja_env.extensions.extend([ ... ])
+catalog.jinja_env.add_extension(MyExtension)
 ```
 
 The ["do" extension](https://jinja.palletsprojects.com/en/3.0.x/extensions/#expression-statement) is enabled by default, so you can write things like:
 
 ```html+jinja
 {% do attrs.set(class="btn", disabled=True) %}
+```
+
+JinjaX also adds a `get_random_id()` global function and an equivalent `random_id` filter to the environment. They are useful for generating unique HTML `id` attributes:
+
+```html+jinja
+{% set uid = get_random_id("dropdown") %}  {# "dropdown-xxxxxxxx..." #}
 ```
 
 ### Reusing an Existing Jinja Environment

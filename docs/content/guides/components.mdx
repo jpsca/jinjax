@@ -78,7 +78,7 @@ If the component is in a subfolder, the name of that folder becomes part of its 
             └─ Form.jinja
 ```
 
-A "components/person/PersonForm.jinja" component is named "Person.Form", meaning the name of the subfolder and the name of the file separated by a dot. This is the full name you use to call it:
+A "components/Person/Form.jinja" component is named "Person.Form", meaning the name of the subfolder and the name of the file separated by a dot. This is the full name you use to call it:
 
 From Python code or a non-component template:
 
@@ -107,6 +107,21 @@ From another component:
 
 - `<PasswordReset.Form> some content </PasswordReset.Form>`, or
 - `<PasswordReset.Form />`
+
+### Index components
+
+If a subfolder contains a component named `index.jinja`, you can call it using just the name of the subfolder:
+
+```
+└ myapp/
+  ├── app.py
+  ├── components/
+        └─ Tab/
+            ├─ index.jinja
+            └─ Panel.jinja
+```
+
+The `Tab/index.jinja` component is named just "Tab", so you call it with `catalog.render("Tab")` or `<Tab> ... </Tab>`. The other components in the subfolder keep their regular names, e.g., `Tab/Panel.jinja` is still named "Tab.Panel".
 
 ## Anatomy of a Component
 
