@@ -10,6 +10,7 @@ from .exceptions import (
     DuplicateDefDeclaration,
     InvalidArgument,
     MissingRequiredArgument,
+    UnknownPrefix,
 )
 from .html_attrs import HTMLAttrs, LazyString
 from .jinjax import JinjaX
@@ -25,4 +26,5 @@ __all__ = [
     "JinjaX",
     "LazyString",
     "MissingRequiredArgument",
+    "UnknownPrefix",
 ]

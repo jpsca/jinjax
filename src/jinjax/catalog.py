@@ -355,7 +355,7 @@ class Catalog:
 
         The prefix acts like a namespace. For example, the name of a
         `Card.jinja` component is, by default, "Card", but under
-        the prefix "common", it becomes "common.Card".
+        the prefix "common", it becomes "common:Card".
 
         An important caveat is that when a component under a prefix calls another
         component without a prefix, the called component is searched **first**
@@ -363,7 +363,7 @@ class Catalog:
 
         The rule for subfolders remains the same: a `components/wrappers/Card.jinja`
         name is, by default, "wrappers.Card", but under the prefix "common", it becomes
-        "common.wrappers.Card".
+        "common:wrappers.Card".
 
         The prefixes take precedence over subfolders, so don't create a subfolder with
         the same name as a prefix because it will be ignored.
@@ -528,11 +528,11 @@ class Catalog:
         **kwargs,
     ) -> "ComponentsMiddleware":
         """
-        Wraps you application with
-        [Withenoise](https://whitenoise.readthedocs.io/),
+        Wraps your application with
+        [Whitenoise](https://whitenoise.readthedocs.io/),
         a static file serving middleware.
 
-        Tecnically not necessary if your components doesn't use static assets
+        Technically not necessary if your components don't use static assets
         or if you serve them by other means. Requires the `whitenoise` python
         package to be installed.
 

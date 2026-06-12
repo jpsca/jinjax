@@ -120,10 +120,10 @@ class HTMLAttrs:
             })
             attrs.as_dict
             {
-                "aria_label": "hello",
+                "aria-label": "hello",
                 "class": "lorem ipsum",
                 "id": "world",
-                "data_test": True,
+                "data-test": True,
                 "hidden": True
             }
             ```
@@ -170,7 +170,7 @@ class HTMLAttrs:
 
             attrs.set(unknown=False, lorem="ipsum", count=42, data_good=True)
             attrs.as_dict
-            {"count":42, "lorem":"ipsum", "data_good": True}
+            {"count":42, "lorem":"ipsum", "data-good": True}
 
             attrs = HTMLAttrs({"class": "b c a"})
             attrs.set(class="c b f d e")
@@ -211,7 +211,9 @@ class HTMLAttrs:
 
         """
         for name, value in kw.items():
-            if value in (True, False, None):
+            # Identity comparison so `0` and `1` are not mistaken
+            # for `False`/`True`
+            if value is True or value is False or value is None:
                 continue
 
             if name in CLASS_KEYS:
@@ -251,7 +253,7 @@ class HTMLAttrs:
 
             ```python
             attrs = HTMLAttrs({"class": "a b c"})
-            attrs.add_class("c d |")
+            attrs.prepend_class("c d |")
             attrs.as_dict
             {"class": "d | a b c"}
             ```
@@ -343,7 +345,7 @@ class HTMLAttrs:
             'class="ipsum" width="42" data-good'
 
             attrs.render(class="abc", data_good=False, tabindex=0)
-            'class="abc ipsum" width="42" tabindex="0"'
+            'class="ipsum abc" tabindex="0" width="42"'
             ```
 
         """

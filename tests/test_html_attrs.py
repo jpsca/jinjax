@@ -124,6 +124,14 @@ def test_setdefault():
     assert 'data-lorem="ipsum" title="hi"' == attrs.render()
 
 
+def test_setdefault_zero_and_one():
+    # `0` and `1` are valid values, they must not be
+    # mistaken for `False`/`True` and skipped
+    attrs = HTMLAttrs({"lorem": "ipsum"})
+    attrs.setdefault(tabindex=0, level=1, lorem="meh")
+    assert 'level="1" lorem="ipsum" tabindex="0"' == attrs.render()
+
+
 def test_as_dict():
     attrs = HTMLAttrs(
         {
