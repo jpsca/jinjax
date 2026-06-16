@@ -67,7 +67,7 @@ class CallerWrapper(UserString):
         return self._content
 
     @property
-    def data(self) -> str:  # type: ignore
+    def data(self) -> str:
         return self.__call__()
 
 
@@ -185,9 +185,9 @@ class Catalog:
 
         env = jinja2.Environment(undefined=jinja2.StrictUndefined)
         extensions = [*(extensions or []), "jinja2.ext.do", JinjaX]
-        globals = globals or {}
-        filters = filters or {}
-        tests = tests or {}
+        globals: dict[str, t.Any] = globals or {}
+        filters: dict[str, t.Any] = filters or {}
+        tests: dict[str, t.Any] = tests or {}
 
         if jinja_env:
             env.extensions.update(jinja_env.extensions)
@@ -195,7 +195,7 @@ class Catalog:
             globals.update(jinja_env.globals)
             filters.update(jinja_env.filters)
             tests.update(jinja_env.tests)
-            jinja_env.globals["catalog"] = self
+            jinja_env.globals["catalog"] = self  # type: ignore
             jinja_env.filters["catalog"] = self
 
         globals["catalog"] = self
@@ -632,8 +632,10 @@ class Catalog:
             self._emit_assets_later = False
             self.collected_css = []
             self.collected_js = []
-        # coerce to plain str before replace to avoid Markup.replace escaping
-        return str(html).replace(self._assets_placeholder, assets_html)
+        # coerce to plain str before replace to avoid Markup.replace escaping,
+        # then re-wrap as Markup so the result is not escaped when inserted
+        # into a parent component under autoescape (issue #140)
+        return Markup(str(html).replace(self._assets_placeholder, assets_html))
 
     # Private
 

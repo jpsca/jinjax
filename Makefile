@@ -18,7 +18,7 @@ coverage:
 
 .PHONY: types
 types:
-	uv run pyright src/jinjax
+	uv run ty check src/jinjax
 
 .PHONY: docs
 docs:

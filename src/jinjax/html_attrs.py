@@ -37,7 +37,7 @@ class LazyString(UserString):
         self._seq = seq
 
     @cached_property
-    def data(self):  # type: ignore
+    def data(self):
         return str(self._seq)
 
 

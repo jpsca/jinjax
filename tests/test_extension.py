@@ -173,3 +173,35 @@ def test_finalizing_assets(folder):
     template = env.get_template("index.html")
     html = template.render()
     assert html == Markup(expected)
+
+
+def test_finalizing_assets_autoescape(folder):
+    # Deferred assets must stay safe Markup so they are not escaped (issue #140)
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(folder), autoescape=True
+    )
+    env.add_extension(JinjaX)
+
+    catalog = Catalog(jinja_env=env)
+    catalog.add_folder(folder)
+
+    (folder / "Parent.jinja").write_text(
+        """
+{{ catalog.render_assets() }}
+{{ content }}""".strip()
+    )
+    (folder / "Comp1.jinja").write_text(
+        """
+{#css "a.css" #}
+{#js "a.js" #}
+<Parent />""".strip()
+    )
+    (folder / "index.html").write_text("<Comp1 />".strip())
+
+    expected = """
+<link rel="stylesheet" href="/static/components/a.css">
+<script type="module" src="/static/components/a.js"></script>""".strip()
+
+    template = env.get_template("index.html")
+    html = template.render()
+    assert html == Markup(expected)
