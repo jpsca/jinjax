@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> <h1><img alt="Jx" src="https://raw.githubusercontent.com/jpsca/jx/main/docs/assets/images/favicon.png" height="36" align="top"> Introducing Jx</h1>
+>
+> **Jx** takes everything that made JinjaX great and makes it better by embracing explicitness, simplicity, and familiar patterns.
+> The result is code that's easier to write, easier to understand, and easier to maintain.
+>
+> [Give Jx a try](https://jx.scaletti.dev/docs/from-jinjax/); I think you'll like it
+----
+
 <h1>
   <img src="https://github.com/jpsca/jinjax/raw/main/docs/jinjax-logo.png" height="50" align="top">
 </h1>
