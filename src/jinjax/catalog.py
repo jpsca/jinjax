@@ -692,8 +692,9 @@ class Catalog:
         name: str,
         source: str,
     ) -> Component:
-        tmpl = self.jinja_env.from_string(source, globals=self.tmpl_globals)
+        tmpl = self.jinja_env.from_string(source)
         component = Component(prefix=prefix, name=name, source=source, tmpl=tmpl)
+        component.tmpl_globals = self.tmpl_globals
         return component
 
     def _get_from_cache(
@@ -741,11 +742,15 @@ class Catalog:
         # mutating the shared `jinja_env.loader`, which is not thread-safe.
         # Pass `name`/`filename` so tracebacks and syntax errors point at the
         # component file instead of an anonymous `<template>`.
-        gs = self.jinja_env.make_globals(self.tmpl_globals)
+        # The per-render globals are kept in the component and passed to
+        # `render()` instead of baked into the template, because the template
+        # is shared by every request once it is cached.
+        gs = self.jinja_env.make_globals(None)
         code = self.jinja_env.compile(
             source, name=str(relpath.as_posix()), filename=str(path)
         )
         component.tmpl = self.jinja_env.template_class.from_code(self.jinja_env, code, gs)
+        component.tmpl_globals = self.tmpl_globals
         return component
 
     def _split_name(self, cname: str) -> tuple[str, str]:

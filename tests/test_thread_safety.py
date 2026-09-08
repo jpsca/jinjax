@@ -2,7 +2,7 @@
 JinjaX
 Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
 """
-from threading import Thread
+from threading import Barrier, Event, Thread
 
 from markupsafe import Markup
 
@@ -170,13 +170,27 @@ def test_same_thread_assets_independence(catalog, folder):
 
 
 def test_thread_safety_of_template_globals(catalog, folder):
+    """Every thread must render its own globals, even when they all hold the
+    same cached component at the same time.
+
+    The globals are set and the component looked up *before* the barrier, so
+    all the threads sit between the lookup and the render simultaneously. That
+    is the window in which a shared template would end up with the globals of
+    whichever thread happened to be the last one.
+    """
     NUM_THREADS = 5
-    (folder / "Page.jinja").write_text(
-        "{{ globalvar if globalvar is defined else 'not set' }}"
-    )
+    (folder / "Page.jinja").write_text("{{ globalvar }}")
+
+    # Warm the cache, so all the threads get the same compiled template
+    assert catalog.render("Page", _globals={"globalvar": "warmup"}) == Markup("warmup")
+
+    barrier = Barrier(NUM_THREADS, timeout=5)
 
     def render(i):
-        return catalog.render("Page", _globals={"globalvar": i})
+        catalog.tmpl_globals = {"globalvar": i}
+        component = catalog._get_component("Page")
+        barrier.wait()
+        return component.render()
 
     threads = []
 
@@ -189,3 +203,48 @@ def test_thread_safety_of_template_globals(catalog, folder):
 
     for i, result in enumerate(results):
         assert result == Markup(str(i))
+
+
+def test_cached_template_globals_are_not_shared_between_threads(catalog, folder):
+    """A render must not emit the globals of another request that used the
+    same cached component in the meantime."""
+    (folder / "Page.jinja").write_text("<p>{{ user }}</p>")
+
+    # Warm the cache, so both threads get the same compiled template
+    assert catalog.render("Page", _globals={"user": "warmup"}) == Markup("<p>warmup</p>")
+
+    got_component = Event()
+    other_finished = Event()
+    results = {}
+
+    def first():
+        catalog.tmpl_globals = {"user": "first"}
+        component = catalog._get_component("Page")
+        # Let another request render the same component before this one does
+        got_component.set()
+        other_finished.wait(timeout=5)
+        results["first"] = component.render()
+
+    def second():
+        got_component.wait(timeout=5)
+        results["second"] = catalog.render("Page", _globals={"user": "second"})
+        other_finished.set()
+
+    threads = [Thread(target=first), Thread(target=second)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert results["first"] == Markup("<p>first</p>")
+    assert results["second"] == Markup("<p>second</p>")
+
+
+def test_render_globals_are_not_stored_in_the_shared_cache(catalog, folder):
+    (folder / "Page.jinja").write_text("<p>{{ user }}</p>")
+    assert catalog.render("Page", _globals={"user": "secret"}) == Markup("<p>secret</p>")
+
+    assert catalog._cache
+    for cache in catalog._cache.values():
+        assert "tmpl_globals" not in cache
+        assert "user" not in cache["tmpl"].globals

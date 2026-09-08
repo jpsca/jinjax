@@ -81,7 +81,12 @@ class Component:
         "root_path",
         "mtime",
         "tmpl",
+        "tmpl_globals",
     )
+
+    # `tmpl_globals` holds per-render data, so it is never stored in the
+    # process-wide cache shared by all the requests.
+    CACHED_ATTRS = tuple(attr for attr in __slots__ if attr != "tmpl_globals")
 
     name: str
     prefix: str
@@ -95,6 +100,7 @@ class Component:
     root_path: Path | None
     mtime: float
     tmpl: "Template | None"
+    tmpl_globals: dict[str, t.Any]
 
     def __init__(
         self,
@@ -136,6 +142,7 @@ class Component:
         self.root_path = self._get_root_path()
         self.mtime = mtime
         self.tmpl = tmpl
+        self.tmpl_globals = {}
 
     @classmethod
     def from_cache(
@@ -152,19 +159,14 @@ class Component:
                 return None
 
         self = cls(name=cache["name"])
-        for key in self.__slots__:
+        for key in self.CACHED_ATTRS:
             setattr(self, key, cache[key])
 
-        if self.tmpl:
-            # Create a copy of the globals dictionary to ensure thread safety
-            globals_copy = {**self.tmpl.globals}
-            globals_copy.update(globals or {})
-            self.tmpl.globals = globals_copy
-
+        self.tmpl_globals = dict(globals or {})
         return self
 
     def serialize(self) -> dict[str, t.Any]:
-        return {k: getattr(self, k) for k in self.__slots__}
+        return {k: getattr(self, k) for k in self.CACHED_ATTRS}
 
     def load_metadata(self, source: str) -> None:
         match = RX_META_HEADER.match(source)
@@ -256,7 +258,7 @@ class Component:
     def render(self, **kwargs):
         assert self.tmpl, f"Component {self.name} has no template"
         kwargs.setdefault(ARGS_PREFIX, self.prefix)
-        html = self.tmpl.render(**kwargs).strip()
+        html = self.tmpl.render({**self.tmpl_globals, **kwargs}).strip()
         return Markup(html)
 
     def __repr__(self) -> str:
