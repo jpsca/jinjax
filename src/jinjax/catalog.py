@@ -38,6 +38,7 @@ DEFAULT_EXTENSION = ".jinja"
 ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
 PREFIX_SEP = ":"
+GLOBAL_ASSET_PREFIXES = ("/", "http://", "https://")
 
 # Create ContextVars containers at module level
 collected_css: dict[int, ContextVar[list[str]]] = {}
@@ -437,6 +438,26 @@ class Catalog:
             out = self._finalize_assets(out)
         return out
 
+    def _process_assets(
+        self,
+        root_path: Path | None,
+        *,
+        collected_assets: list[str],
+        component_assets: list[str],
+    ) -> list[str]:
+        assets_to_add: list[str] = []
+        for url in component_assets:
+            if (
+                root_path
+                and self.fingerprint
+                and not url.startswith(GLOBAL_ASSET_PREFIXES)
+            ):
+                url = self._fingerprint(root_path, url)
+
+            if url not in collected_assets:
+                assets_to_add.append(url)
+        return assets_to_add
+
     def irender(
         self,
         /,
@@ -463,18 +484,13 @@ class Catalog:
         css_list = self.collected_css
         js_list = self.collected_js
 
-        # Process CSS assets
-        css_to_add = []
-        for url in component.css:
-            if (
-                root_path
-                and self.fingerprint
-                and not url.startswith(("http://", "https://"))
-            ):
-                url = self._fingerprint(root_path, url)
 
-            if url not in css_list:
-                css_to_add.append(url)
+        # Process CSS assets
+        css_to_add = self._process_assets(
+            root_path,
+            collected_assets=css_list,
+            component_assets=component.css,
+        )
 
         # Update CSS assets in one operation if needed
         if css_to_add:
@@ -483,17 +499,11 @@ class Catalog:
             self.collected_css = new_css
 
         # Process JS assets
-        js_to_add = []
-        for url in component.js:
-            if (
-                root_path
-                and self.fingerprint
-                and not url.startswith(("http://", "https://"))
-            ):
-                url = self._fingerprint(root_path, url)
-
-            if url not in js_list:
-                js_to_add.append(url)
+        js_to_add = self._process_assets(
+            root_path,
+            collected_assets=js_list,
+            component_assets=component.js,
+        )
 
         # Update JS assets in one operation if needed
         if js_to_add:
@@ -587,37 +597,46 @@ class Catalog:
         self._emit_assets_later = True
         return self._assets_placeholder
 
+    def _format_collected_asset_urls(
+        self,
+        element_template: str,
+        *,
+        collected_urls: list[str],
+        rendered_urls: set[str] | None,
+    ) -> tuple[list[str], set[str]]:
+        html_elements: list[str] = []
+        rendered_urls = rendered_urls or set()
+
+        for url in collected_urls:
+            if not url.startswith(GLOBAL_ASSET_PREFIXES):
+                full_url = f"{self.root_url}{url}"
+            else:
+                full_url = url
+
+            if full_url not in rendered_urls:
+                html_elements.append(element_template.format(full_url))
+                rendered_urls.add(full_url)
+
+        return html_elements, rendered_urls
+
     def _format_collected_assets(self) -> Markup:
         """
         Internal helper to format collected_css and collected_js into
         HTML <link> and <script> tags.
 
         The URLs are prepended by `root_url` unless they begin with
-        "http://" or "https://".
+        "/", "http://", or "https://".
         """
-        html_css: list[str] = []
-        rendered_urls: set[str] = set()
-
-        for url in self.collected_css:
-            if not url.startswith(("http://", "https://")):
-                full_url = f"{self.root_url}{url}"
-            else:
-                full_url = url
-
-            if full_url not in rendered_urls:
-                html_css.append(f'<link rel="stylesheet" href="{full_url}">')
-                rendered_urls.add(full_url)
-
-        html_js: list[str] = []
-        for url in self.collected_js:
-            if not url.startswith(("http://", "https://")):
-                full_url = f"{self.root_url}{url}"
-            else:
-                full_url = url
-
-            if full_url not in rendered_urls:
-                html_js.append(f'<script type="module" src="{full_url}"></script>')
-                rendered_urls.add(full_url)
+        html_css, rendered_urls = self._format_collected_asset_urls(
+            '<link rel="stylesheet" href="{}">',
+            collected_urls=self.collected_css,
+            rendered_urls=None
+        )
+        html_js, rendered_urls = self._format_collected_asset_urls(
+            '<script type="module" src="{}"></script>',
+            collected_urls=self.collected_js,
+            rendered_urls=rendered_urls
+        )
 
         return Markup("\n".join(html_css + html_js))
 
