@@ -604,9 +604,10 @@ class Catalog:
         collected_urls: list[str],
         rendered_urls: set[str] | None,
     ) -> tuple[list[str], set[str]]:
-        html_elements: list[str] = []
-        rendered_urls = rendered_urls or set()
+        if rendered_urls is None:
+            rendered_urls = set()
 
+        html_elements: list[str] = []
         for url in collected_urls:
             if not url.startswith(GLOBAL_ASSET_PREFIXES):
                 full_url = f"{self.root_url}{url}"

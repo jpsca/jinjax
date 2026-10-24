@@ -26,8 +26,8 @@ def test_render_assets(catalog, folder, autoescape, undefined):
 
     (folder / "Card.jinja").write_text(
         """
-{#css https://somewhere.com/style.css, card.css #}
-{#js card.js, shared.js #}
+{#css https://somewhere.com/style.css, card.css, /dist/global.css #}
+{#js card.js, shared.js, /dist/scripts/card.js #}
 <section class="card">
 {{ content }}
 </section>
@@ -63,11 +63,13 @@ def test_render_assets(catalog, folder, autoescape, undefined):
 <html>
 <link rel="stylesheet" href="https://somewhere.com/style.css">
 <link rel="stylesheet" href="/static/components/card.css">
+<link rel="stylesheet" href="/dist/global.css">
 <link rel="stylesheet" href="/static/components/greeting.css">
 <link rel="stylesheet" href="http://example.com/super.css">
 <script type="module" src="https://somewhere.com/blabla.js"></script>
 <script type="module" src="/static/components/shared.js"></script>
 <script type="module" src="/static/components/card.js"></script>
+<script type="module" src="/dist/scripts/card.js"></script>
 <script type="module" src="/static/components/greeting.js"></script>
 <section class="card">
 <div class="greeting [&_a]:flex">Hello</div>
