@@ -82,7 +82,6 @@ def test_add_module_fails_with_other_modules():
         catalog.add_module(module)
 
 
-
 @pytest.mark.parametrize(
     (
         "fingerprint",
@@ -139,7 +138,7 @@ def test_add_module_fails_with_other_modules():
         ),
     ],
 )
-def test_process_assets(
+def test_fingerprint_and_gather_unique_assets(
     catalog: jinjax.Catalog,
     folder: Path,
     fingerprint: bool,
@@ -158,7 +157,7 @@ def test_process_assets(
         if fingerprint and root_path_is_folder:
             os.utime(path, (0, 0))
 
-    added = catalog._process_assets(
+    added = catalog._fingerprint_and_gather_unique_assets(
         root_path,
         collected_assets=collected_assets,
         component_assets=component_assets,
@@ -200,7 +199,7 @@ def test_process_assets(
         ),
     ],
 )
-def test_format_collected_asset_urls(
+def test_asset_urls_to_html(
     catalog: jinjax.Catalog,
     root_url: str,
     collected_urls: list[str],
@@ -209,7 +208,7 @@ def test_format_collected_asset_urls(
 ):
     catalog.root_url = root_url
 
-    elements, rendered = catalog._format_collected_asset_urls(
+    elements, rendered = catalog._asset_urls_to_html(
         '<link rel="stylesheet" href="{}">',
         collected_urls=collected_urls,
         rendered_urls=None,

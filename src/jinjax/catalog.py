@@ -438,7 +438,7 @@ class Catalog:
             out = self._finalize_assets(out)
         return out
 
-    def _process_assets(
+    def _fingerprint_and_gather_unique_assets(
         self,
         root_path: Path | None,
         *,
@@ -486,7 +486,7 @@ class Catalog:
 
 
         # Process CSS assets
-        css_to_add = self._process_assets(
+        css_to_add = self._fingerprint_and_gather_unique_assets(
             root_path,
             collected_assets=css_list,
             component_assets=component.css,
@@ -499,7 +499,7 @@ class Catalog:
             self.collected_css = new_css
 
         # Process JS assets
-        js_to_add = self._process_assets(
+        js_to_add = self._fingerprint_and_gather_unique_assets(
             root_path,
             collected_assets=js_list,
             component_assets=component.js,
@@ -597,7 +597,7 @@ class Catalog:
         self._emit_assets_later = True
         return self._assets_placeholder
 
-    def _format_collected_asset_urls(
+    def _asset_urls_to_html(
         self,
         element_template: str,
         *,
@@ -628,12 +628,12 @@ class Catalog:
         The URLs are prepended by `root_url` unless they begin with
         "/", "http://", or "https://".
         """
-        html_css, rendered_urls = self._format_collected_asset_urls(
+        html_css, rendered_urls = self._asset_urls_to_html(
             '<link rel="stylesheet" href="{}">',
             collected_urls=self.collected_css,
             rendered_urls=None
         )
-        html_js, rendered_urls = self._format_collected_asset_urls(
+        html_js, _ = self._asset_urls_to_html(
             '<script type="module" src="{}"></script>',
             collected_urls=self.collected_js,
             rendered_urls=rendered_urls
