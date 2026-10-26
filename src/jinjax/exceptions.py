@@ -1,7 +1,3 @@
-"""
-JinjaX
-Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
-"""
 
 class ComponentNotFound(Exception):
     """

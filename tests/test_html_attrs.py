@@ -1,7 +1,3 @@
-"""
-JinjaX
-Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
-"""
 import pytest
 
 from jinjax.html_attrs import HTMLAttrs

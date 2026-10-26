@@ -1,7 +1,3 @@
-"""
-JinjaX
-Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
-"""
 import logging
 
 from claydocs import Docs, theme_path

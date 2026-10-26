@@ -1,7 +1,3 @@
-"""
-JinjaX
-Copyright (c) Juan-Pablo Scaletti <juanpablo@jpscaletti.com>
-"""
 import typing as t
 from collections import UserString
 from functools import cached_property
