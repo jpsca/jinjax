@@ -52,6 +52,7 @@ test = [
     "pytest-cov",
     "ruff > 0.3",
     "tox-uv",
+    "whitenoise ~= 6.9.0",
 ]
 
 

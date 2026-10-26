@@ -1,3 +1,4 @@
+import os
 import time
 from textwrap import dedent
 
@@ -889,3 +890,28 @@ def test_kebab_cased_component_names(catalog, folder, autoescape, undefined):
     assert catalog.render("KebabCased") == Markup("kebab")
     assert catalog.render("a_tricky-FOLDER.Greeting") == Markup("pascal")
     assert catalog.render("KebabFolder.KebabCased") == Markup("superkebab")
+
+
+def test_subfolder_with_windows_path_separator(
+    catalog, folder, monkeypatch
+):
+    """Components in subfolders must be found even when the OS reports
+    relative folder paths with backslashes, as Windows does (issue #131).
+    """
+    (folder / "ui" / "forms").mkdir(parents=True)
+    (folder / "ui" / "forms" / "Button.jinja").write_text(
+        "<button>{{ content }}</button>"
+    )
+    (folder / "ui" / "forms" / "Button.css").write_text("")
+
+    orig_relpath = os.path.relpath
+    monkeypatch.setattr(os, "sep", "\\")
+    monkeypatch.setattr(
+        os.path,
+        "relpath",
+        lambda *a, **k: orig_relpath(*a, **k).replace("/", "\\"),
+    )
+
+    html = catalog.render("ui.forms.Button", _content="x")
+    assert html == Markup("<button>x</button>")
+    assert catalog.collected_css == ["ui/forms/Button.css"]

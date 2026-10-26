@@ -264,8 +264,14 @@ class Component:
         """Get the root path of the component."""
         if self.path is None or self.relpath is None:
             return None
-        suffix = str(self.relpath.as_posix())
+        suffix = self.relpath.as_posix()
         if self.url_prefix:
             suffix = f"{self.url_prefix}{suffix}"
 
-        return Path(str(self.path).removesuffix(str(suffix)))
+        # Compare path components instead of strings so this works
+        # regardless of the OS path separator (issue #131)
+        suffix_parts = Path(suffix).parts
+        path_parts = self.path.parts
+        if path_parts[-len(suffix_parts):] != suffix_parts:
+            return self.path
+        return Path(*path_parts[: -len(suffix_parts)])

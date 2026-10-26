@@ -315,6 +315,7 @@ test = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "tox-uv" },
+    { name = "whitenoise" },
 ]
 
 [package.metadata]
@@ -337,6 +338,7 @@ test = [
     { name = "pytest-cov" },
     { name = "ruff", specifier = ">0.3" },
     { name = "tox-uv" },
+    { name = "whitenoise", specifier = "~=6.9.0" },
 ]
 
 [[package]]

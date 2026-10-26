@@ -6,7 +6,7 @@ from pathlib import Path
 try:
     import whitenoise
 except ImportError:
-    WhiteNoise = None
+    whitenoise = None
 
 
 if t.TYPE_CHECKING:

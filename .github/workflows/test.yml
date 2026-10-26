@@ -37,3 +37,17 @@ jobs:
           uv sync --group dev --group test
           pip install -e .
       - run: make test
+  tests-windows:
+    name: tests (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.14"
+      - name: "Installs dependencies"
+        run: |
+          pip install -U uv
+          uv sync --group dev --group test
+          pip install -e .
+      - run: uv run pytest -x src/jinjax tests

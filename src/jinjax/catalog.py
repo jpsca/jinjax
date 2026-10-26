@@ -663,7 +663,7 @@ class Catalog:
 
         ext = "".join(relpath.suffixes)
         stem = relpath.name.removesuffix(ext)
-        parent = str(relpath.parent)
+        parent = relpath.parent.as_posix()
         parent = "" if parent == "." else f"{parent}/"
 
         return f"{parent}{stem}-{fingerprint}{ext}"
@@ -792,7 +792,11 @@ class Catalog:
             for curr_folder, _, files in os.walk(
                 root_path, topdown=False, followlinks=True
             ):
-                relfolder = os.path.relpath(curr_folder, root_path).strip(".")
+                # `os.path.relpath` uses the OS separator (`\\` on Windows),
+                # but component names always use `/`, so normalize to POSIX
+                # before comparing (issue #131)
+                relfolder = os.path.relpath(curr_folder, root_path)
+                relfolder = relfolder.replace(os.sep, SLASH).strip(".")
                 if relfolder:
                     if not (
                         name.startswith(relfolder)
