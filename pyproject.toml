@@ -38,7 +38,7 @@ whitenoise = ["whitenoise ~= 6.9.0"]
 [project.urls]
 homepage = "https://jinjax.scaletti.dev/"
 repository = "https://github.com/jpsca/jinjax"
-documentation = "https://jinjax.scaletti.dev/guides/"
+documentation = "https://jinjax.scaletti.dev/docs/"
 
 [dependency-groups]
 dev = [
