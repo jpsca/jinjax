@@ -19,6 +19,7 @@ from .jinjax import JinjaX
 from .utils import (
     ARGS_PREFIX,
     DELIMITER,
+    GLOBAL_ASSET_PREFIXES,
     SLASH,
     get_random_id,
     get_url_prefix,
@@ -38,7 +39,6 @@ DEFAULT_EXTENSION = ".jinja"
 ARGS_ATTRS = "attrs"
 ARGS_CONTENT = "content"
 PREFIX_SEP = ":"
-GLOBAL_ASSET_PREFIXES = ("/", "http://", "https://")
 
 # Create ContextVars containers at module level
 collected_css: dict[int, ContextVar[list[str]]] = {}
@@ -484,7 +484,6 @@ class Catalog:
         css_list = self.collected_css
         js_list = self.collected_js
 
-
         # Process CSS assets
         css_to_add = self._fingerprint_and_gather_unique_assets(
             root_path,
@@ -600,25 +599,23 @@ class Catalog:
     def _asset_urls_to_html(
         self,
         element_template: str,
-        *,
-        collected_urls: list[str],
-        rendered_urls: set[str] | None,
-    ) -> tuple[list[str], set[str]]:
-        if rendered_urls is None:
-            rendered_urls = set()
-
+        urls: list[str],
+        rendered_urls: set[str],
+    ) -> list[str]:
+        """
+        Format `urls` with `element_template`, prepending `root_url` to the
+        ones that are not global. `rendered_urls` is updated in place and used
+        to skip URLs already rendered.
+        """
         html_elements: list[str] = []
-        for url in collected_urls:
+        for url in urls:
             if not url.startswith(GLOBAL_ASSET_PREFIXES):
-                full_url = f"{self.root_url}{url}"
-            else:
-                full_url = url
-
-            if full_url not in rendered_urls:
-                html_elements.append(element_template.format(full_url))
-                rendered_urls.add(full_url)
-
-        return html_elements, rendered_urls
+                url = f"{self.root_url}{url}"
+            if url in rendered_urls:
+                continue
+            html_elements.append(element_template.format(url))
+            rendered_urls.add(url)
+        return html_elements
 
     def _format_collected_assets(self) -> Markup:
         """
@@ -628,17 +625,17 @@ class Catalog:
         The URLs are prepended by `root_url` unless they begin with
         "/", "http://", or "https://".
         """
-        html_css, rendered_urls = self._asset_urls_to_html(
+        rendered_urls: set[str] = set()
+        html_css = self._asset_urls_to_html(
             '<link rel="stylesheet" href="{}">',
-            collected_urls=self.collected_css,
-            rendered_urls=None
+            self.collected_css,
+            rendered_urls,
         )
-        html_js, _ = self._asset_urls_to_html(
+        html_js = self._asset_urls_to_html(
             '<script type="module" src="{}"></script>',
-            collected_urls=self.collected_js,
-            rendered_urls=rendered_urls
+            self.collected_js,
+            rendered_urls,
         )
-
         return Markup("\n".join(html_css + html_js))
 
     def _finalize_assets(self, html: str, reset: bool = True) -> str:
@@ -660,7 +657,7 @@ class Catalog:
     # Private
 
     def _fingerprint(self, root: Path, filename: str) -> str:
-        relpath = Path(filename.lstrip(os.path.sep))
+        relpath = Path(filename)
         filepath = root / relpath
         if not filepath.is_file():
             return filename

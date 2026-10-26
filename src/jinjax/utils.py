@@ -14,6 +14,10 @@ SLASH = "/"
 
 ARGS_PREFIX = "__prefix"
 
+# Asset URLs with these prefixes are rendered as-is: never fingerprinted
+# and never prepended with the component prefix or the catalog `root_url`.
+GLOBAL_ASSET_PREFIXES = ("/", "http://", "https://")
+
 
 def get_url_prefix(prefix: str) -> str:
     url_prefix = prefix.strip().strip(f"{DELIMITER}{SLASH}").replace(DELIMITER, SLASH)

@@ -16,7 +16,7 @@ from .exceptions import (
     InvalidArgument,
     MissingRequiredArgument,
 )
-from .utils import ARGS_PREFIX, get_url_prefix
+from .utils import ARGS_PREFIX, GLOBAL_ASSET_PREFIXES, get_url_prefix
 
 
 if t.TYPE_CHECKING:
@@ -234,7 +234,7 @@ class Component:
             url = url.strip("\"'").rstrip("/")
             if not url:
                 continue
-            if url.startswith(("/", "http://", "https://")):
+            if url.startswith(GLOBAL_ASSET_PREFIXES):
                 files.append(url)
             else:
                 files.append(f"{self.url_prefix}{url}")
