@@ -316,7 +316,7 @@ wheels = [
 
 [[package]]
 name = "jinjax"
-version = "0.67"
+version = "0.68"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
