@@ -1,0 +1,106 @@
+{# import "autodoc.md.jx" as Autodoc #}
+{# def ds, level=2 #}
+
+{%- if ds.symbol or ds.name %}
+{{ "#" * level }} `{{ ds.symbol }}`{ .autodoc-symbol .autodoc-symbol-{{ ds.symbol }} } `{{ ds.name }}`{ .autodoc-name .autodoc-name-{{ ds.symbol }} }
+{%- if ds.label %} `{{ ds.label }}`{ .autodoc-label .autodoc-label-{{ ds.label }} }{% endif %}
+{% endif -%}
+
+{%- if ds.short_description %}
+:::: div autodoc-short-description
+{{ ds.short_description | safe }}
+::::
+{% endif -%}
+
+{%- if ds.signature %}
+````python
+{{ ds.signature | safe }}
+````
+{% endif -%}
+
+{%- if ds.bases -%}
+:::: div autodoc-bases
+Bases: {% for base in ds.bases %} `{{ base }}`{% if not loop.last %}, {% endif %}
+{%- endfor %}
+::::
+{% endif -%}
+
+{%- if ds.params %}
+:::: div autodoc-table autodoc-arguments
+
+Argument | Description
+-------- | --------
+{%- for param in ds.params %}
+`{{ param.name }}` | {{ param.description | replace('\n', '<br/>') | safe }}
+{%- endfor %}
+
+::::
+{% endif -%}
+
+{%- if ds.long_description %}
+:::: div autodoc-long-description
+{{ ds.long_description | safe }}
+::::
+{% endif %}
+{%- if ds.examples %}
+:::: div autodoc-examples
+**Example:**
+
+{% for ex in ds.examples -%}
+::: div
+{% if ex.description %}{{ ex.description | safe }}
+{% endif -%}
+{% if ex.snippet %}
+{{ ex.snippet | safe }}
+{% endif %}
+
+:::
+{% endfor %}
+::::
+{% endif -%}
+
+{%- if ds.returns or ds.many_returns %}
+:::: div autodoc-returns
+**Returns:**
+{%- if ds.returns %}
+{{ ds.returns.description | safe }}
+{%- elif ds.many_returns -%}
+{%- for return in ds.many_returns %}
+- **{{ return.return_name }}**: {{ return.description | safe }}
+{%- endfor %}
+{% endif %}
+::::
+{% endif -%}
+
+{%- if ds.raises %}
+:::: div autodoc-raises
+**Raises:**
+{% for raises in ds.raises -%}
+- {{ raises.description | safe }}
+{% endfor %}
+::::
+{% endif -%}
+
+{%- if ds.attrs %}
+::::: div autodoc-attrs
+{% for attr in ds.attrs %}
+<Autodoc ds={{ attr }} level={{ level + 1 }} />
+{% endfor %}
+:::::
+{% endif -%}
+
+{%- if ds.properties %}
+::::: div autodoc-properties
+{% for attr in ds.properties %}
+<Autodoc ds={{ attr }} level={{ level + 1 }} />
+{%- endfor %}
+:::::
+{% endif -%}
+
+{%- if ds.methods %}
+::::: div autodoc-methods
+{% for method in ds.methods %}
+<Autodoc ds={{ method }} level={{ level + 1 }} />
+{%- endfor %}
+:::::
+{% endif -%}

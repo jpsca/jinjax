@@ -423,6 +423,24 @@ class Catalog:
         This is the method you should call to render a parent component from a
         view/controller in your app.
 
+        Arguments:
+
+            __name:
+                The name of the component to render, e.g. "Page" or
+                "ui.Button".
+
+            caller:
+                An optional callable that returns the content of the
+                component, as Jinja's `{% call %}` does.
+
+            _globals:
+                An optional dictionary of extra template globals. They are
+                available to the rendered component and to every component
+                nested inside it, for the duration of this call only.
+                Use it for per-request data like the current request or
+                the current user. Any other keyword argument is passed to
+                the component as a regular argument.
+
         """
         # Clear any existing assets
         self.collected_css = []

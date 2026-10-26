@@ -1,55 +1,41 @@
-import logging
+"""
+# JinjaX Documentation
 
-from claydocs import Docs, theme_path
+- `python docs.py run` to start a local server with live reload.
+- `python docs.py build` to build the documentation for deployment.
 
+"""
+from writeadoc import Docs
 
-LOGGER_LEVEL = logging.INFO
-logging.getLogger("claydocs").setLevel(LOGGER_LEVEL)
-logging.getLogger("jinjax").setLevel(LOGGER_LEVEL)
-
-# languages = {
-#     "en": "English",
-#     "es": "Español",
-# }
 
 pages = [
-    "index.mdx",
-    ["Guides", [
-        "guides/index.mdx",
-        "guides/components.mdx",
-        "guides/arguments.mdx",
-        "guides/organization.mdx",
-        "guides/slots.mdx",
-        "guides/css_and_js.mdx",
-    ]],
-    "api.mdx",
-    "motivation.mdx",
+    {
+        "title": "Guides",
+        "pages": [
+            "guides/introduction.md",
+            "guides/components.md",
+            "guides/arguments.md",
+            "guides/organization.md",
+            "guides/slots.md",
+            "guides/css_and_js.md",
+        ],
+    },
+    "api.md",
+    "motivation.md",
 ]
 
-
-def get_docs() -> Docs:
-    docs = Docs(
-        pages,
-        content_folder="./content",
-        search=False,
-        cache=False,
-        domain="https://jinjax.scaletti.dev",
-        default="Page",
-        default_social="SocialCard",
-        metadata={
-            "default_title": "JinjaX Documentation",
-            "repo": "https://github.com/jpsca/jinjax",
-            "logo": "/static/img/jinjax-logo.svg",
-        }
-    )
-
-    # Custom component + theme overrides
-    docs.add_folder("./components")
-    # Default theme
-    docs.add_folder(theme_path)
-    return docs
+docs = Docs(
+    __file__,
+    pages=pages,
+    site={
+        "name": "JinjaX",
+        "description": "Super components powers for your Jinja templates",
+        "base_url": "https://jinjax.scaletti.dev",
+        "lang": "en",
+        "source_code": "https://github.com/jpsca/jinjax",
+    },
+)
 
 
 if __name__ == "__main__":
-    get_docs().run()
-
+    docs.cli()

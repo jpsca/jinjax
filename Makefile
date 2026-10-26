@@ -1,6 +1,6 @@
 .PHONY: install
 install:
-	uv sync --group dev --group test
+	uv sync --all-groups
 	uv pip install -e .
 	uv run pre-commit install
 
@@ -22,11 +22,12 @@ types:
 
 .PHONY: docs
 docs:
-	cd docs && uv run python docs.py
+	cd docs && uv run python docs.py run
 
 .PHONY: docs-build
 docs-build:
-	cd docs && uv run python docs.py build
+	rm -rf docs/build
+	cd docs && uv run python docs.py build --llm
 
 .PHONY: docs-deploy
 docs-deploy:

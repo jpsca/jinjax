@@ -1,0 +1,18 @@
+<nav class="page__pager">
+  {%- if page.prev %}
+  <a href="{{ page.prev.url }}" aria-label="{{ page.prev.title }}" class="prev">
+    <dl>
+      <dt>{{ _('PREVIOUS') }}</dt>
+      <dd>{{ page.prev.title }}</dd>
+    </dl>
+  </a>
+  {%- endif %}
+  {%- if page.next %}
+  <a href="{{ page.next.url }}" aria-label="{{ page.next.title }}" class="next">
+    <dl>
+      <dt>{{ _('NEXT') }}</dt>
+      <dd>{{ page.next.title }}</dd>
+    </dl>
+  </a>
+  {%- endif %}
+</nav>

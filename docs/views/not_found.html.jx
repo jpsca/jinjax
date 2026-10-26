@@ -1,0 +1,13 @@
+{# import "./layout.jx" as Layout #}
+
+<Layout>
+  <div class="page page--docs">
+    <div class="page__wrapper">
+      <div class="page__content">
+        <h1>{{ _('NOT_FOUND_TITLE') }}</h1>
+        <p>{{ _('NOT_FOUND_MESSAGE') }}</p>
+        <p><a href="/">{{ _('BACK_TO_HOME') }}</a></p>
+      </div>
+    </div>
+  </div>
+</Layout>

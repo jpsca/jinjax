@@ -1,0 +1,15 @@
+{# def search_data #}
+{# import "./layout.jx" as Layout #}
+{# import "./toc.jx" as Toc #}
+
+<Layout sidebar>
+  <div class="page__wrapper">
+    <div class="page__content">
+      <h1 id="search-query">{{ _('SEARCH_RESULTS_FOR') }} <mark>&nbsp;</mark></h1>
+      <div id="search-results">
+        <p>{{ _('NO_RESULTS_FOUND') }}</p>
+      </div>
+      <script>window.store = {{ search_data | tojson(indent=2) }};</script>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: {{ build.base_url }}search/
+{% for variant in build.variants.values() -%}
+Disallow: {{ variant.base_url }}search/
+{% endfor -%}
+Sitemap: {{ site.base_url }}/sitemap.xml

@@ -1,0 +1,9 @@
+{%- if site.archived %}
+<aside class="banner banner--warning">
+	<div class="wrapper">
+		<div>
+			{{ _('NOT_THE_LATEST_VERSION') }} <a href="/"><strong>{{ _('CLICK_TO_GO_TO_LATEST') }}</strong>.</a>
+		</div>
+	</div>
+</aside>
+{%- endif %}

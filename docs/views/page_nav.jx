@@ -1,0 +1,6 @@
+<nav class="page__nav">
+  <button class="menu-trigger" popovertarget="sidebar-popover">{{ _('MENU') }}</button>
+  {% if page.toc -%}
+    <button class="toc-trigger" popovertarget="pagetoc-popover">{{ _('ON_THIS_PAGE') }}</button>
+  {% endif %}
+</nav>

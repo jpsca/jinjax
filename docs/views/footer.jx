@@ -1,0 +1,6 @@
+<footer class="footer">
+	<div>
+		<p class="copy">Website &copy; <a href="https://jpscaletti.com">Juan-Pablo Scaletti</a>. JinjaX and the documentation text licensed under the MIT license.</p>
+		<p class="madewith">Made with <a href="https://writeadoc.scaletti.dev/" target="_blank" rel="noopener">WriteADoc</a></p>
+	</div>
+</footer>

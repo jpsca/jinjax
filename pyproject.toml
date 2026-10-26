@@ -54,7 +54,9 @@ test = [
     "tox-uv",
     "whitenoise ~= 6.9.0",
 ]
-
+docs = [
+    "writeadoc",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

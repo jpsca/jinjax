@@ -1,0 +1,57 @@
+{# import "./metadata.jx" as Metadata #}
+{# import "./header.jx" as Header #}
+{# import "./sidebar.jx" as Sidebar #}
+{# import "./page_nav.jx" as PageNav #}
+{# import "./banner_archived.jx" as BannerArchived #}
+{# def sidebar=False #}
+<!DOCTYPE html>
+<html lang="{{ site.lang }}" class="cs-system">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>{% if page.title %}{{ page.title | striptags }} | {% endif %}{{ site.name | striptags }}</title>
+
+<meta content="ie=edge" http-equiv="x-ua-compatible" />
+<meta name="handheldfriendly" content="true" />
+<meta name="viewport" content="initial-scale=1, width=device-width" />
+
+<script src="/assets/js/color-scheme.js"></script>
+<link rel="stylesheet" href="/assets/css/base.css" />
+<link rel="stylesheet" href="/assets/css/layout.css" />
+<link rel="stylesheet" href="/assets/css/custom.css" />
+
+<Metadata />
+<script defer data-domain="jinjax.scaletti.dev" src="https://watcher.scaletti.dev/js/script.js"></script>
+
+<script type="module" src="/assets/js/turbo.min.js"></script>
+<script type="module" src="/assets/js/script.js"></script>
+{{ assets.render() -}}
+<script src="/assets/js/lunr.min.js"></script>
+{%- if site.lang != "en" %}
+<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>
+{%- endif %}
+</head>
+
+<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %} no-js" id="top">
+  <script>document.body.classList.remove('no-js')</script>
+  <div class="layout">
+    <Header />
+
+    <main class="main">
+      <Sidebar />
+      <div class="page">
+        {% if page.url != build.base_url -%}<PageNav />{%- endif %}
+        <BannerArchived />
+        {{ content }}
+      </div>
+    </main>
+  </div>
+
+  <script>
+    window.strings = {
+      COPY: "{{ _('COPY') }}",
+      COPIED: "{{ _('COPIED') }}",
+      NO_RESULTS_FOUND: "{{ _('NO_RESULTS_FOUND') }}",
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{# import "./version_selector.jx" as VersionSelector #}
+{# import "./language_selector.jx" as LanguageSelector #}
+{# import "./color_scheme.jx" as ColorScheme #}
+
+<header class="header">
+	<nav class="wrapper">
+		<a class="header__brand" href="/" aria-label="{{ site.name }}">
+			<img class="only-light" src="/assets/images/jinjax-logo.svg" height="32" alt="{{ site.name }}" />
+			<img class="only-dark" src="/assets/images/jinjax-logo-dark.svg" height="32" alt="{{ site.name }}" />
+		</a>
+		<div class="header__links">
+			<a href="/docs/">
+				<span>Guides</span>
+			</a>
+			<a href="/docs/api/">
+				<span>API</span>
+			</a>
+			<a href="{{ site.source_code }}" target="_blank" rel="noopener">
+				<span>{{ _('SOURCE_CODE') }}</span>
+			</a>
+		</div>
+
+		<VersionSelector />
+		<LanguageSelector />
+		<a class="header__search" href="/search/">
+			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+			</svg>
+		</a>
+		<ColorScheme />
+	</nav>
+</header>

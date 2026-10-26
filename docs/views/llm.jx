@@ -1,0 +1,14 @@
+{% set pages = site.pages|selectattr("source")|list -%}
+
+# Index
+
+{% for page in pages -%}
+{{ loop.index }}. [{{ page.title|safe }}](#{{ page.id }})
+{% endfor %}
+---
+{% for page in pages %}
+
+{{ page.render_metadata(url=page.url)|safe }}
+
+{{ page.source|safe }}
+{% endfor %}

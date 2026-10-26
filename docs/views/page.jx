@@ -1,0 +1,14 @@
+{# import "./layout.jx" as Layout #}
+{# import "./page_pager.jx" as PagePager #}
+{# import "./page_toc.jx" as PageToc #}
+
+<Layout sidebar>
+  <div class="page__wrapper">
+    <div class="page__content">
+      <h1>{{ page.title }}</h1>
+      {{ page.content or content }}
+      <PagePager />
+    </div>
+    <PageToc />
+  </div>
+</Layout>

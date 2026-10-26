@@ -1,0 +1,15 @@
+{#
+{% if not site.archived -%}
+<div class="version variant-popover">
+	<button type="button" popovertarget="version-selector" tabindex="0">
+		{{ site.version }}
+	</button>
+	<div class="popover" role="menu">
+		<div>
+			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
+		</div>
+	</div>
+</div>
+{%- endif %}
+#}

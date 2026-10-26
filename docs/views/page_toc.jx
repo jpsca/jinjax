@@ -1,0 +1,15 @@
+{% macro render_toc(items) %}
+	<ul>
+	{% for level, id, text in items -%}
+	<li class="level--{{ level }}"><a href="#{{ id }}">{{ text|safe }}</a></li>
+	{% endfor %}
+	</ul>
+{% endmacro %}
+
+<nav class="page__toc" id="pagetoc-popover" popover="auto">
+{% if page.toc -%}
+<a class="top-link" href="#">{{ _('BACK_TO_TOP') }}</a>
+<h4><a href="#">{{ _('ON_THIS_PAGE') }}</a></h4>
+{{ render_toc(page.toc) }}
+{%- endif %}
+</nav>

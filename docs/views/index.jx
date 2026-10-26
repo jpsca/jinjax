@@ -1,0 +1,10 @@
+{# import "./layout.jx" as Layout #}
+{# import "./footer.jx" as Footer #}
+
+<Layout>
+  <div class="page-home">
+    <svg class="home-bg" aria-hidden="true"><defs><pattern id="home-bg-grid" width="50" height="50" x="50%" y="-1" patternUnits="userSpaceOnUse"><path d="M.5 200V.5H200" fill="none"></path></pattern></defs><rect width="100%" height="100%" stroke-width="0" fill="url(#home-bg-grid)"></rect></svg>
+    {{ page.content }}
+  </div>
+  <Footer />
+</Layout>
