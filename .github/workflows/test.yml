@@ -23,7 +23,7 @@ jobs:
     name: tests
     strategy:
       matrix:
-        python: ["3.11", "3.12", "3.13"]
+        python: ["3.11", "3.12", "3.13", "3.14", "3.15", "3.14t", "3.15t"]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
